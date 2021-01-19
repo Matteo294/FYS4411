@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{packages}
+
+\newcommand{\bb}[1]{\mathbf{#1}}
+\newcommand{\trialsemp}[2]{\prod_{i=1}^{N} exp\left[-{#1}\left(x_i^2 + y_i^2 + {#2} z_i^2\right)\right]}
+\newcommand{\trialsempsing}[2]{e^{-{#1}\left(x_i^2 + y_i^2 + {#2} z_i^2\right)}}
+
+\begin{document}
+\raggedright 
+Without interaction between the particles the general expression for the potential of the \emph{elliptical trap} is
+$$ V(\bb{r}) = \frac{1}{2}m\left[\omega_{ho}^2(x^2+y^2) + w_zz^2\right] $$
+and the case in which $\omega_z=\omega_{ho}$ is called \emph{spherical trap}.
+The trial function for this potential is 
+$$ \Psi_T(\bb{r}) = \prod_{i=1}^{N} g(\alpha, \beta, \bb{r}_i)$$
+where $g(\alpha, \beta, \bb{r}_i) = \trialsemp{\alpha}{\beta}$, so that the local energy becomes 
+\begin{equation}
+    \begin{gathered}
+    E_L(\bb{r}) = \frac{1}{\Psi_T(\bb{r})}H\Psi_T(\bb{r}) \\ 
+    = \left(\prod_{i=1}^{N} g(\alpha, \beta, \bb{r}_i)\right)^{-1} \, 
+    \left(-\frac{\hbar^2}{2m}\nabla_{\bb{r}}^2 + V(\bb{r})\right) \,
+    \left(\prod_{i=1}^{N} g(\alpha, \beta, \bb{r}_i)\right)  \\
+    = \left(\prod_{i=1}^{N} g(\alpha, \beta, \bb{r}_i)\right)^{-1} \,
+    \left\{V(\bb{r})\prod_{i=1}^{N} g(\alpha, \beta, \bb{r}_i) \, - \, 
+    \frac{\hbar^2}{2m}\nabla_{\bb{r}}^2 \prod_{i=1}^{N} g(\alpha, \beta, \bb{r}_i)\right\}
+\end{gathered}
+\label{eq:localenergy}
+\end{equation}
+with $\nabla_{\bb{r}} = \sum_{i=1}^N \nabla_{\bb{r}_i}$. Let now be $\beta=1$.
+$$ \frac{\partial^2}{\partial x^2}\left(\trialsempsing{\alpha}{}\right) = 
+-2\alpha \trialsempsing{\alpha}{} + 4 \alpha^2 x^2 \trialsempsing{\alpha}{} = 2\alpha\left(2\alpha x^2 - 1\right) \, g(\alpha, \bb{r}_i)$$
+Combining with the analogous expressions for $y$ and $z$:
+\begin{gather*} 
+    \nabla_i^2 \Psi_i(\bb{r}_i) = \left[4\alpha^2(x_i^2 + y_i^2 + z_i^2) - 6\alpha\right] g(\alpha, \bb{r}_i)
+\end{gather*}
+Using this result one can write expression \ref{eq:localenergy} as follows
+\begin{gather*}
+    E_L({\bb{r}}) = V(\bb{r}) - \frac{\hbar^2}{2m} \, 
+    \left(\prod_{i=1}^{N} g(\alpha, \beta, \bb{r}_i)\right)^{-1} \sum_{i=1}^N \left\{g(\alpha, \bb{r}_i) \, 
+    \left[4\alpha^2(x_i^2 + y_i^2 + z_i^2) - 6\alpha\right] \prod_{j \neq i}^{N} g(\alpha, \bb{r}_j)\right\} = \\
+    = V(\bb{r}) - \frac{\hbar^2}{2m} \, \sum_{i=1}^N \left[4\alpha^2(x_i^2 + y_i^2 + z_i^2) - 6\alpha\right] \\
+    = V(\bb{r}) + \frac{\alpha\hbar^2}{m} \, \left(3 - 2\alpha \,\sum_{i=1}^N \left(x_i^2 + y_i^2 + z_i^2\right)\right)
+\end{gather*}
+\end{document}
