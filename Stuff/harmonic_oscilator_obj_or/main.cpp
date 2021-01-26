@@ -6,6 +6,7 @@
 #include "particle.h"
 #include "system.h"
 #include "gaussian.h"
+#include "asymmetricGaussian.h"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ int main(){
     const double min = -1.0;
     const double max = 1.0;
     const double alpha = 1.0;
+    const double beta = 1.0;
     const int dimension = 3;
     const int Nparticles = 2;
 
@@ -30,7 +32,10 @@ int main(){
     system.setParticlePosition(0, new_pos);
     system.setParticlePosition(1, new_pos);
 
+    // Compare results between symmetric gaussian and asymmetric gaussian but with alpha=beta
     Gaussian psi(&system, alpha);
-    cout << "Value of psi: " << psi.evaluate() << endl;    
+    AsymmetricGaussian psi2(&system, alpha, beta);
+    cout << "Value of psi: " << psi.evaluate() << endl;
+    cout << "Valule of psi2: " << psi2.evaluate() << endl;
 
 }

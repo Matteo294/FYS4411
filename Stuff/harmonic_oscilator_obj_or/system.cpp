@@ -42,10 +42,10 @@ void System::getInfoParticles(){
     int i=0;
     int j=0;
     for(i=0; i<this->Nparticles; i++){
-        cout << "Particle[" << i << "]   mass=" << this->particles.at(i)->mass << "   Position={";
+        cout << "Particle[" << i << "]   mass=" << particles[i]->mass << "   Position={";
         for(j=0; j<this->dimension; j++){
-            cout << this->particles.at(i)->getPosition().at(j);
-            if(j!= (this->dimension -1)){
+            cout << this->particles[i]->getPosition().at(j);
+            if(j != (this->dimension -1)){
                 cout << ",";
             }
         }

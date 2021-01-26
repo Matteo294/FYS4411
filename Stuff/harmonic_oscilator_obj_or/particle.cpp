@@ -12,9 +12,9 @@ void Particle::setPosition(std::vector<double> new_pos){
 }
 
 void Particle::move(std::vector<double> var_pos){
-    assert(var_pos.size()==(*system).dimension);
+    assert(var_pos.size()==system->getDimension());
     int i=0;
-    for(i=0; i<(*system).dimension; i++){
+    for(i=0; i<system->getDimension(); i++){
         this->position.at(i) += var_pos.at(i);
     }
 }

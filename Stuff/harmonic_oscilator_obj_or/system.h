@@ -9,8 +9,6 @@ using namespace std;
 class System{
     public:
         vector<class Particle*> particles; // vector of pointers to the single particles in the system
-        int dimension; 
-        int Nparticles;
         void addParticle();
         int getDimension();
         int getNParticles();
@@ -18,4 +16,7 @@ class System{
         void moveParticle(int i, vector<double> delta_pos);
         void setParticlePosition(int i, vector<double> new_pos);
         System(int dim, int Npart);
+    private:
+        int dimension; 
+        int Nparticles;
 };
