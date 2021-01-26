@@ -7,10 +7,9 @@ class Particle{
         class System* system;
         std::vector<double> position;
         double mass;
-
         void setMass(double m);
         void setPosition(std::vector<double> new_pos);
-        void updPosition(std::vector<double> var_pos);
+        void move(std::vector<double> delta_pos);
         std::vector<double> getPosition();
         Particle();
 };

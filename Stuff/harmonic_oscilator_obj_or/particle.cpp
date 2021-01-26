@@ -11,7 +11,7 @@ void Particle::setPosition(std::vector<double> new_pos){
     this->position = new_pos;
 }
 
-void Particle::updPosition(std::vector<double> var_pos){
+void Particle::move(std::vector<double> var_pos){
     assert(var_pos.size()==(*system).dimension);
     int i=0;
     for(i=0; i<(*system).dimension; i++){
