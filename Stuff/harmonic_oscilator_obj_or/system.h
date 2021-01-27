@@ -3,6 +3,7 @@
 #include "particle.h"
 #include "wavefunction.h"
 #include "hamiltonian.h"
+#include "solver.h"
 #include <iostream>
 #include <cassert> 
 
@@ -17,6 +18,10 @@ class System{
         class Wavefunction* wafefunction;
         void setWavefunction(class Wavefunction* wavefunction);
         class Wavefunction* getWavefunction();
+
+        class Solver* solver;
+        void setSolver(class Solver* solver);
+        class Solver* getSolver();
 
         vector<class Particle*> particles; // vector of pointers to the single particles in the system
         void addParticle();

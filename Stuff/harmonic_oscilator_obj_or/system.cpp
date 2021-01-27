@@ -41,6 +41,16 @@ class Wavefunction* System::getWavefunction(){
     return this->wafefunction;
 }
 
+void System::setSolver(class Solver* solver){
+    this->solver=solver;
+}
+
+class Solver* System::getSolver(){
+    return this->solver;
+}
+
+
+
 /* Add a particle by adding a new pointer to the vector of pointer */
 void System::addParticle(){
     this->particles.push_back(new Particle());

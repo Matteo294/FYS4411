@@ -1,5 +1,5 @@
-main : main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o
-	g++ -Wall -o main main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o
+main : main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o solver.o metropolis.o
+	g++ -Wall -o main main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o solver.o metropolis.o
 main.o : main.cpp
 	g++ -c main.cpp
 system.o : system.h system.cpp 
@@ -16,3 +16,7 @@ hamiltonian.o : hamiltonian.h hamiltonian.cpp
 	g++ -c hamiltonian.cpp
 spherical.o : spherical.h spherical.cpp
 	g++ -c spherical.cpp
+solver.o : solver.h solver.cpp
+	g++ -c solver.cpp
+metropolis.o : metropolis.h metropolis.cpp
+	g++ -c metropolis.cpp
