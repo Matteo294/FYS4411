@@ -6,19 +6,17 @@ Spherical::Spherical(System* system, double omega) : Hamiltonian(system){
 
 double Spherical::LocalEnergy(){
     double res = 0.0;
-
     // potential contribution
-    for(int i=0; i<system->getNParticles(); i++){    
-        for(int j=0; j<system->getDimension(); j++){
-            res = res + pow(system->particles[i]->position[j], 2);
+    for(int i=0; i<this->system->getNParticles() ; i++){    
+        for(int j=0; j<this->system->getDimension(); j++){
+            res = res + pow( this->system->particles[i]->position[j], 2);
         }
     }     
-    res = res*0.5*omega*2*system->particles[0]->mass;
+
+    res = res*0.5*pow(this->omega,2)*this->system->particles[0]->mass;
 
     // second derivative contribution
-    res = res + (0.5/system->particles[0]->mass)*system->getWavefunction()->evaluateSecondDerivative();
-    // final result
-    res = system->getWavefunction()->evaluate()*res;
+    res = res - (0.5/this->system->particles[0]->mass/this->system->getWavefunction()->evaluate())*this->system->getWavefunction()->evaluateSecondDerivative();
 
     return res;
 }

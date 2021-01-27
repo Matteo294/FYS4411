@@ -18,11 +18,11 @@ int main(){
 
     const double min = -1.0;
     const double max = 1.0;
-    const double alpha = 1.0;
+    double alpha = 1.0;
     const double beta = 1.0;
     double omega = 1.0;
-    const int dimension = 3;
-    const int Nparticles = 10;
+    const int dimension = 1;
+    const int Nparticles = 1;
 
     const int Nsteps = (int) 1e6;
     const double step = 1.0;
@@ -37,8 +37,18 @@ int main(){
     system.setHamiltonian(&spherical);
     system.setSolver(&metropolis);
 
-    system.solver->solve();
-    system.getInfoParticles();
+    //cout << system.getHamiltonian()->LocalEnergy() << endl;
+    
+    double alpha_min = 0.1;
+    double alpha_max = 2.0;
+    int alpha_N = 10;
+    for(int i=0; i<alpha_N; i++){
+        alpha = alpha_min + i*(alpha_max - alpha_min)/alpha_N;
+        cout << "alpha= " << alpha << endl;
+        system.setWavefunction(new Gaussian(&system, alpha));
+        system.solver->solve();
+        cout << endl << endl;
+    }
     
 
 }

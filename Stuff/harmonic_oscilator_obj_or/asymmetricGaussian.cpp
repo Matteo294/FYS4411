@@ -12,19 +12,19 @@ double AsymmetricGaussian::evaluate(){
     When we have a sum all the constants that are repeatedly summed (e.g. alpha in this case) should be left outside of the sum
     and added in the multiplication at the end. In this wave we make the code faster because the require only one step to be added
     in the sum (otherwise N). */
-    for(int i=0; i<s->getNParticles(); i++){
+    for(int i=0; i<this->s->getNParticles(); i++){
         for(int j=0; j<2; j++){
-            sum += pow(s->particles[i]->getPosition().at(j), 2);
+            sum += pow(this->s->particles[i]->getPosition().at(j), 2);
         }
-        sum += beta * pow(s->particles[i]->getPosition().at(2), 2); // Asymmetric therm
+        sum += beta * pow(this->s->particles[i]->getPosition().at(2), 2); // Asymmetric therm
     }
-    sum *= -alpha;
+    sum *= -this->alpha;
     return exp(sum);
 }
 
 double AsymmetricGaussian::evaluateSecondDerivative(){
     double wavef = evaluate();
-    return (4*pow(alpha, 2) - 2*alpha) * wavef;
+    return (4*pow(this->alpha, 2) - 2*this->alpha) * wavef;
 }
 
 double AsymmetricGaussian::numericalSecondDerivative() {return 0.0;}
