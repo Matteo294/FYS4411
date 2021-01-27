@@ -1,9 +1,8 @@
 #pragma once 
 #include <vector>
 #include "particle.h"
-#include "spherical.h"
-#include "gaussian.h"   
-#include "asymmetricGaussian.h"
+#include "wavefunction.h"
+#include "hamiltonian.h"
 #include <iostream>
 #include <cassert> 
 

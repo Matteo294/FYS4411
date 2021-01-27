@@ -6,5 +6,5 @@ class Spherical: public Hamiltonian{
     public:
         Spherical(class System* system, double omega);
         double omega;
-        double LocalEnergy();
+        virtual double LocalEnergy();
 };

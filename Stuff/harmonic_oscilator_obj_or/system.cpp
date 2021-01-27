@@ -24,6 +24,7 @@ System::System(int dim, int Npart){
     }
 }
 
+
 void System::setHamiltonian(class Hamiltonian* hamiltonian){
     this->hamiltonian=hamiltonian;
 }

@@ -19,5 +19,7 @@ double Spherical::LocalEnergy(){
     res = res + (0.5/system->particles[0]->mass)*system->wafefunction->evaluateSecondDerivative();
     // final result
     res = system->wafefunction->evaluate()*res;
+
+    return res;
 }
 
