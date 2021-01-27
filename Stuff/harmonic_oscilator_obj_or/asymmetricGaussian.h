@@ -4,9 +4,9 @@
 class AsymmetricGaussian: public Wavefunction{
     public:
         AsymmetricGaussian(class System* s, double alpha, double beta); // Constructor
-        double evaluate();
-        double evaluateSecondDerivative();
-        double numericalSecondDerivative();
+        virtual double evaluate();
+        virtual double evaluateSecondDerivative();
+        virtual double numericalSecondDerivative();
     private:
         double alpha; // Variational parameter
         double beta;

@@ -24,6 +24,22 @@ System::System(int dim, int Npart){
     }
 }
 
+void System::setHamiltonian(class Hamiltonian* hamiltonian){
+    this->hamiltonian=hamiltonian;
+}
+
+class Hamiltonian* System::getHamiltonian(){
+    return this->hamiltonian;
+}
+
+void System::setWavefunction(class Wavefunction* wavefunction){
+    this->wafefunction=wavefunction;
+}
+
+class Wavefunction* System::getWavefunction(){
+    return this->wafefunction;
+}
+
 /* Add a particle by adding a new pointer to the vector of pointer */
 void System::addParticle(){
     this->particles.push_back(new Particle());
