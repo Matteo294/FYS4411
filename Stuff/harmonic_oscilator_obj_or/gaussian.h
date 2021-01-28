@@ -8,6 +8,5 @@ class Gaussian: public Wavefunction{
         double evaluate();
         double evaluateSecondDerivative();
         double numericalSecondDerivative();
-    private:
         double alpha; // Variational parameter
 };

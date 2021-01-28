@@ -1,6 +1,6 @@
 #include "gaussian.h"
 
-Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s){
+Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s, alpha){
     this->alpha = alpha;
 }
 

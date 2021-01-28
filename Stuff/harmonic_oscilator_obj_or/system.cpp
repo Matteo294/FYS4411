@@ -18,8 +18,8 @@ System::System(int dim, int Npart){
     for(i=0; i<Npart; i++){
         this->addParticle();
         for(j=0; j<this->dimension; j++){
-            particles[i]->setMass((double) 1.0);
-            particles[i]->setPosition(pos);
+            this->particles[i]->setMass((double) 1.0);
+            this->particles[i]->setPosition(pos);
         }
     }
 }
@@ -49,12 +49,10 @@ class Solver* System::getSolver(){
     return this->solver;
 }
 
-
-
 /* Add a particle by adding a new pointer to the vector of pointer */
 void System::addParticle(){
-    this->particles.push_back(new Particle());
-    this->Nparticles=particles.size();    
+    this->particles.push_back(new Particle(this));
+    this->Nparticles=this->particles.size();    
 }
 
 int System::getDimension(){
@@ -81,10 +79,11 @@ void System::getInfoParticles(){
 }
 
 void System::moveParticle(int i, vector<double> delta_pos){
-    particles[i]->move(delta_pos);
+    //this->particles[i]->getPosition();
+    this->particles[i]->move(delta_pos);
 }
 
 void System::setParticlePosition(int i, vector<double> new_pos){
     assert(i < Nparticles);
-    particles[i]->setPosition(new_pos);
+    this->particles[i]->setPosition(new_pos);
 }

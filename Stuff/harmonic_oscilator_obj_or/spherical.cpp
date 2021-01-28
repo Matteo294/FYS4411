@@ -11,13 +11,11 @@ double Spherical::LocalEnergy(){
         for(int j=0; j<this->system->getDimension(); j++){
             res = res + pow( this->system->particles[i]->position[j], 2);
         }
-    }     
+    } 
 
-    res = res*0.5*pow(this->omega,2)*this->system->particles[0]->mass;
+    res = res * (0.5 * pow(this->omega,2) * this->system->particles[0]->mass - 2*pow(this->system->getWavefunction()->alpha, 2)/this->system->particles[0]->mass);
+    res = res + this->system->getNParticles() * this->system->getDimension() * this->system->getWavefunction()->alpha / this->system->particles[0]->mass;
 
     // second derivative contribution
-    res = res - (0.5/this->system->particles[0]->mass/this->system->getWavefunction()->evaluate())*this->system->getWavefunction()->evaluateSecondDerivative();
-
-    return res;
+    //res = res - (0.5/this->system->particles[0]->mass/this->system->getWavefunction()->evaluate())*this->system->getWavefunction()->evaluateSecondDerivative();
 }
-

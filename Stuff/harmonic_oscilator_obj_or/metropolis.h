@@ -12,7 +12,7 @@ class Metropolis : public Solver{
         int getNsteps();
         double getstep();
         double getinitialFraction();
-        void solve();
+        vector<double> solve();
         double best_alpha;
 
 };

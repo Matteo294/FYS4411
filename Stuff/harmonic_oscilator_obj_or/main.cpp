@@ -2,6 +2,7 @@
 #include <vector>
 #include <ctime>
 #include <cstdlib>
+#include <fstream>
 
 #include "system.h"
 #include "gaussian.h"
@@ -18,13 +19,13 @@ int main(){
 
     const double min = -1.0;
     const double max = 1.0;
-    double alpha = 1.0;
+    double alpha = 0.5;
     const double beta = 1.0;
     double omega = 1.0;
-    const int dimension = 1;
-    const int Nparticles = 1;
+    const int dimension = 3;
+    const int Nparticles = 100;
 
-    const int Nsteps = (int) 1e6;
+    const int Nsteps = (int) 1e4;
     const double step = 1.0;
     const double initialFraction = 0.1;
 
@@ -36,19 +37,21 @@ int main(){
     system.setWavefunction(&psi);
     system.setHamiltonian(&spherical);
     system.setSolver(&metropolis);
-
-    //cout << system.getHamiltonian()->LocalEnergy() << endl;
     
-    double alpha_min = 0.1;
-    double alpha_max = 2.0;
-    int alpha_N = 10;
+    
+    double alpha_min = 0.5;
+    double alpha_max = 5;
+    int alpha_N = 1;
+    ofstream fout("results.csv");
+    fout << "alpha,energy,STD" << endl;
     for(int i=0; i<alpha_N; i++){
         alpha = alpha_min + i*(alpha_max - alpha_min)/alpha_N;
-        cout << "alpha= " << alpha << endl;
         system.setWavefunction(new Gaussian(&system, alpha));
-        system.solver->solve();
-        cout << endl << endl;
+        fout << alpha << "," << system.solver->solve()[0] << "," << system.solver->solve()[1] << endl;
     }
+
+    fout.close();
+    
     
 
 }
