@@ -1,3 +1,3 @@
 make
 ./main
-python plotting.py
+python3 plotting.py
