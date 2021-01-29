@@ -22,43 +22,10 @@ System::System(int dim, int Npart){
     }
 }
 
-
-void System::setHamiltonian(class Hamiltonian* hamiltonian){
-    this->hamiltonian=hamiltonian;
-}
-
-class Hamiltonian* System::getHamiltonian(){
-    return this->hamiltonian;
-}
-
-void System::setWavefunction(class Wavefunction* wavefunction){
-    this->wafefunction=wavefunction;
-}
-
-class Wavefunction* System::getWavefunction(){
-    return this->wafefunction;
-}
-
-void System::setSolver(class Solver* solver){
-    this->solver=solver;
-}
-
-class Solver* System::getSolver(){
-    return this->solver;
-}
-
 /* Add a particle by adding a new pointer to the vector of pointer - not tested yet */
 void System::addParticle(double mass, vector<double> pos){
     this->particles.push_back(new Particle(this, mass, pos));
     this->Nparticles++;
-}
-
-int System::getDimension(){
-    return this->dimension; 
-}
-
-int System::getNParticles(){
-    return this->Nparticles;
 }
 
 void System::getInfoParticles(){
@@ -74,14 +41,4 @@ void System::getInfoParticles(){
         }
         cout << "}" << endl;
     }
-}
-
-void System::moveParticle(int i, vector<double> delta_pos){
-    //this->particles[i]->getPosition();
-    this->particles[i]->move(delta_pos);
-}
-
-void System::setParticlePosition(int i, vector<double> new_pos){
-    assert(i < Nparticles);
-    this->particles[i]->setPosition(new_pos);
 }

@@ -11,28 +11,35 @@ using namespace std;
 
 class System{
     public:
+
+        System(int dim, int Npart); // Constructor
+
+        // Attributes
         class Hamiltonian* hamiltonian;
-        void setHamiltonian(class Hamiltonian* hamiltonian);
-        class Hamiltonian* getHamiltonian();
-
-        class Wavefunction* wafefunction;
-        void setWavefunction(class Wavefunction* wavefunction);
-        class Wavefunction* getWavefunction();
-
+        class Wavefunction* wavefunction;
         class Solver* solver;
-        void setSolver(class Solver* solver);
-        class Solver* getSolver();
+        vector<class Particle*> particles; // vector of pointers to the single particles in the system        
 
-        vector<class Particle*> particles; // vector of pointers to the single particles in the system
-        void addParticle(double mass, vector<double> pos);
-        int getDimension();
-        int getNParticles();
+        // Getters
+        class Hamiltonian* getHamiltonian() {return this->hamiltonian;}
+        class Wavefunction* getWavefunction() {return this->wavefunction;}
+        class Solver* getSolver(){return this->solver;}
+        int getDimension() {return this->dimension;}
+        int getNParticles() {return this->Nparticles;}
         void getInfoParticles();
-        void moveParticle(int i, vector<double> delta_pos);
-        void setParticlePosition(int i, vector<double> new_pos);
 
-        System(int dim, int Npart);
+        // Setters
+        void setParticlePosition(int i, vector<double> new_pos) {this->particles[i]->setPosition(new_pos);}
+        void setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
+        void setSolver(class Solver* solver) {this->solver = solver;}
+        void setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}
+
+        // Other functions
+        void addParticle(double mass, vector<double> pos);
+        void moveParticle(int i, vector<double> delta_pos) {this->particles[i]->move(delta_pos);}
+
     private:
+        // Access this data only via getters
         int dimension; 
         int Nparticles;
 };
