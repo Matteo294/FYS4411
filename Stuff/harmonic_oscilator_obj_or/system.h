@@ -11,28 +11,36 @@ using namespace std;
 
 class System{
     public:
+
+        // Constructor
+        System(int dim, int Npart);
+
+        // Attributes
         class Hamiltonian* hamiltonian;
-        void setHamiltonian(class Hamiltonian* hamiltonian);
-        class Hamiltonian* getHamiltonian();
-
-        class Wavefunction* wafefunction;
-        void setWavefunction(class Wavefunction* wavefunction);
-        class Wavefunction* getWavefunction();
-
+        class Wavefunction* wavefunction;
         class Solver* solver;
-        void setSolver(class Solver* solver);
-        class Solver* getSolver();
+        vector<class Particle*> particles; // vector of pointers to the single particles in the system        
 
-        vector<class Particle*> particles; // vector of pointers to the single particles in the system
-        void addParticle();
+        // Getters
+        class Hamiltonian* getHamiltonian();
+        class Wavefunction* getWavefunction();
+        class Solver* getSolver();
         int getDimension();
         int getNParticles();
         void getInfoParticles();
-        void moveParticle(int i, vector<double> delta_pos);
-        void setParticlePosition(int i, vector<double> new_pos);
 
-        System(int dim, int Npart);
+        // Setters
+        void setParticlePosition(int i, vector<double> new_pos);
+        void setHamiltonian(class Hamiltonian* hamiltonian);
+        void setSolver(class Solver* solver);
+        void setWavefunction(class Wavefunction* wavefunction);
+
+        // Other functions
+        void addParticle(double mass, vector<double> pos);
+        void moveParticle(int i, vector<double> delta_pos);
+
     private:
+        // Access this data only via getters
         int dimension; 
         int Nparticles;
 };

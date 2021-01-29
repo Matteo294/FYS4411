@@ -57,7 +57,6 @@ int main(){
     for(int i=0; i<alpha_N; i++){
         alpha = alpha_min + i*(alpha_max - alpha_min)/alpha_N;
         system.setWavefunction(new Gaussian(&system, alpha));
-        cout << "alpha: " << alpha;
         vector<double> estimations = system.solver->solve(); // Energy and standard deviation
         fout << alpha << "," << estimations[0] << "," << estimations[1] << endl;
         cout << setprecision(5) << "\t Cycle: " << i << "\t alpha: " << alpha << "\t energy: " << estimations[0] << "\t std: " << estimations[1] << endl;

@@ -15,59 +15,24 @@ System::System(int dim, int Npart){
         pos.push_back((double) 0.0);
     }
 
-    for(i=0; i<Npart; i++){
-        this->addParticle();
-        for(j=0; j<this->dimension; j++){
-            this->particles[i]->setMass((double) 1.0);
-            this->particles[i]->setPosition(pos);
-        }
+    this->particles.resize(Nparticles);
+
+    for(int i=0; i<this->Nparticles; i++){
+        this->particles[i] = new Particle(this, 1.0, pos);
     }
 }
 
-
-void System::setHamiltonian(class Hamiltonian* hamiltonian){
-    this->hamiltonian=hamiltonian;
-}
-
-class Hamiltonian* System::getHamiltonian(){
-    return this->hamiltonian;
-}
-
-void System::setWavefunction(class Wavefunction* wavefunction){
-    this->wafefunction=wavefunction;
-}
-
-class Wavefunction* System::getWavefunction(){
-    return this->wafefunction;
-}
-
-void System::setSolver(class Solver* solver){
-    this->solver=solver;
-}
-
-class Solver* System::getSolver(){
-    return this->solver;
-}
-
-/* Add a particle by adding a new pointer to the vector of pointer */
-void System::addParticle(){
-    this->particles.push_back(new Particle(this));
-    this->Nparticles=this->particles.size();    
-}
-
-int System::getDimension(){
-    return this->dimension; 
-}
-
-int System::getNParticles(){
-    return this->Nparticles;
+/* Add a particle by adding a new pointer to the vector of pointer - not tested yet */
+void System::addParticle(double mass, vector<double> pos){
+    this->particles.push_back(new Particle(this, mass, pos));
+    this->Nparticles++;
 }
 
 void System::getInfoParticles(){
     int i=0;
     int j=0;
     for(i=0; i<this->Nparticles; i++){
-        cout << "Particle[" << i << "]   mass=" << particles[i]->mass << "   Position={";
+        cout << "Particle[" << i << "]   mass=" << particles[i]->getMass() << "   Position={";
         for(j=0; j<this->dimension; j++){
             cout << this->particles[i]->getPosition().at(j);
             if(j != (this->dimension -1)){
@@ -78,12 +43,17 @@ void System::getInfoParticles(){
     }
 }
 
-void System::moveParticle(int i, vector<double> delta_pos){
-    //this->particles[i]->getPosition();
-    this->particles[i]->move(delta_pos);
-}
+void System::moveParticle(int i, vector<double> delta_pos) {this->particles[i]->move(delta_pos);}
 
-void System::setParticlePosition(int i, vector<double> new_pos){
-    assert(i < Nparticles);
-    this->particles[i]->setPosition(new_pos);
-}
+// Getters
+        class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
+        class Wavefunction* System::getWavefunction() {return this->wavefunction;}
+        class Solver* System::getSolver(){return this->solver;}
+        int System::getDimension() {return this->dimension;}
+        int System::getNParticles() {return this->Nparticles;}
+
+// Setters
+        void System::setParticlePosition(int i, vector<double> new_pos) {this->particles[i]->setPosition(new_pos);}
+        void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
+        void System::setSolver(class Solver* solver) {this->solver = solver;}
+        void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}

@@ -4,7 +4,18 @@
 
 class Spherical: public Hamiltonian{
     public:
+
+        // Constructor
         Spherical(class System* system, double omega);
-        double omega;
+
+        // Getters
+        double getOmega() {return this->omega;}
+
+        //Other functions
         double LocalEnergy();
+        double potential();
+
+    private:
+        // Private attributes: access only via getters and setters
+        double omega;
 };

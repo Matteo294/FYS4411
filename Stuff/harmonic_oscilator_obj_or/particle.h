@@ -4,12 +4,26 @@
 
 class Particle{
     public:
+
+        // Constructor
+        Particle(class System* system, double mass, std::vector<double> pos);
+
+        // Attributes
         class System* system;
-        std::vector<double> position;
+        
+        // Setters
         void setMass(double m);
         void setPosition(std::vector<double> new_pos);
-        void move(std::vector<double> delta_pos);
+
+        // Getters
         std::vector<double> getPosition();
-        Particle(class System* system);
+        double getMass() {return this->mass;}
+
+        // Other functions
+        std::vector<double> position;
+        void move(std::vector<double> delta_pos);
+
+    private:
+        // Private attributes: access only via setters and getters
         double mass;
 };
