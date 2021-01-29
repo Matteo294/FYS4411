@@ -1,7 +1,8 @@
 #include "gaussian.h"
 
-Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s, alpha){
-    this->alpha = alpha;
+Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s, 1){
+    this->setParameter(0, alpha);
+    this->alpha = alpha; // <-- Is this necessary?
 }
 
 double Gaussian::evaluate(){

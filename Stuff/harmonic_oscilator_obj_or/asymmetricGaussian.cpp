@@ -1,7 +1,9 @@
 #include "asymmetricGaussian.h"
 
-AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta) : Wavefunction(s, alpha){
+AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta) : Wavefunction(s, 2){
     assert(s->getDimension() == 3); // Works only in 3D
+    this->setParameter(0, alpha);
+    this->setParameter(1, beta);
     this->alpha = alpha;
     this->beta = beta;
 }
