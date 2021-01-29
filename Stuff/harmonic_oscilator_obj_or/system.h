@@ -24,7 +24,7 @@ class System{
         class Solver* getSolver();
 
         vector<class Particle*> particles; // vector of pointers to the single particles in the system
-        void addParticle();
+        void addParticle(double mass, vector<double> pos);
         int getDimension();
         int getNParticles();
         void getInfoParticles();
