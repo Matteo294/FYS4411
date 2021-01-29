@@ -1,6 +1,6 @@
 #include "particle.h"
 
-Particle::Particle(System* system, double mass, vector<double> pos){
+Particle::Particle(System* system, double mass, std::vector<double> pos){
     this->position = pos;
     this->mass = mass;
     this->system=system;

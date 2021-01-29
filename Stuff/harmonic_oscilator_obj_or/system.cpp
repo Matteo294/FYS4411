@@ -32,7 +32,7 @@ void System::getInfoParticles(){
     int i=0;
     int j=0;
     for(i=0; i<this->Nparticles; i++){
-        cout << "Particle[" << i << "]   mass=" << particles[i]->mass << "   Position={";
+        cout << "Particle[" << i << "]   mass=" << particles[i]->getMass() << "   Position={";
         for(j=0; j<this->dimension; j++){
             cout << this->particles[i]->getPosition().at(j);
             if(j != (this->dimension -1)){
@@ -42,3 +42,18 @@ void System::getInfoParticles(){
         cout << "}" << endl;
     }
 }
+
+void System::moveParticle(int i, vector<double> delta_pos) {this->particles[i]->move(delta_pos);}
+
+// Getters
+        class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
+        class Wavefunction* System::getWavefunction() {return this->wavefunction;}
+        class Solver* System::getSolver(){return this->solver;}
+        int System::getDimension() {return this->dimension;}
+        int System::getNParticles() {return this->Nparticles;}
+
+// Setters
+        void System::setParticlePosition(int i, vector<double> new_pos) {this->particles[i]->setPosition(new_pos);}
+        void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
+        void System::setSolver(class Solver* solver) {this->solver = solver;}
+        void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}

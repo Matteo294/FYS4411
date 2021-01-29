@@ -12,7 +12,8 @@ using namespace std;
 class System{
     public:
 
-        System(int dim, int Npart); // Constructor
+        // Constructor
+        System(int dim, int Npart);
 
         // Attributes
         class Hamiltonian* hamiltonian;
@@ -21,22 +22,22 @@ class System{
         vector<class Particle*> particles; // vector of pointers to the single particles in the system        
 
         // Getters
-        class Hamiltonian* getHamiltonian() {return this->hamiltonian;}
-        class Wavefunction* getWavefunction() {return this->wavefunction;}
-        class Solver* getSolver(){return this->solver;}
-        int getDimension() {return this->dimension;}
-        int getNParticles() {return this->Nparticles;}
+        class Hamiltonian* getHamiltonian();
+        class Wavefunction* getWavefunction();
+        class Solver* getSolver();
+        int getDimension();
+        int getNParticles();
         void getInfoParticles();
 
         // Setters
-        void setParticlePosition(int i, vector<double> new_pos) {this->particles[i]->setPosition(new_pos);}
-        void setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
-        void setSolver(class Solver* solver) {this->solver = solver;}
-        void setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}
+        void setParticlePosition(int i, vector<double> new_pos);
+        void setHamiltonian(class Hamiltonian* hamiltonian);
+        void setSolver(class Solver* solver);
+        void setWavefunction(class Wavefunction* wavefunction);
 
         // Other functions
         void addParticle(double mass, vector<double> pos);
-        void moveParticle(int i, vector<double> delta_pos) {this->particles[i]->move(delta_pos);}
+        void moveParticle(int i, vector<double> delta_pos);
 
     private:
         // Access this data only via getters
