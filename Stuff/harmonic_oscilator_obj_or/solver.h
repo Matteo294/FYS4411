@@ -10,7 +10,7 @@ class Solver{
         virtual int getNsteps()=0;
         virtual double getstep()=0;
         virtual double getinitialFraction()=0;
-        virtual vector<double> solve()=0;
+        virtual vector<double> solve() = 0;
         int Nsteps;
         double step;
         double initialFraction;

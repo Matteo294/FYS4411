@@ -41,4 +41,4 @@ double AsymmetricGaussian::evaluateSecondDerivative(){
     return (4*pow(this->alpha, 2) - 2*this->alpha) * wavef;
 }
 
-double AsymmetricGaussian::numericalSecondDerivative() {return 0.0;}
+double AsymmetricGaussian::numericalSecondDerivative(int part_idx, int direction, double h) {return 0.0;}

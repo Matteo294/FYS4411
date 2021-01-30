@@ -7,7 +7,7 @@ class AsymmetricGaussian: public Wavefunction{
         virtual double evaluateAll();
         virtual double evaluateSing(int part_idx);
         virtual double evaluateSecondDerivative();
-        virtual double numericalSecondDerivative();
+        virtual double numericalSecondDerivative(int part_idx, int direction, double h);
     protected:
         double alpha; // Variational parameter
         double beta;

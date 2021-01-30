@@ -5,7 +5,7 @@ Metropolis::Metropolis(System* system, int Nsteps, double step, double initialFr
 }
 
 vector<double> Metropolis::solve(){
-
+    
     int i=0, j=0, idx=0;
     double energy=0.0, energy2=0.0, tmp=0.0;
     double old_val = 0.0;
@@ -40,6 +40,7 @@ vector<double> Metropolis::solve(){
 
         if(i>=(int)(this->Nsteps*this->initialFraction)){
             tmp = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
+            //tmp = (double) this->system->getHamiltonian()->LocalEnergyNumeric();
             energy += tmp;
             energy2 += tmp*tmp;
         }

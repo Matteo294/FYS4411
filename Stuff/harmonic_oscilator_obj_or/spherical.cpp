@@ -47,3 +47,25 @@ double Spherical::LocalEnergyAnalytic(){
     return res + alpha * this->system->getDimension() * this->system->getNParticles() / mass;
 
 }
+
+
+double Spherical::LocalEnergyNumeric(){
+    // things I need multiple times in the calculations or long expressions: better calculate them once for all
+    double alpha = this->system->getWavefunction()->getParameter(0);
+    double mass = 1.0; // !!!!!!!!!!!!!!!! Hard-code this is true only for the chosen model
+    int i=0, j=0;
+    double res = 0.0;
+    
+    for(i=0; i<this->system->getNParticles(); i++){
+        for(j=0; j<this->system->getDimension(); j++){
+            res += this->system->getWavefunction()->numericalSecondDerivative(i, j, 1e-5);
+        }
+    }
+
+    res *= -0.5 / mass / this->system->getWavefunction()->evaluateAll();
+    res += potential();
+
+    return res;
+
+
+}

@@ -14,6 +14,7 @@ class Spherical: public Hamiltonian{
         //Other functions
         double LocalEnergySecondDerivative(); 
         double LocalEnergyAnalytic();
+        double LocalEnergyNumeric();
         double potential();
 
     private:
