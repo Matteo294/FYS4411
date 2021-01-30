@@ -12,7 +12,8 @@ class Spherical: public Hamiltonian{
         double getOmega() {return this->omega;}
 
         //Other functions
-        double LocalEnergy();
+        double LocalEnergySecondDerivative(); 
+        double LocalEnergyAnalytic();
         double potential();
 
     private:

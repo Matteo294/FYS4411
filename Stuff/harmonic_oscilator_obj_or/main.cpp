@@ -13,14 +13,10 @@
 #include "metropolis.h"
 using namespace std;
 
-double rando(double min, double max){
-    return min + ((double) rand()/RAND_MAX)*(max-min);
-}
-
 int main(){
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-
+    srand(time(NULL));
     const double min = -1.0;
     const double max = 1.0;
     double alpha = 0.5;
@@ -34,11 +30,11 @@ int main(){
     const double initialFraction = 0.1;
 
     System system(dimension, Nparticles);
-    Gaussian psi(&system, alpha); // Do we need this *here*?
+    //Gaussian psi(&system, alpha); // Do we need this *here*?
     Spherical spherical(&system, omega);
     Metropolis metropolis(&system, Nsteps, step, initialFraction);
 
-    system.setWavefunction(&psi); // Do we need this *here*?
+    //system.setWavefunction(&psi); // Do we need this *here*?
     system.setHamiltonian(&spherical);
     system.setSolver(&metropolis);
     
@@ -47,6 +43,7 @@ int main(){
     double alpha_max = 0.8;
     int alpha_N = 10;
 
+    
     // File to store results
     ofstream fout("results.csv");
     fout << "alpha,energy,STD" << endl;

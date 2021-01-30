@@ -45,6 +45,8 @@ void System::getInfoParticles(){
 
 void System::moveParticle(int i, vector<double> delta_pos) {this->particles[i]->move(delta_pos);}
 
+double System::randomuniform() {return (double) rand()/RAND_MAX; }
+
 // Getters
         class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
         class Wavefunction* System::getWavefunction() {return this->wavefunction;}

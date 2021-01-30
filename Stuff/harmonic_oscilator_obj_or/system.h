@@ -38,6 +38,7 @@ class System{
         // Other functions
         void addParticle(double mass, vector<double> pos);
         void moveParticle(int i, vector<double> delta_pos);
+        double randomuniform();
 
     private:
         // Access this data only via getters

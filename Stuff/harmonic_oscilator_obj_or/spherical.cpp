@@ -14,17 +14,36 @@ double Spherical::potential(){
     return 0.5 * pow(this->omega, 2) * x2;
 }
 
-double Spherical::LocalEnergy(){
+double Spherical::LocalEnergySecondDerivative(){
 
     // things I need multiple times in the calculations or long expressions: better calculate them once for all
     double alpha = this->system->getWavefunction()->getParameter(0);
     double mass = 1.0; // !!!!!!!!!!!!!!!! Hard-code this is true only for the chosen model
-    double res = 0.0;
-    double psi = this->system->getWavefunction()->evaluate();
+    double psi = this->system->getWavefunction()->evaluateAll();
     double psidotdot = this->system->getWavefunction()->evaluateSecondDerivative();
 
     // Local energy
     double EL = 1/psi * ((-0.5)*psidotdot + this->potential()*psi);
 
     return EL;
+}
+
+
+double Spherical::LocalEnergyAnalytic(){
+    // things I need multiple times in the calculations or long expressions: better calculate them once for all
+    double alpha = this->system->getWavefunction()->getParameter(0);
+    double mass = 1.0; // !!!!!!!!!!!!!!!! Hard-code this is true only for the chosen model
+    int i=0, j=0;
+    double res = 0;
+
+    for(i=0; i<this->system->getNParticles(); i++){
+        for(j=0; j < this->system->getDimension(); j++){
+            res += pow(this->system->particles[i]->getPosition()[j], 2);
+        }
+    }
+
+    res *= 0.5 * mass * pow(this->omega, 2) - 2 * pow(alpha, 2) / mass;
+
+    return res + alpha * this->system->getDimension() * this->system->getNParticles() / mass;
+
 }

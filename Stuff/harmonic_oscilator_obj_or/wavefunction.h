@@ -14,7 +14,10 @@ class Wavefunction{
         /* evaluate() evaluates the wf in the specified point. 
         "Virtual" means that it must be implemented in the subclass, 
         for the moment we just create it let others know that it must be implemented */
-        virtual double evaluate() = 0;
+        virtual double evaluateAll() = 0;
+
+        /* evaluateSing( int part_idx) evaluates the gaussian contribution relative to the part_idx-th particle */
+        virtual double evaluateSing(int part_idx) = 0;
 
         virtual double evaluateSecondDerivative() = 0; // Evaluates the second derivative if an analytical form exists
         virtual double numericalSecondDerivative() = 0; // Evaluates the second derivative numerically from the analytical wf

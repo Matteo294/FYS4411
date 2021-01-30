@@ -5,7 +5,7 @@ Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s, 1){
     this->alpha = alpha; // <-- Is this necessary?
 }
 
-double Gaussian::evaluate(){
+double Gaussian::evaluateAll(){
     double sum = 0.0; // Keeps track of the sum inside the exponetial
     /* Important!!!!
     When we have a sum all the constants that are repeatedly summed (e.g. alpha in this case) should be left outside of the sum
@@ -20,6 +20,14 @@ double Gaussian::evaluate(){
     return exp(sum);
 }
 
+double Gaussian::evaluateSing(int part_idx){
+    double arg = 0.0;
+    for(int i=0; i<this->s->getDimension(); i++){
+        arg += pow( this->s->particles[part_idx]->getPosition()[i] , 2);
+    }
+    return exp( -this->alpha * arg );
+}
+
 double Gaussian::evaluateSecondDerivative(){
     double res = 0.0;
     for(int i=0; i<this->s->getNParticles(); i++){
@@ -31,7 +39,7 @@ double Gaussian::evaluateSecondDerivative(){
     for(int i=0; i<(this->s->getDimension()*this->s->getNParticles()); i++){
         res = res - 2*this->alpha;
     }
-    return res*evaluate();
+    return res*evaluateAll();
 }
 
 double Gaussian::numericalSecondDerivative() {return 0.0;}

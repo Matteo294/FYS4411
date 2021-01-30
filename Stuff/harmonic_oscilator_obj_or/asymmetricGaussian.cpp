@@ -8,7 +8,7 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta) : W
     this->beta = beta;
 }
 
-double AsymmetricGaussian::evaluate(){
+double AsymmetricGaussian::evaluateAll(){
     double sum = 0.0; // Keeps track of the sum inside the exponetial
     /* Important!!!!
     When we have a sum all the constants that are repeatedly summed (e.g. alpha in this case) should be left outside of the sum
@@ -24,8 +24,20 @@ double AsymmetricGaussian::evaluate(){
     return exp(sum);
 }
 
+double AsymmetricGaussian::evaluateSing(int part_idx){
+    double arg = 0.0;
+    for(int i=0; i<2; i++){
+        arg += pow( this->s->particles[part_idx]->getPosition()[i], 2);
+    }
+    arg += this->beta * pow( this->s->particles[part_idx]->getPosition()[2], 2);
+    arg *= -this->alpha;
+
+    return exp(arg);
+}
+
+/* !!!!!!!!!!!!! wrong, needs to be fixed !!!!!!!!!!!!!!!!!!! */
 double AsymmetricGaussian::evaluateSecondDerivative(){
-    double wavef = evaluate();
+    double wavef = evaluateAll();
     return (4*pow(this->alpha, 2) - 2*this->alpha) * wavef;
 }
 
