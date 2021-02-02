@@ -1,5 +1,5 @@
-main : main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o solver.o metropolis.o
-	g++ -Wall -o main main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o solver.o metropolis.o
+main : main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o solver.o metropolis.o importanceSampling.o random_generator.o
+	g++ -Wall -o main main.o system.o particle.o wavefunction.o gaussian.o asymmetricGaussian.o hamiltonian.o spherical.o solver.o metropolis.o importanceSampling.o random_generator.o
 main.o : main.cpp
 	g++ -c main.cpp
 system.o : system.h system.cpp 
@@ -20,3 +20,7 @@ solver.o : solver.h solver.cpp
 	g++ -c solver.cpp
 metropolis.o : metropolis.h metropolis.cpp
 	g++ -c metropolis.cpp
+importanceSampling.o : importanceSampling.h importanceSampling.cpp
+	g++ -c importanceSampling.cpp
+random_generator.o : random_generator.h random_generator.cpp
+	g++ -c random_generator.cpp

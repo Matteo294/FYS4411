@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
+#include <algorithm>
+#include <iostream>
 #include "system.h"
+using namespace std;
 
 /* This is the wavefunction superclass. It contains the general features of the wf
 such as a function that evaluates the wf in a particular point or a fuction that evaluate
@@ -26,6 +29,9 @@ class Wavefunction{
         direction can be 0 (x), 1 (y), 2 (z), accordingly to the dimension of the system chosen. 
         */
         virtual double numericalSecondDerivative(int part_idx, int direction, double h) = 0; 
+
+        /* evaluates the drift force associated to the part_idx-th particle */
+        virtual vector<double> DriftForce(int part_idx) = 0;
         
         /* This is a pointer to the system. We could have passed the system entirely but it would have slown down the code a lot.
         Just think that for 10 particles and 10000 integration steps we end up with 6x10x10000 variables (positions + velocities) that 

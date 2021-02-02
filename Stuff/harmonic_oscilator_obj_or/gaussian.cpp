@@ -69,3 +69,14 @@ double Gaussian::numericalSecondDerivative(int part_idx, int direction, double h
     return res/pow(h, 2);
 
 }
+
+vector<double> Gaussian::DriftForce(int part_idx){
+    
+    vector<double> v = this->s->particles[part_idx]->getPosition();
+
+    for(int i=0; i<this->s->getDimension(); i++){
+        v[i] *= -4 * this->alpha;
+    }
+    
+    return v;
+}

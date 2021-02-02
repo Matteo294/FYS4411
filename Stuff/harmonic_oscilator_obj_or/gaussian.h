@@ -9,5 +9,7 @@ class Gaussian: public Wavefunction{
         double evaluateSing(int part_idx);
         double evaluateSecondDerivative();
         double numericalSecondDerivative(int part_idx, int direction, double h);
+        virtual
+        vector<double> DriftForce(int part_idx);
         double alpha; // Variational parameter
 };

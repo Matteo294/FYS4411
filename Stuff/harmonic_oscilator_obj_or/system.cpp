@@ -45,17 +45,18 @@ void System::getInfoParticles(){
 
 void System::moveParticle(int i, vector<double> delta_pos) {this->particles[i]->move(delta_pos);}
 
-double System::randomuniform() {return (double) rand()/RAND_MAX; }
-
 // Getters
         class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
         class Wavefunction* System::getWavefunction() {return this->wavefunction;}
         class Solver* System::getSolver(){return this->solver;}
+        class RandomGenerator* System::getRandomGenerator(){ return this->randomgenerator; }
         int System::getDimension() {return this->dimension;}
         int System::getNParticles() {return this->Nparticles;}
+        
 
 // Setters
         void System::setParticlePosition(int i, vector<double> new_pos) {this->particles[i]->setPosition(new_pos);}
         void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
         void System::setSolver(class Solver* solver) {this->solver = solver;}
         void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}
+        void System::setRandomGenerator(class RandomGenerator* randomgenerator) { this->randomgenerator = randomgenerator; }

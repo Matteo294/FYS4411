@@ -11,6 +11,8 @@
 #include "asymmetricGaussian.h"
 #include "spherical.h"
 #include "metropolis.h"
+#include "importanceSampling.h"
+#include "random_generator.h"
 using namespace std;
 
 int main(){
@@ -28,16 +30,20 @@ int main(){
     const int Nsteps = (int) 1e4;
     const double step = 1.0;
     const double initialFraction = 0.1;
+    const double D = 0.5;
+    const double dt = 0.01;
 
     System system(dimension, Nparticles);
-    //Gaussian psi(&system, alpha); // Do we need this *here*?
     Spherical spherical(&system, omega);
-    Metropolis metropolis(&system, Nsteps, step, initialFraction);
+    //Metropolis metropolis(&system, Nsteps, step, initialFraction);
+    ImportanceSampling importance(&system, Nsteps, step, initialFraction, dt, D);
+    
+    RandomGenerator randomgenerator;
 
-    //system.setWavefunction(&psi); // Do we need this *here*?
     system.setHamiltonian(&spherical);
-    system.setSolver(&metropolis);
-
+    system.setSolver(&importance);
+    //system.setSolver(&metropolis);
+    system.setRandomGenerator(&randomgenerator);
 
 
     // Different values of alpha
