@@ -21,6 +21,7 @@ double Spherical::LocalEnergySecondDerivative(){
     double mass = 1.0; // !!!!!!!!!!!!!!!! Hard-code this is true only for the chosen model
     double psi = this->system->getWavefunction()->evaluateAll();
     double psidotdot = this->system->getWavefunction()->evaluateSecondDerivative();
+    vector<double> psidot = this->system->getWavefunction()->evaluateGradient();
 
     // Local energy
     double EL = 1/psi * ((-0.5)*psidotdot + this->potential()*psi);

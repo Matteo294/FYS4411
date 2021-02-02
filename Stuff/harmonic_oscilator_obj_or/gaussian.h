@@ -1,6 +1,7 @@
 #pragma once 
 #include "wavefunction.h"
 #include <cmath>
+#include <vector>
 
 class Gaussian: public Wavefunction{
     public:
@@ -8,6 +9,7 @@ class Gaussian: public Wavefunction{
         double evaluateAll();
         double evaluateSing(int part_idx);
         double evaluateSecondDerivative();
+        vector<double> evaluateGradient();
         double numericalSecondDerivative(int part_idx, int direction, double h);
         double alpha; // Variational parameter
 };

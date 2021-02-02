@@ -59,9 +59,11 @@ int main(){
         // remember that you can solve between analytical and numerical solver in metropolis.cpp
         // the numerical version evaluates numerically the second derivative that enters in the local energy definition.
         vector<double> estimations = system.solver->solve(); // Energy and standard deviation
+        vector<double> ss = system.getWavefunction()->evaluateGradient();
         fout << alpha << "," << estimations[0] << "," << estimations[1] << endl;
         cout << setprecision(5) << "\t Cycle: " << i << "\t alpha: " << alpha << "\t energy: " << estimations[0] << "\t std: " << estimations[1] << endl;
-    }
+    } 
+
 
     fout.close();
 

@@ -1,4 +1,5 @@
 #include "gaussian.h"
+#include <vector>
 
 Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s, 1){
     this->setParameter(0, alpha);
@@ -32,15 +33,34 @@ double Gaussian::evaluateSecondDerivative(){
     double res = 0.0;
     for(int i=0; i<this->s->getNParticles(); i++){
         for(int j=0; j<this->s->getDimension(); j++){
-            res = res + pow(this->s->particles[i]->getPosition().at(j), 2);
+            res = res + pow(this->s->particles[i]->getPosition().at(j), 2); // particle i at its position 3 element vector alla dimensione j  
         }
     }
     res = res*4*pow(this->alpha, 2);
     for(int i=0; i<(this->s->getDimension()*this->s->getNParticles()); i++){
         res = res - 2*this->alpha;
     }
+    //std::cout << "res1 " << evaluateAll() << endl;
     return res*evaluateAll();
 }
+
+vector<double> Gaussian::evaluateGradient(){
+    vector<double> Grad;
+    Grad.push_back(1);
+    Grad.push_back(1);
+    Grad.push_back(1);
+    for(int i=0; i<this->s->getNParticles(); i++){ // for on all the particles
+        for(int j=0; j<this->s->getDimension(); j++){ // for on all the dimentions
+            Grad[j] = -2*this->alpha*this->s->particles[i]->getPosition().at(j);   
+        }
+    }
+    for(int j=0; j<this->s->getDimension(); j++){ // if you comment these 3 lines, you will get the drift force a meno di un 2
+            Grad[j] = Grad[j]*evaluateAll();
+        }
+    //std::cout << " Gradiente " << endl << "x: " << Grad[0] << " y: " << Grad[1]  << " z: " << Grad[2] << endl;
+    return Grad;
+}
+
 
 double Gaussian::numericalSecondDerivative(int part_idx, int direction, double h) {
     assert( direction < this->s->getDimension() );

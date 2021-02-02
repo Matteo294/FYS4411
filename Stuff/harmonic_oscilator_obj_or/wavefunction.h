@@ -21,11 +21,14 @@ class Wavefunction{
 
         virtual double evaluateSecondDerivative() = 0; // Evaluates the second derivative if an analytical form exists
 
+        virtual std::vector<double> evaluateGradient() =0; // Evaluates the first derivative if an analytical form exists
+
         /* Evaluates numerically the second derivative with respect to the coordinate "direction" of particle "part_idx".
          The derivative is evaluated in the point in which the particles are in this moment.
         direction can be 0 (x), 1 (y), 2 (z), accordingly to the dimension of the system chosen. 
         */
         virtual double numericalSecondDerivative(int part_idx, int direction, double h) = 0; 
+
         
         /* This is a pointer to the system. We could have passed the system entirely but it would have slown down the code a lot.
         Just think that for 10 particles and 10000 integration steps we end up with 6x10x10000 variables (positions + velocities) that 
