@@ -45,22 +45,33 @@ double Gaussian::evaluateSecondDerivative(){
 }
 
 vector<double> Gaussian::evaluateGradient(){
-    vector<double> Grad;
-    Grad.push_back(1);
-    Grad.push_back(1);
-    Grad.push_back(1);
-    for(int i=0; i<this->s->getNParticles(); i++){ // for on all the particles
-        for(int j=0; j<this->s->getDimension(); j++){ // for on all the dimentions
-            Grad[j] = -2*this->alpha*this->s->particles[i]->getPosition().at(j);   
+    vector<double> grad;
+    // mac isn't able to recognise this command grad.reshape(3,0.0);
+    grad.push_back(0);
+    grad.push_back(0);
+    grad.push_back(0);
+    for(int i=0; i<this->s->getNParticles(); i++){ // for cicle on all the particles
+        for(int j=0; j<this->s->getDimension(); j++){ // for cicle on all the dimentions
+            grad[j] += -2*this->alpha*this->s->particles[i]->getPosition().at(j);   
         }
     }
     for(int j=0; j<this->s->getDimension(); j++){ // if you comment these 3 lines, you will get the drift force a meno di un 2
-            Grad[j] = Grad[j]*evaluateAll();
+           grad[j] = grad[j]*evaluateAll();
         }
-    //std::cout << " Gradiente " << endl << "x: " << Grad[0] << " y: " << Grad[1]  << " z: " << Grad[2] << endl;
-    return Grad;
+    //std::cout << " Gradient:  " << endl << "x: " << grad[0] << " y: " << grad[1]  << " z: " << grad[2] << endl;
+    //std::cout << " position0: " << endl << "x:" << this->s->particles[0]->getPosition().at(0) << " y:" << this->s->particles[0]->getPosition().at(1) << " z:" << this->s->particles[0]->getPosition().at(2)<< endl;
+    //std::cout << " position1: " << endl << "x:" << this->s->particles[1]->getPosition().at(0) << " y:" << this->s->particles[1]->getPosition().at(1) << " z:" << this->s->particles[1]->getPosition().at(2)<< endl;
+    return grad;
 }
+/*vector<double> Gaussian::numericaldriftForce(int part_idx, int direction, double h){
+    assert( direction < this->s->getDimension() );
+    assert ( part_idx < this->s->getNParticles() );
+    double res = 0.0;
+    int i=0, j=0;
 
+    vector<double> drift(this->s->getDimension(), 0.0);
+
+}*/
 
 double Gaussian::numericalSecondDerivative(int part_idx, int direction, double h) {
     assert( direction < this->s->getDimension() );
