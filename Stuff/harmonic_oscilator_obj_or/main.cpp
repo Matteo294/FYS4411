@@ -23,7 +23,7 @@ int main(){
     const double beta = 1.0;
     double omega = 1.0;
     const int dimension = 3;
-    const int Nparticles = 100;
+    const int Nparticles = 1;
 
     const int Nsteps = (int) 1e4;
     const double step = 1.0;
@@ -59,7 +59,8 @@ int main(){
         // remember that you can solve between analytical and numerical solver in metropolis.cpp
         // the numerical version evaluates numerically the second derivative that enters in the local energy definition.
         vector<double> estimations = system.solver->solve(); // Energy and standard deviation
-        vector<double> ss = system.getWavefunction()->evaluateGradient();
+       // vector<double> ss = system.getWavefunction()->evaluateGradient();
+        //double ss1= system.getWavefunction()->numericaldriftForce(0,0,0.000001);
         fout << alpha << "," << estimations[0] << "," << estimations[1] << endl;
         cout << setprecision(5) << "\t Cycle: " << i << "\t alpha: " << alpha << "\t energy: " << estimations[0] << "\t std: " << estimations[1] << endl;
     } 

@@ -29,6 +29,8 @@ class Wavefunction{
         */
         virtual double numericalSecondDerivative(int part_idx, int direction, double h) = 0; 
 
+        virtual double numericaldriftForce(int part_idx, int direction, double h)=0;
+
         
         /* This is a pointer to the system. We could have passed the system entirely but it would have slown down the code a lot.
         Just think that for 10 particles and 10000 integration steps we end up with 6x10x10000 variables (positions + velocities) that 

@@ -9,7 +9,8 @@ class Gaussian: public Wavefunction{
         double evaluateAll();
         double evaluateSing(int part_idx);
         double evaluateSecondDerivative();
-        vector<double> evaluateGradient();
+        std::vector<double> evaluateGradient();
+        double numericaldriftForce(int part_idx, int direction, double h);
         double numericalSecondDerivative(int part_idx, int direction, double h);
         double alpha; // Variational parameter
 };
