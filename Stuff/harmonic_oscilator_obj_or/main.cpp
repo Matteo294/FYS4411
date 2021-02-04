@@ -18,16 +18,13 @@ using namespace std;
 int main(){
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-    srand(time(NULL));
-    const double min = -1.0;
-    const double max = 1.0;
-    double alpha = 1;
+    double alpha = 1.0;
     const double beta = 1.0;
     double omega = 1.0;
     const int dimension = 3;
     const int Nparticles = 100;
 
-    const int Nsteps = (int) 1e4;
+    const int Nsteps = (int) 1e5;
     const double step = 1.0;
     const double initialFraction = 0.1;
     const double D = 0.5;
@@ -35,14 +32,13 @@ int main(){
 
     System system(dimension, Nparticles);
     Spherical spherical(&system, omega);
-    //Metropolis metropolis(&system, Nsteps, step, initialFraction);
-    ImportanceSampling importance(&system, Nsteps, step, initialFraction, dt, D);
-    
+    //Metropolis metropolis(&system, Nsteps, initialFraction, step);
+    ImportanceSampling importance(&system, Nsteps, initialFraction, dt, D);
     RandomGenerator randomgenerator;
 
     system.setHamiltonian(&spherical);
-    system.setSolver(&importance);
     //system.setSolver(&metropolis);
+    system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
 
@@ -62,9 +58,7 @@ int main(){
     for(int i=0; i<alpha_N; i++){
         alpha = alpha_min + i*(alpha_max - alpha_min)/alpha_N;
         system.setWavefunction(new Gaussian(&system, alpha));
-        // remember that you can solve between analytical and numerical solver in metropolis.cpp
-        // the numerical version evaluates numerically the second derivative that enters in the local energy definition.
-        vector<double> estimations = system.solver->solve(); // Energy and standard deviation
+        vector<double> estimations = system.getSolver()->solve(); // Energy and standard deviation
         fout << alpha << "," << estimations[0] << "," << estimations[1] << endl;
         cout << setprecision(5) << "\t Cycle: " << i << "\t alpha: " << alpha << "\t energy: " << estimations[0] << "\t std: " << estimations[1] << endl;
     }

@@ -15,15 +15,7 @@ class System{
     public:
 
         // Constructor
-        System(int dim, int Npart);
-
-        // Attributes
-        class Hamiltonian* hamiltonian;
-        class Wavefunction* wavefunction;
-        class Solver* solver;
-        vector<class Particle*> particles; // vector of pointers to the single particles in the system   
-        class RandomGenerator* randomgenerator;
-             
+        System(int dim, int Npart);             
 
         // Getters
         class Hamiltonian* getHamiltonian();
@@ -32,11 +24,10 @@ class System{
         class RandomGenerator* getRandomGenerator();
         int getDimension();
         int getNParticles();
-        void getInfoParticles();
+        vector<class Particle*> getParticles();
 
 
         // Setters
-        void setParticlePosition(int i, vector<double> new_pos);
         void setHamiltonian(class Hamiltonian* hamiltonian);
         void setSolver(class Solver* solver);
         void setWavefunction(class Wavefunction* wavefunction);
@@ -44,9 +35,15 @@ class System{
 
         // Other functions
         void addParticle(double mass, vector<double> pos);
-        void moveParticle(int i, vector<double> delta_pos);
 
     private:
+        // Attributes
+        class Hamiltonian* hamiltonian;
+        class Wavefunction* wavefunction;
+        class Solver* solver;
+        vector<class Particle*> particles; // vector of pointers to the single particles in the system   
+        class RandomGenerator* randomgenerator;
+
         // Access this data only via getters
         int dimension; 
         int Nparticles;

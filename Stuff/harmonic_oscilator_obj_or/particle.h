@@ -1,29 +1,30 @@
 #pragma once
 #include "system.h"
 #include <vector>
+using namespace std;
 
 class Particle{
     public:
 
         // Constructor
-        Particle(class System* system, double mass, std::vector<double> pos);
-
-        // Attributes
-        class System* system;
+        Particle(class System* system, double mass, vector<double> pos);
         
         // Setters
         void setMass(double m);
-        void setPosition(std::vector<double> new_pos);
+        void setPosition(vector<double> new_pos);
 
         // Getters
-        std::vector<double> getPosition();
+        vector<double> getPosition();
         double getMass() {return this->mass;}
 
         // Other functions
-        std::vector<double> position;
-        void move(std::vector<double> delta_pos);
+        void move(vector<double> delta_pos);
+
+        // Attributes
+        class System* system;
 
     private:
         // Private attributes: access only via setters and getters
         double mass;
+        vector<double> position;
 };
