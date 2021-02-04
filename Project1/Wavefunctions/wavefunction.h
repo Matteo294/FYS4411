@@ -5,24 +5,18 @@
 #include "../System/system.h"
 using namespace std;
 
-/* This is the wavefunction superclass. It contains the general features of the wf
-such as a function that evaluates the wf in a particular point or a fuction that evaluate
-the second derivative in a particular point. */
-
 class Wavefunction{
     
     public:
         Wavefunction(class System* system, int nparams);
 
-        /* evaluate() evaluates the wf in the specified point. 
+        /* evaluateAll() evaluates the wf in the specified point. 
         "Virtual" means that it must be implemented in the subclass, 
         for the moment we just create it let others know that it must be implemented */
         virtual double evaluateAll() = 0;
 
         /* evaluateSing( int part_idx) evaluates the gaussian contribution relative to the part_idx-th particle */
         virtual double evaluateSing(int part_idx) = 0;
-
-        virtual double evaluateSecondDerivative() = 0; // Evaluates the second derivative if an analytical form exists
 
         /* Evaluates numerically the second derivative with respect to the coordinate "direction" of particle "part_idx".
          The derivative is evaluated in the point in which the particles are in this moment.
@@ -41,7 +35,9 @@ class Wavefunction{
         // Get and set variational parameters
         double setParameter(int idx, double value);
         double getParameter(int idx);
+        
+    protected:
         int nparams;
-        std::vector<double> params; // variational parameters
+        vector<double> params; // variational parameters
         
 };

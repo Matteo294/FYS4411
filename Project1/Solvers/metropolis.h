@@ -8,11 +8,12 @@ using namespace std;
 
 class Metropolis : public Solver{
     public:
-        Metropolis(class System* system, int Nsteps, double step, double initialFraction);
-        int getNsteps();
-        double getstep();
-        double getinitialFraction();
-        vector<double> solve();
-        double best_alpha;
+        Metropolis(class System* system, int Nsteps, double initialFraction, double step);
+        double getStep();
+        double setStep(double step);
+        vector<double> solve(); // uses LocalEnergyAnalytic()
+        vector<double> solve(double h); // uses LocalEnergyNumeric(double h)
 
+    private:
+        double step;
 };
