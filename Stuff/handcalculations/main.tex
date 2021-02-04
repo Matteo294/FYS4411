@@ -1,0 +1,368 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amsmath, bm}
+\usepackage{textcomp}
+\usepackage{cancel}
+\usepackage{ dsfont }
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{amssymb}
+\usepackage{placeins}
+\usepackage{changepage}
+\usepackage{caption}
+\usepackage{subfigure}
+\usepackage{graphicx}
+
+\usepackage[a4paper, top = 3cm, bottom = 2 cm, left = 2 cm,
+right = 2 cm, marginparwidth = 1.75 cm]{geometry}
+
+\usepackage{ bbold }
+\newcommand{\hl}{\text{\textonehalf}}
+\newcommand{\commute}[2]{\big[{#1},\,{#2}\big]}
+\newcommand{\anticom}[2]{\big\{{#1},\,{#2}\big\}}
+\newcommand{\crea}{\hat{a}^\dag}
+\newcommand{\dist}{\hat{a}}
+\newcommand{\expecto}[3]{\langle{#1}\vert{#2}\vert{#3}\rangle}
+
+\title{Computational physics - Calculations}
+\author{Staffoli Emiliano}
+\date{Academic year 2020-2021}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}
+
+\begin{equation}
+    H = \sum_i^N \left(\frac{-\hbar^2}{2m}{\bigtriangledown }_{i}^2 +V_{ext}({\mathbf{r}}_i)\right)  + \sum_{i<j}^{N} V_{int}({\mathbf{r}}_i,{\mathbf{r}}_j),
+\end{equation}
+
+\begin{equation}
+    V_{ext}(\mathbf{r}) = \Bigg\{ 
+    \begin{array}{ll} \frac{1}{2}m\omega_{ho}^2r^2 & (S)\\ \strut \frac{1}{2}m[\omega_{ho}^2(x^2+y^2) + \omega_z^2z^2] & (E) 
+    \label{trap_eqn}
+\end{array}
+\end{equation}
+
+\begin{equation}
+    \Psi_T(\mathbf{r})=\Psi_T(\mathbf{r}_1, \mathbf{r}_2, \dots \mathbf{r}_N,\alpha,\beta)
+    =\left[
+    \prod_i g(\alpha,\beta,\mathbf{r}_i)
+    \right]
+    \left[
+    \prod_{j<k}f(a,|\mathbf{r}_j-\mathbf{r}_k|)
+    \right],
+\label{eq:trialwf}
+\end{equation}
+
+\begin{equation}
+    g(\alpha,\beta,\mathbf{r}_i)= \exp{[-\alpha(x_i^2+y_i^2+\beta z_i^2)]}.
+\end{equation}
+
+
+
+
+
+\section{$\beta = 1$, $1D$, $N=1$}
+In this case we have
+\begin{equation*}
+     H = -\frac{1}{2m} \frac{d^2}{dx^2} + \frac{1}{2} m \omega_{ho}^2 x^2
+\end{equation*}
+
+\begin{equation*}
+    \Psi_T(x)=\Psi_T(x,\alpha,\beta=1)
+    = g(\alpha,\beta=1,x) = \text{exp}\left[-\alpha x^2\right]
+\end{equation*}
+ 
+Thus we get
+\begin{align*}
+    E_L(x) &= \frac{1}{\Psi_T(x)}H\Psi_T(x) = \frac{1}{\text{exp}\left[-\alpha x^2\right]}  \left[ -\frac{1}{2m} \frac{d^2}{dx^2} + \frac{1}{2} m \omega_{ho}^2 x^2 \right] \text{exp}\left[-\alpha x^2\right] \\
+    &= -\frac{1}{\text{exp}\left[-\alpha x^2\right]}  \frac{1}{2m} \frac{d^2}{dx^2}\text{exp}\left[-\alpha x^2\right]  + \frac{1}{\cancel{\text{exp}\left[-\alpha x^2\right]}}  \frac{1}{2} m \omega_{ho}^2 x^2  \cancel{\text{exp}\left[-\alpha x^2\right] } \\
+    &= -\frac{1}{\text{exp}\left[-\alpha x^2\right]}  \frac{1}{2m} \frac{d}{dx} \big\{ (-2 x \alpha) \text{exp} \left[-\alpha x^2\right] \big\} + \frac{1}{2} m \omega_{ho}^2 x^2  \\
+    &= -\frac{1}{\text{exp}\left[-\alpha x^2\right]}  \frac{1}{2m} \big\{-2 \alpha \text{exp} \left[-\alpha x^2\right] + (-2x\alpha)^2 \text{exp} \left[-\alpha x^2\right] \big\} + \frac{1}{2} m \omega_{ho}^2 x^2 \\
+    &= -\frac{1}{\cancel{\text{exp}\left[-\alpha x^2\right]}}  \frac{1}{2m} \big\{-2 \alpha  + 4x^2\alpha^2 \big\} \cancel{\text{exp} \left[-\alpha x^2\right]} + \frac{1}{2} m \omega_{ho}^2 x^2 \\
+    &= \frac{1}{m} \left[ \alpha - 2x^2\alpha^2 \right] + \frac{1}{2} m \omega_{ho}^2 x^2 \\ 
+    &= x^2 \left( \frac{1}{2} m \omega_{ho}^2 - \frac{2\alpha^2}{m} \right) + \frac{\alpha}{m}
+\end{align*}
+
+
+And then the drift force results to be
+\begin{align*}
+    F &= \frac{2}{\Psi_T(x)} \frac{d\Psi_T(x)}{dx} = \frac{2}{\text{exp}\left[-\alpha x^2\right]} \frac{d}{dx} \text{exp}\left[-\alpha x^2\right] \\
+    &= \frac{2}{\cancel{\text{exp}\left[-\alpha x^2\right]}} (-2x\alpha) \cancel{\text{exp}\left[-\alpha x^2\right]} \\
+    &= -4x\alpha
+\end{align*}
+
+
+
+\section{$\beta = 1$, $1D$, $N$}
+
+In this case we have
+\begin{equation*}
+     H = \sum_{i=1}^N \left[ -\frac{1}{2m} \frac{d^2}{dx_i^2} + \frac{1}{2} m \omega_{ho}^2 x_i^2 \right]
+\end{equation*}
+
+\begin{equation*}
+    \Psi_T(\mathbf{x}) = \Psi_T(\mathbf{x},\alpha,\beta=1)
+    = \prod_{i=1}^N g(\alpha,\beta=1,x_i) = \prod_{i=1}^N \text{exp} \left[-\alpha x_i^2\right]
+\end{equation*}
+ 
+Thus we get
+\begin{align*}
+    E_L(\mathbf{x}) &= \frac{1}{\Psi_T(\mathbf{x})}\hat{H}\Psi_T(\mathbf{x}) = \prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha x_i^2\right]} \sum_{j=1}^N \left[ -\frac{1}{2m} \frac{d^2}{dx_j^2} + \frac{1}{2} m \omega_{ho}^2 x_j^2 \right] \prod_{k=1}^N \text{exp}\left[-\alpha x_k^2\right] \\
+    &=  \prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha x_i^2\right]}\bigg\{ \sum_{j=1}^N -\frac{1}{2m} \frac{d^2}{dx_j^2} \prod_{k=1}^N \text{exp}\left[-\alpha x_k^2\right] \bigg\} + \cancel{\prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha x_i^2\right]}} \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 x_j^2  \cancel{\prod_{k=1}^N \text{exp}\left[-\alpha x_k^2\right]} \\
+    &= \prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha x_i^2\right]} \bigg\{ \sum_{j=1}^N -\frac{1}{2m} \frac{d}{dx_j} (-2 x_j \alpha)  \prod_{k=1}^N \text{exp}\left[-\alpha x_k^2\right] \bigg\} + \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 x_j^2 \\
+    &= \cancel{\prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha x_i^2\right]}} \bigg\{ \sum_{j=1}^N -\frac{1}{2m} (-2 \alpha + 4\alpha^2 x_j^2) \cancel{ \prod_{k=1}^N \text{exp}\left[-\alpha x_k^2\right]} \bigg\} + \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 x_j^2 \\
+    &= \sum_{j=1}^N \frac{1}{m} (\alpha - 2\alpha^2 x_j^2) + \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 x_j^2 \\
+    &= \frac{N\alpha}{m} + \sum_{j=1}^N \left(\frac{1}{2} m \omega_{ho}^2 - \frac{2\alpha^2}{m} \right)  x_j^2 
+\end{align*}
+
+We notice that this expression is actually the sum performed over $N$ particles of the result obtained for $N=1$.
+
+And then the drift force on the $i$-th particle results to be
+\begin{align*}
+    F_i &= \frac{2}{\Psi_T(\mathbf{x})} \frac{\Psi_T(\mathbf{x})}{dx_i} = \frac{2}{\prod_{j=1}^N \text{exp}\left[-\alpha x_j^2\right]} \frac{d}{dx_i} \prod_{k=1}^N \text{exp}\left[-\alpha x_k^2\right] \\
+    &= \frac{2}{\cancel{\prod_{j=1}^N \text{exp}\left[-\alpha x_j^2\right]}} (-2\alpha x_i) \cancel{\prod_{k=1}^N \text{exp}\left[-\alpha x_k^2\right]}\\
+    &= -4\alpha x_i
+\end{align*}
+
+
+\section{$\beta = 1$, $2D$, $N=1$}
+In this case we have
+\begin{equation*}
+     H = -\frac{1}{2m} \left( \frac{d^2}{dx^2} + \frac{d^2}{dy^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2)
+\end{equation*}
+
+\begin{equation*}
+    \Psi_T(\mathbf{r})=\Psi_T(\mathbf{r},\alpha,\beta=1)
+    = g(\alpha,\beta=1,\mathbf{r}_i) = \text{exp}\left[-\alpha (x^2 + y^2) \right]
+\end{equation*}
+
+Thus we get
+\begin{align*}
+    E_L(\mathbf{r}) &= \frac{1}{\Psi_T(\mathbf{r})} \hat{H} \Psi_T(\mathbf{r}) = \frac{1}{\text{exp}\left[-\alpha (x^2 + y^2) \right]} \left[ -\frac{1}{2m} \left( \frac{d^2}{dx^2} + \frac{d^2}{dy^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2) \right] \text{exp}\left[-\alpha (x^2 + y^2) \right] \\
+    &= \frac{1}{\text{exp}\left[-\alpha (x^2 + y^2) \right]} \bigg\{ -\frac{1}{2m} \left[ \frac{d}{dx} \left( -2x\alpha \text{exp}\left[-\alpha (x^2 + y^2) \right] \right) + \frac{d}{dy} \left( -2y\alpha \text{exp}\left[-\alpha (x^2 + y^2) \right] \right) \right]\bigg\} + \\
+    &\quad + \cancel{\frac{1}{\text{exp}\left[-\alpha (x^2 + y^2) \right]}} \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2) \cancel{\text{exp}\left[-\alpha (x^2 + y^2) \right]}  \\
+    &= \cancel{\frac{1}{\text{exp}\left[-\alpha (x^2 + y^2) \right]}} \bigg\{ -\frac{1}{2m} \left[ \left( -2\alpha + 4\alpha^2x^2 \right) \cancel{\text{exp}\left[-\alpha (x^2 + y^2) \right]} + \left( -2\alpha + 4\alpha^2 y^2 \right) \cancel{\text{exp}\left[-\alpha (x^2 + y^2) \right]}  \right]\bigg\} + \\
+    &\quad + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2) \\
+    &=  \frac{1}{m} \left[ 2\alpha - 2\alpha^2 (x^2 + y^2) \right] + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2) \\
+    &= \frac{2\alpha}{m} + \left( \frac{1}{2} m \omega_{ho}^2 - \frac{2\alpha^2}{m} \right) (x^2 + y^2)
+\end{align*}
+
+And then the drift force results to be
+\begin{align*}
+    \mathbf{F} &= \frac{2}{\Psi_T(\mathbf{r})} \nabla\Psi_T(\mathbf{r}) = \frac{2}{\cancel{\text{exp}\left[-\alpha (x^2 + y^2) \right]}} \left( -2\alpha x,\, - 2\alpha y\right) \cancel{\text{exp}\left[-\alpha (x^2 + y^2) \right]} \\
+    &= -4\alpha \mathbf{r} 
+\end{align*}
+
+\section{$\beta = 1$, $2D$, $N$}
+In this case we have
+\begin{equation*}
+     H = -\sum_{i=1}^N \frac{1}{2m} \left( \frac{d^2}{dx_i^2} + \frac{d^2}{dy_i^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x_i^2 + y_i^2)
+\end{equation*}
+
+\begin{equation*}
+    \Psi_T(\mathbf{r})=\Psi_T(\mathbf{r},\alpha,\beta=1)
+    = \prod_{i=1}^N g(\alpha,\beta=1,\mathbf{r}) = \prod_{i=1}^N \text{exp}\left[-\alpha (x_i^2 + y_i^2) \right]
+\end{equation*}
+
+Thus we get
+\begin{align*}
+    E_L(\mathbf{r}) &= \frac{1}{\Psi_T(\mathbf{r})} \hat{H} \Psi_T(\mathbf{r}) = \prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha (x_i^2 + y_i^2) \right]} \sum_{j=1}^N \left[ -\frac{1}{2m} \left( \frac{d^2}{dx_j^2} + \frac{d^2}{dy_j^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x_j^2 + y_j^2) \right] \prod_{k=1}^N \text{exp}\left[-\alpha (x_k^2 + y_k^2) \right] \\
+    &= \cancel{\prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha (x_i^2 + y_i^2) \right]} }
+    \bigg\{ \sum_{j=1}^N -\frac{1}{2m}  (-2\alpha + 4 \alpha^2 x_j^2 - 2\alpha + 4\alpha^2 y_j^2)  \cancel{ \prod_{k=1}^N \text{exp}\left[-\alpha (x_k^2 + y_k^2) \right]} \bigg\} + \\
+    &\quad \cancel{\prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha (x_i^2 + y_i^2) \right]}} \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 (x_j^2 + y_j^2)  \cancel{\prod_{k=1}^N \text{exp}\left[-\alpha (x_k^2 + y_k^2) \right]} \\
+    &= \sum_{j=1}^N \frac{1}{m}  ( 2\alpha - 2 \alpha^2 x_j^2 - 2\alpha^2 y_j^2) +  \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 (x_j^2 + y_j^2) \\
+    &= \frac{2\alpha N}{m} + \sum_{j=1}^{N} \left( \frac{1}{2} m \omega_{ho}^2 - 2\alpha^2 \right) (x_j^2 + y_j^2)
+\end{align*}
+
+We notice that the obtained expression corresponds to the sum over all the particles of the result previously obtained for $N=1$.
+
+And the drive force on the $i$-th particle results to be
+\begin{align*}
+    \mathbf{F}_i &= \frac{2}{\Psi_T(\mathbf{r})} \nabla_i \Psi_T(\mathbf{r}) = \frac{2}{\cancel{\prod_{j=1}^N \text{exp}\left[-\alpha (x_j^2 + y_j)^2\right]}} (-2\alpha x_i,\, -2\alpha y_i) \cancel{\prod_{k=1}^N \text{exp}\left[-\alpha x_k^2 + y_k^2 \right]} \\
+    &= -4\alpha \mathbf{r}_i
+\end{align*}
+
+
+\section{$\beta = 1$, $3D$, $N=1$}
+In this case we have
+\begin{equation*}
+     H = -\frac{1}{2m} \left( \frac{d^2}{dx^2} + \frac{d^2}{dy^2} + \frac{d^2}{dz^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2 + z^2)
+\end{equation*}
+
+\begin{equation*}
+    \Psi_T(\mathbf{r})=\Psi_T(\mathbf{r},\alpha,\beta=1)
+    = g(\alpha,\beta=1,\mathbf{r}_i) = \text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]
+\end{equation*}
+
+Thus we get
+\begin{align*}
+    E_L(\mathbf{r}) &= \frac{1}{\Psi_T(\mathbf{r})} \hat{H} \Psi_T(\mathbf{r}) = \frac{1}{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]} \left[ -\frac{1}{2m} \left( \frac{d^2}{dx^2} + \frac{d^2}{dy^2} + \frac{d^2}{dz^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2 + z^2) \right] \times \\
+    &\quad \times \text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right] \\
+    &= \frac{1}{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]} \bigg\{ -\frac{1}{2m} \bigg[ \frac{d}{dx} \left( -2x\alpha \text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right] \right) + \frac{d}{dy} \left( -2y\alpha \text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right] \right) + \\
+    &\quad + \frac{d}{dz} \left( -2z\alpha \text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right] \right) \bigg]\bigg\} + \cancel{\frac{1}{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]}} \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2 + z^2) \cancel{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]}  \\
+    &= \cancel{\frac{1}{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]}} \bigg\{ -\frac{1}{2m} \bigg[ \left( -2\alpha + 4\alpha^2x^2 \right) \cancel{\text{exp}\left[-\alpha (x^2 + y^2) \right]} + \left( -2\alpha + 4\alpha^2 y^2 \right) \cancel{\text{exp}\left[-\alpha (x^2 + y^2) \right]}  + \\
+    &\quad + \left( -2\alpha + 4\alpha^2 z^2 \right) \cancel{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]}  \bigg] \bigg\} + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2 + z^2) \\
+    &=  \frac{1}{m} \left[ 3\alpha - 2\alpha^2 (x^2 + y^2 + z^2) \right] + \frac{1}{2} m \omega_{ho}^2 (x^2 + y^2 + z^2) \\
+    &= \frac{3\alpha}{m} + \left( \frac{1}{2} m \omega_{ho}^2 - \frac{2\alpha^2}{m} \right) (x^2 + y^2 + z^2)
+\end{align*}
+
+And then the drift force results to be
+\begin{align*}
+    \mathbf{F} &= \frac{2}{\Psi_T(\mathbf{r})} \nabla\Psi_T(\mathbf{r}) = \frac{2}{\cancel{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]}} \left( -2\alpha x,\, - 2\alpha y,\, -2\alpha z\right) \cancel{\text{exp}\left[-\alpha (x^2 + y^2 + z^2) \right]} \\
+    &= -4\alpha \mathbf{r} 
+\end{align*}
+
+
+
+\section{Local energy: $\beta = 1$, $3D$, $N$}
+In this case we have
+\begin{equation*}
+     H = -\sum_{i=1}^N \frac{1}{2m} \left( \frac{d^2}{dx_i^2} + \frac{d^2}{dy_i^2} + \frac{d^2}{dz_i^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x_i^2 + y_i^2 + z^2)
+\end{equation*}
+
+\begin{equation*}
+    \Psi_T(\mathbf{r})=\Psi_T(\mathbf{r},\alpha,\beta=1)
+    = \prod_{i=1}^N g(\alpha,\beta=1,\mathbf{r}_i) = \prod_{i=1}^N \text{exp}\left[-\alpha (x_i^2 + y_i^2 + z_i^2) \right]
+\end{equation*}
+
+Thus we get
+\begin{align*}
+    E_L(\mathbf{r}) &= \frac{1}{\Psi_T(\mathbf{r})} \hat{H} \Psi_T(\mathbf{r}) = \prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha (x_i^2 + y_i^2 + z_i^2) \right]} \sum_{j=1}^N \left[ -\frac{1}{2m} \left( \frac{d^2}{dx_j^2} + \frac{d^2}{dy_j^2} + \frac{d^2}{dz_j^2} \right) + \frac{1}{2} m \omega_{ho}^2 (x_j^2 + y_j^2 + z_j^2) \right] \times \\
+    &\quad \times \prod_{k=1}^N \text{exp}\left[-\alpha (x_k^2 + y_k^2 + z_k^2) \right] \\
+    &= \cancel{\prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha (x_i^2 + y_i^2 + z_i^2) \right]} }
+    \bigg\{ \sum_{j=1}^N -\frac{1}{2m}  (-2\alpha + 4 \alpha^2 x_j^2 - 2\alpha + 4\alpha^2 y_j^2 - 2\alpha + 4\alpha^2 z_j^2)  \cancel{ \prod_{k=1}^N \text{exp}\left[-\alpha (x_k^2 + y_k^2 + z_k^2) \right]} \bigg\} + \\
+    &\quad \cancel{\prod_{i=1}^N \frac{1}{\text{exp}\left[-\alpha (x_i^2 + y_i^2 + z_i^2) \right]}} \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 (x_j^2 + y_j^2 + z_j^2)  \cancel{\prod_{k=1}^N \text{exp}\left[-\alpha (x_k^2 + y_k^2 + z_k^2) \right]} \\
+    &= \sum_{j=1}^N \frac{1}{m}  ( 3\alpha - 2 \alpha^2 x_j^2 - 2\alpha^2 y_j^2 - 2\alpha^2 z_j^2) +  \sum_{j=1}^N \frac{1}{2} m \omega_{ho}^2 (x_j^2 + y_j^2 + z_j^2) \\
+    &= \frac{3\alpha N}{m} + \sum_{j=1}^{N} \left( \frac{1}{2} m \omega_{ho}^2 - 2\alpha^2 \right) (x_j^2 + y_j^2 + z_j^2)
+\end{align*}
+
+We notice that the obtained expression corresponds to the sum over all the particles of the result previously obtained for $N=1$.
+
+
+And the drive force on the $i$-th particle results to be
+\begin{align*}
+    \mathbf{F}_i &= \frac{2}{\Psi_T(\mathbf{r})} \nabla_i \Psi_T(\mathbf{r}) = \frac{2}{\cancel{\prod_{j=1}^N \text{exp}\left[-\alpha (x_j^2 + y_j^2 + z_j^2)\right]}} (-2\alpha x_i,\, -2\alpha y_i,\, -2\alpha z_i) \cancel{\prod_{k=1}^N \text{exp}\left[-\alpha x_k^2 + y_k^2 + z_k^2 \right]} \\
+    &= -4\alpha \mathbf{r}_i
+\end{align*}
+
+
+
+
+\section{First derivative for particle $k$ in the general case}
+We rewrite 
+
+\begin{equation*}
+    \Psi_T(\mathbf{r})=\Psi_T(\mathbf{r}_1, \mathbf{r}_2, \dots \mathbf{r}_N,\alpha,\beta)
+    = \left[ \prod_i g(\alpha,\beta,\mathbf{r}_i) \right]
+    \left[ \prod_{j<k}f(a,|\mathbf{r}_j-\mathbf{r}_k|) \right],
+\end{equation*}
+as
+
+\begin{equation*}
+    \Psi_T(\mathbf{r})=\left[ \prod_i g(\alpha,\beta,\mathbf{r}_i) \right] \exp{\left(\sum_{j<k}u(r_{jk})\right)}
+\end{equation*}
+where we have defined $r_{ij}=|\mathbf{r}_i-\mathbf{r}_j|$
+and
+
+\begin{equation*}
+   f(r_{ij})= \exp{\left(u(r_{ij})\right)},
+\end{equation*}
+with $u(r_{ij})=\ln{f(r_{ij})}$. We have also
+\begin{equation*}
+    g(\alpha,\beta,\mathbf{r}_i) = \exp{\left[-\alpha(x_i^2+y_i^2+\beta
+    z_i^2)\right]}= \phi(\mathbf{r}_i).
+\end{equation*}
+
+Now we evaluate the gradient of the trial function for particle $k$
+
+\begin{align*}
+    \nabla_k\Psi_T(\mathbf{r}) &= \nabla_k \bigg\{ \left[ \prod_i g(\alpha,\beta,\mathbf{r}_i) \right]
+    \left[ \prod_{j<m}f(a,|\mathbf{r}_j-\mathbf{r}_m|) \right] \bigg\} \\
+    &= \nabla_k \bigg\{ \left[ \prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} \bigg\} \\
+    &= \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} + \left[\prod_i \phi(\mathbf{r}_i)  \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \nabla_k \left[ \sum_{j<m} u(r_{jm}) \right] \\
+    &= \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} + \left[\prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right]
+\end{align*}
+
+In our specific case, this reduces to (for $r_{ij}>a,\, \forall i,j$)
+\begin{align*}
+    &\left[ \nabla_k 
+    \left( \exp{ \left[ -\alpha(x_k^2 + y_k^2 + \beta z_k^2) \right]} \right) \right] \left[ \prod_{i \neq k} \exp{ \left[ -\alpha(x_i^2 + y_i^2 + \beta z_i^2) \right] } \right] \left[ \prod_{j<m} \left( 1 - \frac{a}{r_{jm}} \right) \right] +  \left[\prod_i \exp{ \left[ -\alpha (x_i^2 + y_i^2 + \beta z_i^2) \right]} \right] \times \\
+    &\quad \times \left[\prod_{j<m} \left( 1 - \frac{a}{r_{jm}} \right) \right] \left[ \sum_{j\neq k} \nabla_k \ln \left( 1 - \frac{a}{r_{jk}} \right) \right] \\
+    &= (-2\alpha x_k, -2\alpha y_k, -2\alpha\beta z_k) \left[ \prod_i \exp{ \left[ -\alpha(x_i^2 + y_i^2 + \beta z_i^2) \right] } \right] \left[ \prod_{j<m} f(r_{jm}) \right] +  \left[ \prod_i \exp{ \left[ -\alpha(x_i^2 + y_i^2 + \beta z_i^2) \right] } \right] \times \\
+    &\quad \times \left[\prod_{j<m} \left( 1 - \frac{a}{r_{jm}} \right) \right] \left[ \sum_{j\neq k} \frac{1}{\left( 1 - \frac{a}{r_{jk}} \right)} \nabla_k \left( 1 - \frac{a}{r_{jk}} \right) \right] \\
+    &= (-2\alpha x_k, -2\alpha y_k, -2\alpha\beta z_k) \Psi_T(\mathbf{r}) + \Psi_T(\mathbf{r}) \left[ \sum_{j\neq k} \frac{1}{\left( 1 - \frac{a}{r_{jk}} \right)} \frac{a \mathbf{r}_{kj}}{r_{jk}^{3/2}} \right] \\
+    &= \Psi_T(\mathbf{r}) \left[ -2\alpha (x_k, y_k, \beta z_k) + \sum_{j\neq k} \frac{a}{\left( \frac{r_jk - a}{\cancel{r_{jk}}} \right)} \frac{\mathbf{r}_{kj}}{r_{jk}^{\cancelto{1/2}{3/2}}} \right] \\
+    &= \Psi_T(\mathbf{r}) \left[ -2\alpha (x_k, y_k, \beta z_k) + \sum_{j\neq k} \frac{a}{\left( r_{jk} - a \right) r_{jk}^{1/2}} \mathbf{r}_{kj} \right]
+\end{align*}
+
+
+
+
+
+\section{Second derivative for particle $k$ in the general case}
+We restart from
+\begin{equation*}
+    \nabla_k\Psi_T(\mathbf{r}) = \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} + \left[\prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right]
+\end{equation*}
+
+Proceeding we get
+\begin{align*}
+    \nabla_k^2 \Psi_T(\mathbf{r}) &= \left[ \nabla_k^2 \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} + \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] +  \\
+    &\quad + \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] + \left[\prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right]^2 + \\
+    &= \quad + \left[\prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k^2 u(r_{jk}) \right]
+\end{align*}
+
+Dividing by $\Psi_T(\mathbf{r})$ we get
+\begin{align*}
+    \frac{ \nabla_k^2 \Psi_T(\mathbf{r})}{\Psi_T(\mathbf{r})} &= \frac{\nabla_k^2 \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} + 2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] + \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right]^2 + \left[ \sum_{j\neq k} \nabla_k^2 u(r_{jk}) \right] \\
+    &= \frac{\nabla_k^2 \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} + 2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] + \left[ \sum_{j\neq k} \sum_{m \neq k} \nabla_k u(r_{jk}) \nabla_k u(r_{mk}) \right] + \left[ \sum_{j\neq k} \nabla_k^2 u(r_{jk}) \right]
+\end{align*}
+
+At this point we rewrite the gradient in spherical coordinates
+\begin{equation*}
+    \nabla f = \frac{\partial f}{\partial r} \frac{\mathbf{r}}{r} + \frac{1}{r} \frac{\partial f}{\partial \theta} \hat{\theta} + \frac{1}{\sin \theta} \frac{\partial f}{\partial \phi} \hat{\phi}
+\end{equation*}
+
+Applying the gradient to $u(r_{jk})$
+\begin{equation*}
+    \nabla_k u(r_{jk}) = \frac{ d (\mathbf{r}_k - \mathbf{r}_j)}{d \mathbf{r}_k} \nabla_{kj} u(r_{kj}) = \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}}
+\end{equation*}
+
+With the same reasoning one can get also the expression for the Laplacian of $u(r_{jk})$
+\begin{equation*}
+    \nabla^2 f = \frac{1}{r^2} \frac{\partial}{\partial r} \left( r^2 \frac{\partial f}{\partial r} \right) + \frac{1}{r^2 \sin\theta } \frac{\partial }{\partial\theta} \left( \sin \theta \frac{\partial f}{\partial \theta} \right) + \frac{1}{r^2 \sin^2 \theta} \frac{\partial^2 f}{\partial \phi^2}
+\end{equation*}
+which in our case reduces to
+\begin{align*}
+    \nabla_k^2 u(r_{jk}) = \frac{1}{r_{jk}^2} \frac{\partial}{\partial r_{jk}} \left( r_{jk}^2 \frac{\partial u}{\partial r_{jk}} \right) = \frac{1}{r_{jk}^2}  \left( 2 r_{jk} \frac{\partial u}{\partial r_{jk}} + r_{jk}^2 \frac{\partial^2 u}{\partial r_{jk}^2} \right) = \frac{2}{r_{jk}} \frac{\partial u}{\partial r_{jk}} + \frac{\partial^2 u}{\partial r_{jk}^2}
+\end{align*}
+
+Returning to the complete equation for the Laplacian of $\Psi_T(\mathbf{r})$ we get
+
+\begin{align*}
+     \frac{ \nabla_k^2 \Psi_T(\mathbf{r})}{\Psi_T(\mathbf{r})} &=  \frac{\nabla_k^2 \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} + 2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k}  \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \right] + \left[ \sum_{j\neq k} \sum_{m \neq k} \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \frac{\mathbf{r}_{km}}{r_{km}} \frac{du(r_{kj})}{dr_{kj}} \right] + \\
+     &\quad + \left[ \sum_{j\neq k} \frac{2}{r_{jk}} \frac{\partial u(r_{jk})}{\partial r_{jk}} + \frac{\partial^2 u(r_{jk})}{\partial r_{jk}^2} \right]
+\end{align*}
+
+
+\section{Local energy: general case}
+
+We consider the case of $r_{ij}>a,\, \forall i,j$, then $V_int(\mathbf{r}_i,\mathbf{r}_j) = 0$
+
+\begin{align*}
+    E_L(\mathbf{r}) &= \frac{1}{\Psi_T(\mathbf{r})} \hat{H} \Psi_T(\mathbf{r}) = \frac{1}{\Psi_T(\mathbf{r})} \left[ \sum_i^N \left( -\frac{1}{2m} \nabla_{i}^2 + \frac{1}{2} m \omega_{ho}^2 r_i^2 \right)  + \cancelto{0}{\sum_{i<j}^{N} V_{int}({\mathbf{r}}_i,{\mathbf{r}}_j)} \right] \Psi_T(\mathbf{r}) \\
+    &= -\frac{1}{2m} \sum_i^N \frac{1}{\Psi_T(\mathbf{r})} \nabla_{i}^2 \Psi_T(\mathbf{r}) + \sum_i^N \frac{1}{\cancel{\Psi_T(\mathbf{r})}} \frac{1}{2} \omega_{ho} m r_{i}^2 \cancel{\Psi_T(\mathbf{r})} \\
+    &= -\frac{1}{2m} \sum_k^N \bigg\{ \frac{\nabla_k^2 \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} + 2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k} \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \right] + \left[ \sum_{j\neq k} \sum_{m \neq k} \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \frac{\mathbf{r}_{km}}{r_{km}} \frac{du(r_{kj})}{dr_{kj}} \right]  + \\
+    &\quad + \left[ \sum_{j\neq k} \frac{2}{r_{jk}} \frac{\partial u(r_{jk})}{\partial r_{jk}} + \frac{\partial^2 u(r_{jk})}{\partial r_{jk}^2} \right] \bigg\} + \sum_i^N \frac{1}{2} \omega_{ho} m r_{i}^2
+\end{align*}    
+
+
+
+\end{document}
