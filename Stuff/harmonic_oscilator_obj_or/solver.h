@@ -6,14 +6,23 @@ using namespace std;
 
 class Solver{
     public:
-        Solver(class System* system, int Nsteps, double step, double initialFraction);
-        virtual int getNsteps()=0;
-        virtual double getstep()=0;
-        virtual double getinitialFraction()=0;
+        Solver(class System* system, int Nsteps, double initialFraction);
+
+    // Getters
+        int getNsteps();
+        double getInitialFraction();
+
+    // Setters
+        void setNsteps(int Nsteps);
+        void setInitialFraction(double initialFraction);
+
+    // Other functions & attributes
         virtual vector<double> solve() = 0;
-        int Nsteps;
-        double step;
-        double initialFraction;
+        virtual vector<double> solve(double h) = 0; // override when numerical local energy
         class System* system;
+
+    protected:
+        int Nsteps;
+        double InitialFraction;
 
 };

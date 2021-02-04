@@ -6,11 +6,13 @@ I initialize all the particles in the origin (with proper dimensions), each mass
 
 System::System(int dim, int Npart){
     assert(dim>0 && Npart>=0);
-    int i=0, j=0;
+    int i=0;
     this->dimension=dim;
     this->Nparticles=Npart;
 
-    vector<double> pos;
+    // we create all the particles in the origin
+    vector<double> pos(dim, 0.0);
+
     for(i=0; i<this->dimension; i++){
         pos.push_back((double) 0.0);
     }
@@ -28,23 +30,6 @@ void System::addParticle(double mass, vector<double> pos){
     this->Nparticles++;
 }
 
-void System::getInfoParticles(){
-    int i=0;
-    int j=0;
-    for(i=0; i<this->Nparticles; i++){
-        cout << "Particle[" << i << "]   mass=" << particles[i]->getMass() << "   Position={";
-        for(j=0; j<this->dimension; j++){
-            cout << this->particles[i]->getPosition().at(j);
-            if(j != (this->dimension -1)){
-                cout << ",";
-            }
-        }
-        cout << "}" << endl;
-    }
-}
-
-void System::moveParticle(int i, vector<double> delta_pos) {this->particles[i]->move(delta_pos);}
-
 // Getters
         class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
         class Wavefunction* System::getWavefunction() {return this->wavefunction;}
@@ -52,10 +37,10 @@ void System::moveParticle(int i, vector<double> delta_pos) {this->particles[i]->
         class RandomGenerator* System::getRandomGenerator(){ return this->randomgenerator; }
         int System::getDimension() {return this->dimension;}
         int System::getNParticles() {return this->Nparticles;}
+        vector<class Particle*> System::getParticles(){return this->particles;}
         
 
 // Setters
-        void System::setParticlePosition(int i, vector<double> new_pos) {this->particles[i]->setPosition(new_pos);}
         void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
         void System::setSolver(class Solver* solver) {this->solver = solver;}
         void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}

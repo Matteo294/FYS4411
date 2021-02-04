@@ -6,13 +6,9 @@ class Hamiltonian{
         Hamiltonian(class System *system);
         class System* system;
 
-        /* uses analytic expression of the second derivative of the wavefunction to evaluate the result.
-        At the moment this is implemented only for the non-interacting case */
-        virtual double LocalEnergySecondDerivative() = 0;
-
         /* uses analytic expression of the local energy to evaluate the result.
         At the moment this is implemented only for the non-interacting case */
         virtual double LocalEnergyAnalytic() = 0;
-        virtual double LocalEnergyNumeric() = 0;
+        virtual double LocalEnergyNumeric(double h) = 0;
 
 };
