@@ -127,6 +127,102 @@ vector<double> ImportanceSampling::solve(double h){
 }
 
 
+vector<vector<double>> ImportanceSampling::solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas){
+        
+    vector<vector<double>> results(Nalphas + 1, vector<double>(3));
+    int i=0, j=0, k=0, idx=0;
+    double energy=0.0, energy2=0.0, tmp=0.0;
+    
+
+    double old_val = 0.0;
+    double arg = 0.0;
+    vector<double> new_pos(this->system->getDimension(), 0.0);
+    vector<double> old_drift(this->system->getDimension(), 0.0);
+    vector<double> new_drift(this->system->getDimension(), 0.0);
+
+    for(k=0; k<=Nalphas; k++){
+        // initialize random variable
+        random_device rd;
+        mt19937_64 gen(rd());
+
+        // set alpha
+        this->system->getWavefunction()->setParameter(0, alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas );
+
+        energy = 0.0;
+        energy2 = 0.0;
+        tmp = 0.0;
+
+        for(i=0; i<this->system->getNParticles(); i++){
+            for(j=0; j<this->system->getDimension(); j++){
+                new_pos[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->dt);
+            }
+
+            this->system->getParticles()[i]->setPosition(new_pos);
+        }
+
+        //MCsteps
+        for(i=0; i<this->Nsteps; i++){
+            
+            idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
+
+            old_val = this->system->getWavefunction()->evaluateSing(idx);
+            old_drift = this->system->getWavefunction()->DriftForce(idx);
+
+            for(j=0; j<this->system->getDimension(); j++){
+                new_pos[j] = this->D * old_drift[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
+            }
+            
+            this->system->getParticles()[idx]->move(new_pos);
+            new_drift = this->system->getWavefunction()->DriftForce(idx);
+            for(j=0; j<this->system->getDimension(); j++){
+                arg += (old_drift[j] + new_drift[j]) * ( -2 * new_pos[j] + this->D * this->dt * (old_drift[j] - new_drift[j]) );
+            }
+
+            arg *= 0.25;
+            
+
+            if( this->system->getRandomGenerator()->uniform(gen) > (exp(arg) * pow(this->system->getWavefunction()->evaluateSing(idx), 2) / pow(old_val, 2))){
+                for(j=0; j<this->system->getDimension(); j++){
+                    new_pos[j] = -new_pos[j];
+                }
+                this->system->getParticles()[idx]->move(new_pos);
+            }
+
+            if(i>=(int)(this->Nsteps*this->InitialFraction)){
+                tmp = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
+                energy += tmp;
+                energy2 += tmp*tmp;
+            }
+            
+        }
+
+        results[k] = {this->system->getWavefunction()->getParameter(0), energy/this->Nsteps/(1-this->InitialFraction), energy2/this->Nsteps/(1-this->InitialFraction) - energy*energy/this->Nsteps/(1-this->InitialFraction)/this->Nsteps/(1-this->InitialFraction)};
+        cout << "alpha= " << results[k][0] << "     " << "energy= " << results[k][1] << "      " << "std= " << results[k][2] << endl;
+
+    }
+
+    return results;
+}
+
+
+vector<vector<double>> ImportanceSampling::solve_varying_dt(double dt_min, double dt_max, int Ndt){
+
+    vector<vector<double>> results(Ndt + 1, vector<double>(3, 0.0));
+    vector<double> tmp(2, 0.0);
+
+    for(int i=0; i<=Ndt; i++){
+        this->setdt(dt_min + (double) i * (dt_max - dt_min) / Ndt);
+        tmp = this->solve();
+        results[i][0] = this->getdt();
+        results[i][1] = tmp[0];
+        results[i][2] = tmp[1];
+        cout << setprecision(5) << "dt= " << results[i][0] << "\t energy= " << results[i][1] << "\t std= " << results[i][2] << endl;
+    }
+
+    return results;
+}
+
+
 // Gettes
     double ImportanceSampling::getdt(){ return this->dt; }
     double ImportanceSampling::getD(){ return this->D; }
