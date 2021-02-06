@@ -16,9 +16,9 @@ double AsymmetricGaussian::evaluateAll(){
     in the sum (otherwise N). */
     for(int i=0; i<this->s->getNParticles(); i++){
         for(int j=0; j<2; j++){
-            sum += pow(this->s->particles[i]->getPosition().at(j), 2);
+            sum += pow(this->s->getParticles()[i]->getPosition().at(j), 2);
         }
-        sum += beta * pow(this->s->particles[i]->getPosition().at(2), 2); // Asymmetric therm
+        sum += beta * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
     }
     sum *= -this->alpha;
     return exp(sum);
@@ -27,9 +27,9 @@ double AsymmetricGaussian::evaluateAll(){
 double AsymmetricGaussian::evaluateSing(int part_idx){
     double arg = 0.0;
     for(int i=0; i<2; i++){
-        arg += pow( this->s->particles[part_idx]->getPosition()[i], 2);
+        arg += pow( this->s->getParticles()[part_idx]->getPosition()[i], 2);
     }
-    arg += this->beta * pow( this->s->particles[part_idx]->getPosition()[2], 2);
+    arg += this->beta * pow( this->s->getParticles()[part_idx]->getPosition()[2], 2);
     arg *= -this->alpha;
 
     return exp(arg);
