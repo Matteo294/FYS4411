@@ -18,13 +18,20 @@ using namespace std;
 int main(){
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
+<<<<<<< HEAD
     double alpha = 1.0;
     const double beta = 1.0;
+=======
+>>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
     double omega = 1.0;
     const int dimension = 3;
     const int Nparticles = 10;
 
+<<<<<<< HEAD
     const int Nsteps = (int) 1e5;
+=======
+    const int Nsteps = (int) 1e4;
+>>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
     const double step = 1.0;
     const double initialFraction = 0.1;
     const double D = 0.5;
@@ -32,11 +39,19 @@ int main(){
 
     System system(dimension, Nparticles);
     Spherical spherical(&system, omega);
+<<<<<<< HEAD
+=======
+    Gaussian gaussian(&system, (double) 0.5);
+>>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
     //Metropolis metropolis(&system, Nsteps, initialFraction, step);
     ImportanceSampling importance(&system, Nsteps, initialFraction, dt, D);
     RandomGenerator randomgenerator;
 
     system.setHamiltonian(&spherical);
+<<<<<<< HEAD
+=======
+    system.setWavefunction(&gaussian);
+>>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
     //system.setSolver(&metropolis);
     system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
@@ -47,6 +62,7 @@ int main(){
     double alpha_max = 0.8;
     int alpha_N = 10;
 
+<<<<<<< HEAD
     
     // File to store results
     ofstream fout("results.csv");
@@ -70,6 +86,15 @@ int main(){
     cout << endl << "Simulation termined. Run time: " << chrono::duration <double, milli> (diff).count() << " ms" << endl << endl; // Print run time
     
     
+=======
+    // different values of dt
+    double dt_min = 0.001;
+    double dt_max = 0.1;
+    int Ndt = 10;
+
+    vector<vector<double>> results;
+    results = system.getSolver()->solve_varying_dt(dt_min, dt_max, Ndt);   
+>>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
     
 
 }
