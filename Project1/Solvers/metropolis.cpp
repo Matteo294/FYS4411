@@ -53,10 +53,6 @@ vector<double> Metropolis::solve(){
 }
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
 vector<double> Metropolis::solve(double h){
     // initialize random variable
     random_device rd;
@@ -106,8 +102,6 @@ vector<double> Metropolis::solve(double h){
 }
 
 
-<<<<<<< HEAD
-=======
 
 vector<vector<double>> Metropolis::solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas){
     
@@ -182,7 +176,6 @@ vector<vector<double>> Metropolis::solve_varying_dt(double dt_min, double dt_max
 
 
 
->>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
 double Metropolis::getStep(){
     return this->step;
 }

@@ -4,10 +4,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
-<<<<<<< HEAD
-=======
 #include <iomanip>
->>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
 using namespace std;
 
 class ImportanceSampling : public Solver{
@@ -25,18 +22,10 @@ class ImportanceSampling : public Solver{
     // Other functions and attributes
         vector<double> solve(); // uses LocalEnergyAnalytic()
         vector<double> solve(double h); // uses LocalEnergyNumeric()
-<<<<<<< HEAD
-=======
         vector<vector<double>> solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas);
         vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt);
->>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
     
     private:
         double dt;
         double D;
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
 };

@@ -127,8 +127,6 @@ vector<double> ImportanceSampling::solve(double h){
 }
 
 
-<<<<<<< HEAD
-=======
 vector<vector<double>> ImportanceSampling::solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas){
         
     vector<vector<double>> results(Nalphas + 1, vector<double>(3));
@@ -225,7 +223,6 @@ vector<vector<double>> ImportanceSampling::solve_varying_dt(double dt_min, doubl
 }
 
 
->>>>>>> 6c76b22c10e7e8f3688d66d11aab33e7d1666a61
 // Gettes
     double ImportanceSampling::getdt(){ return this->dt; }
     double ImportanceSampling::getD(){ return this->D; }
