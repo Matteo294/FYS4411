@@ -22,8 +22,6 @@ class ImportanceSampling : public Solver{
     // Other functions and attributes
         vector<double> solve(); // uses LocalEnergyAnalytic()
         vector<double> solve(double h); // uses LocalEnergyNumeric()
-        vector<vector<double>> solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas);
-        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt);
     
     private:
         double dt;

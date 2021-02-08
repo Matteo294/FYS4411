@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "random": "cpp",
+        "fstream": "cpp",
+        "vector": "cpp"
     }
 }

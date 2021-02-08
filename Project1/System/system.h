@@ -5,6 +5,7 @@
 #include "../Hamiltonians/hamiltonian.h"
 #include "../Solvers/solver.h"
 #include "../Others/random_generator.h"
+#include "../Others/functions.h"
 #include <iostream>
 #include <cassert> 
 
