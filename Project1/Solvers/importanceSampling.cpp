@@ -1,4 +1,5 @@
 #include "importanceSampling.h"
+#include <fstream>
 
 ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initialFraction, double dt, double D) : Solver(system, Nsteps, initialFraction){
     this->dt=dt;
@@ -8,12 +9,13 @@ ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initia
 vector<double> ImportanceSampling::solve(){
     random_device rd;
     mt19937_64 gen(rd());
-    
+        
     int i=0, j=0, idx=0;
     double energy=0.0, energy2=0.0, tmp=0.0;
 
     double old_val = 0.0;
     double arg = 0.0;
+    
     vector<double> new_pos(this->system->getDimension(), 0.0);
     vector<double> old_drift(this->system->getDimension(), 0.0);
     vector<double> new_drift(this->system->getDimension(), 0.0);
@@ -38,6 +40,7 @@ vector<double> ImportanceSampling::solve(){
             new_pos[j] = this->D * old_drift[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
         }
         
+        double arg = 0.0;
         this->system->getParticles()[idx]->move(new_pos);
         new_drift = this->system->getWavefunction()->DriftForce(idx);
         for(j=0; j<this->system->getDimension(); j++){

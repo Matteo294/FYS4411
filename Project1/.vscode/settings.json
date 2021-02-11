@@ -3,6 +3,10 @@
         "cassert": "cpp",
         "random": "cpp",
         "fstream": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "chrono": "cpp",
+        "iosfwd": "cpp",
+        "*.tcc": "cpp",
+        "ostream": "cpp"
     }
 }
