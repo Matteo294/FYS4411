@@ -19,10 +19,10 @@ using namespace std;
 int main(){
 
     double omega = 1.0;
-    const int dimension = 1;
-    const int Nparticles = 1;
+    const int dimension = 3;
+    const int Nparticles = 10;
 
-    const int Nsteps = (int) 1e3;
+    const int Nsteps = (int) 1e6;
     const double step = 1.0;
     const double initialFraction = 0.1;
     const double D = 0.5;

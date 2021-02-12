@@ -5,9 +5,9 @@ Functions::Functions(System* system) { this->system = system;}
 
 
 
-vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas) {
+vector< vector<double> > Functions::solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas) {
     
-    vector<vector<double>> results(Nalphas + 1, vector<double>(3));
+    vector< vector<double> > results(Nalphas + 1, vector<double>(3));
     vector<double> results_prov(2, 0.0);
     int i=0, j=0, k=0, idx=0;
 
