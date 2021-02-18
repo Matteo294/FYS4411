@@ -53,7 +53,6 @@ vector<double> Metropolis::solve(){
 }
 
 
-
 vector<double> Metropolis::solve(double h){
     // initialize random variable
     random_device rd;

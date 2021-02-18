@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{packages}
+
+\begin{document}
+    Let us consider a Markov process whose transition matrix is $P(x,y)$ (i.e. the matrix that identifies the probability to move from state x to state y). Initially let us consider 
+    discrete cases only. \\
+    Let us denote by $\pi(x)$ a generical probability distribution function (i.e. a function that tells the probability of finding the system in the state x). \\
+    If we initially prepare the system in a state $x_0$ our initial distibution is 
+    $$\pi^0(x) = 
+    \begin{cases}
+        1 \quad \text{if } x=x_0 \\
+        0 \quad \text{otherwise}
+    \end{cases}$$
+    If we think of $\pi^0$ as a row vector that gives a probability of beeing in the state $x_i$ at the step $0$ then it would be something like
+    $$\pi^0 = \left(0, 0, 0, \dots, 1, \dots, 0, 0, 0\right)$$
+    We can then let the probability distibution evolve by multiplying it to the right by the transition matrix. We then expect to find 
+    a new probability distribution given by the row-matrix product $$\pi^1 = \pi^0 P = \sum_i \pi^0_i P_{ij} = \sum_i \pi^0(x_i)P(x_i, y_j) $$
+    After N steps the probability distribution becomes 
+    $$\pi^N = \pi^{N-1} P = \pi^{N-2} P^2 = \pi^0 P^N$$
+    If after some $N_0$ one has that
+    $$\pi^{N+1} = \pi^N P \qquad \forall N > N_0$$
+    the probability distribution function is said to be stationary. This means that the probability of being in a state $x$ has become independent 
+    of the step number but depends only on the state, hence we can call this distribution $\pi(x)$. The last equation can be 
+    rewritten by dropping the step number as 
+    $$\pi = \pi P$$ 
+    or 
+    \begin{equation}
+        \pi_j = \sum_i \pi_i P_{ij}
+    \end{equation}
+    The existence of such distibution can be guaranteed by the following two sufficient (but not necessary) conditions
+    \begin{enumerate}
+        \item Detailed balance holds (which is equivalent to ask for reversibility of the chain), that is 
+        \begin{equation}
+            \pi(x_i) P(x_i,x_j) = \pi(x_j) P(x_j,x_i) \qquad \forall x_i x_j
+            \label{eq:detailed_balance}
+        \end{equation}
+        \item The stationary distribution must be unique. This is guaranteed by ergodicity (or irreducibility which means that the chain does not
+        "lose" pieces and it is always possibile to reach every state in a finite number of steps) and aperiodicity (the chain does not have a regular pattern, this is 
+        the generalisation of the $-1$ eigenvalue case for which the period is $1$).
+    \end{enumerate}
+    The reason why detailed balance is a sufficient condition can be seen by taking the sum over $i$ of equation \ref{eq:detailed_balance}
+    \begin{gather*}
+        \sum_i \pi_i P_{ij} = \sum_i \pi_j P_{ji} \\
+        (\pi P)_j = \pi_j \\
+        \pi P = \pi
+    \end{gather*}
+    where from line 1 to 2 I used the fact that the sum extended to all $x_j$ of probabilities to move from $x_i$ to $x_j$ is $1$ (we have to end up somewhere). \\
+    Now suppose that one wants to extract some samples from a distribution $\pi(x)$. One way to do so is to use the Metropolis-Hasting algorithm. 
+    The algorithm simply consists in constructing a transition matrix of the form $P(x_i, x_j) = g(x_i, x_j)A(x_i, x_j)$ where $g(x_i, x_j)$ is another transition
+    matrix that can be arbitrarilly chosen (or cleverly chosen, depends on the point of view) and $A(x_i, x_j)$ is defined as 
+    $$A(x_i, x_j) = min\left(1, \frac{\pi(x_j)g(x_j, x_i)}{\pi(x_i)g(x_i,x_j)}\right)$$
+    Why this procedure leads to a stationary distribution that is exactly $\pi$? Practically one assumes condition $2$ valid :) For condition 1, we have to prove that 
+    $$\pi(x_i) P(x_i,x_j) = \pi(x_j) P(x_j,x_i)$$
+    via the given definitions, hence convergence to $\pi$ is guaranteed by what previously said. \\
+    We first note by looking at the definition of $A$ that if 
+    $$\pi(x_i)g(x_i, x_j) < \pi(x_j)g(x_j,x_i)$$ then 
+    $A(x_i, x_j) = 1$ and $A(x_j, x_i) < 1$. \\
+    Instead, if 
+    $$\pi(x_i)g(x_i, x_j) > \pi(x_j)g(x_j,x_i)$$ then
+    $A(x_i, x_j) < 1$ and $A(x_j, x_i) = 1$
+    or, in other words, either $A(x_i, x_j)$ or $A(x_j, x_i)$ are different from one. This allows us to write
+    $$\frac{A(x_i,x_j)}{A(x_j, x_i)} = \frac{\pi(x_j) g(x_j,x_i)}{\pi(x_i) g(x_i,x_j)}$$
+    which is always true. Rearranging therms 
+    $$\frac{\pi(x_i)}{\pi(x_j)} = \frac{A(x_j, x_i)g(x_j, x_i)}{A(x_i, x_j)g(x_i, x_j)} = \frac{P(x_j, x_i)}{P(x_i, x_j)}$$
+    where I used th definition of $P$, and finally
+    $$ \pi(x_i)P(x_i, x_j) = \pi(x_j) = P(x_j, x_i)$$
+    :)
+\end{document}
