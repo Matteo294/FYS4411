@@ -17,8 +17,10 @@ class Solver{
         void setInitialFraction(double initialFraction);
 
     // Other functions & attributes
-        virtual vector<double> solve() = 0;
-        virtual vector<double> solve(double h) = 0; // override when numerical local energy
+        virtual vector<double> computeEnergy() = 0;
+        virtual vector<double> computeEnergy(double h) = 0; // override when numerical local energy
+        virtual vector<double> computeExpectationPsidotPsiEl() = 0;
+        virtual vector<double> computeExpectationPsidotPsi() = 0;
         class System* system;
 
     protected:

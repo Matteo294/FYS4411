@@ -24,6 +24,8 @@ class Wavefunction{
         */
         virtual double numericalSecondDerivative(int part_idx, int direction, double h) = 0; 
 
+        virtual double analyticalAlphaDerivative() = 0;
+
         /* evaluates the drift force associated to the part_idx-th particle */
         virtual vector<double> DriftForce(int part_idx) = 0;
         

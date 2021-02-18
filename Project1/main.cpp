@@ -19,8 +19,8 @@ using namespace std;
 int main(){
 
     double omega = 1.0;
-    const int dimension = 3;
-    const int Nparticles = 10;
+    const int dimension = 1;
+    const int Nparticles = 3;
 
     const int Nsteps = (int) 1e6;
     const double step = 1.0;
@@ -46,7 +46,11 @@ int main(){
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
     
-    system.getSolver()->solve(); 
+    /* This part searches for the best variational parameter */
+    
+    functions.bestAlpha(1e-2);
+
+    //system.getSolver()->computeEnergy(); 
     
     // Different values of alpha
     double alpha_min = 0.2;

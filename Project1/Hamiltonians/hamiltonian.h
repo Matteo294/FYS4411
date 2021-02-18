@@ -10,5 +10,4 @@ class Hamiltonian{
         At the moment this is implemented only for the non-interacting case */
         virtual double LocalEnergyAnalytic() = 0;
         virtual double LocalEnergyNumeric(double h) = 0;
-
 };

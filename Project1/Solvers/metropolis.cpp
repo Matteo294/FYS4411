@@ -4,7 +4,7 @@ Metropolis::Metropolis(System* system, int Nsteps, double initialFraction, doubl
     this->step = step;
 }
 
-vector<double> Metropolis::solve(){
+vector<double> Metropolis::computeEnergy(){
     // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
@@ -53,7 +53,7 @@ vector<double> Metropolis::solve(){
 }
 
 
-vector<double> Metropolis::solve(double h){
+vector<double> Metropolis::computeEnergy(double h){
     // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());

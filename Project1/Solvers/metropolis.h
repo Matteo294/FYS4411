@@ -11,8 +11,8 @@ class Metropolis : public Solver{
         Metropolis(class System* system, int Nsteps, double initialFraction, double step);
         double getStep();
         double setStep(double step);
-        vector<double> solve(); // uses LocalEnergyAnalytic()
-        vector<double> solve(double h); // uses LocalEnergyNumeric(double h)
+        vector<double> computeEnergy(); // uses LocalEnergyAnalytic()
+        vector<double> computeEnergy(double h); // uses LocalEnergyNumeric(double h)
 
     private:
         double step;

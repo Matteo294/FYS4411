@@ -27,7 +27,6 @@ class System{
         int getNParticles();
         vector<class Particle*> getParticles();
 
-
         // Setters
         void setHamiltonian(class Hamiltonian* hamiltonian);
         void setSolver(class Solver* solver);
@@ -38,6 +37,7 @@ class System{
         void addParticle(double mass, vector<double> pos);
 
     private:
+
         // Attributes
         class Hamiltonian* hamiltonian;
         class Wavefunction* wavefunction;
