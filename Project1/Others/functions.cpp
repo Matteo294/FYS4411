@@ -29,12 +29,13 @@ vector< vector<double> > Functions::solve_varying_alpha(double alpha_min, double
     return results;
 }
 
-void Functions::bestAlpha(double gamma){
-    double avg_psidot_psi_eloc = this->system->getSolver()->computeExpectationPsidotPsiEl()[0];
-    double avg_psidot_psi = this->system->getSolver()->computeExpectationPsidotPsi()[0];
-    double avg_energy = this->system->getSolver()->computeEnergy()[0];
-
-    double alpha_old=1.0, alpha_new=0.51; // just to make sure to enter the cycle
+void Functions::bestAlpha(double gamma, int nsteps){
+    this->system->getSolver()->setNsteps(nsteps);
+    double avg_psidot_psi_eloc;
+    double avg_psidot_psi;
+    double avg_energy;
+    double ELdot, old_ELdot;
+    double alpha_old=1.0, alpha_new=0.1; // just to make sure to enter the cycle
     int i=0;
     while((abs(alpha_new - alpha_old) > 1e-6) && (i<1000000)){
         alpha_old = alpha_new;
@@ -45,9 +46,12 @@ void Functions::bestAlpha(double gamma){
         avg_psidot_psi = this->system->getSolver()->computeExpectationPsidotPsi()[0];
         avg_psidot_psi_eloc = this->system->getSolver()->computeExpectationPsidotPsiEl()[0];
 
-        alpha_new = alpha_old - 2*gamma*(avg_psidot_psi_eloc - avg_psidot_psi*avg_energy);
-        cout << alpha_new << " " << avg_energy << " " << 2*gamma*(avg_psidot_psi_eloc - avg_psidot_psi*avg_energy) << endl;
+        old_ELdot = ELdot;
+        ELdot = 2*gamma*(avg_psidot_psi_eloc - avg_psidot_psi*avg_energy);
+        alpha_new = alpha_old - ELdot;
+        cout << this->system->getWavefunction()->getParameter(0) << " " << avg_energy << " " << ELdot << endl;
         i++;
     }
-    cout << alpha_new << endl;
+    system->getWavefunction()->setParameter(0, alpha_new);
+    cout << "Best alpha " << alpha_new << " found at step " << i << endl;
 }

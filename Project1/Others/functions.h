@@ -16,7 +16,7 @@ class Functions{
         // solves for a bunch of dt values, mandatory having chosen ImportanceSampling solver
         //vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt);
 
-        void bestAlpha(double gamma); // Optimization via variational parameter: simple gradient descent
+        void bestAlpha(double gamma, int nsteps); // Optimization via variational parameter: simple gradient descent
 
 
 };

@@ -24,7 +24,6 @@ class ImportanceSampling : public Solver{
         vector<double> computeEnergy(double h); // uses LocalEnergyNumeric()
         vector<double> computeExpectationPsidotPsi(); // computes average psi'/psi -> can be made more efficient by using logarithm
         vector<double> computeExpectationPsidotPsiEl(); // computes average psi'/psi*Eloc -> can be made more efficient by using logarithm
-        vector<double> solve3(); // computes average psi'/psi*Eloc
     
     private:
         double dt;
