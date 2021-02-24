@@ -2,6 +2,7 @@
 #include "../System/system.h"
 #include <vector>
 #include <iomanip>
+#include <cmath>
 
 class Functions{
 

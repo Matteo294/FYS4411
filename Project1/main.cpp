@@ -34,15 +34,15 @@ int main(){
     Spherical spherical(&system, omega);
     Gaussian gaussian(&system, alpha);
     AsymmetricGaussian wf(&system, alpha, (double) 5.0);
-    Metropolis metropolis(&system, Nsteps, initialFraction, step);
-    //ImportanceSampling importance(&system, Nsteps, initialFraction, dt, D);
+    //Metropolis metropolis(&system, Nsteps, initialFraction, step);
+    ImportanceSampling importance(&system, Nsteps, initialFraction, dt, D);
     RandomGenerator randomgenerator;
     Functions functions(&system);
 
     system.setHamiltonian(&spherical);
     system.setWavefunction(&gaussian);
-    system.setSolver(&metropolis);
-    //system.setSolver(&importance);
+    //system.setSolver(&metropolis);
+    system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time

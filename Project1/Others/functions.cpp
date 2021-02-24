@@ -41,17 +41,18 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     this->system->getWavefunction()->setParameter(0, alpha);
     results = this->system->getSolver()->solve((bool) 1);
     // print current alpha, energy, derivative of energy wrt 
-    cout << fixed << setprecision(5) << "alpha=" << alpha << "\tenergy=" << results[0] << "\tderivative=" << results[2] << endl;
-
+    cout << fixed << setprecision(5) << "iteration=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\tderivative=" << results[2] << "\t|dAlpha|-tol=" << abs(deltaAlpha) - tolerance << endl;
     deltaAlpha = - gamma * results[2];
     alpha = alpha + deltaAlpha;
+    i++;
 
-    while((i<Nmax) && (deltaAlpha > tolerance)){
+    while((i<Nmax) && (abs(deltaAlpha)>tolerance)){
         this->system->getWavefunction()->setParameter(0, alpha);
         results = this->system->getSolver()->solve((bool) 1);
-        cout << fixed << setprecision(10) << "alpha=" << alpha << "\tenergy=" << results[0] << "\tderivative=" << results[2] << endl;
+        cout << fixed << setprecision(8) << "iteration=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\tderivative=" <<  results[2] << "\t|dAlpha|-tol=" << abs(deltaAlpha) - tolerance << endl;
         deltaAlpha = - gamma * results[2];
         alpha = alpha + deltaAlpha;
+        i++;
     }
 
     return alpha;
