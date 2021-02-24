@@ -12,6 +12,8 @@ vector<double> Metropolis::solve(bool allAverages){
     int i=0, j=0, idx=0;
     double energy=0.0, energy2=0.0, psi_bar_psi=0.0, psi_bar_psi_EL=0.0, tmp1=0.0, tmp2=0.0;
     double psi_old = 0.0, psi_new=0.0;
+    int accepted=0;
+    double ratio_accepted=0.0;
     vector<double> new_pos(this->system->getDimension(), 0.0);
 
     for(i=0; i<this->system->getNParticles(); i++){
@@ -40,6 +42,8 @@ vector<double> Metropolis::solve(bool allAverages){
                 new_pos[j] = -new_pos[j];
             }
             this->system->getParticles()[idx]->move(new_pos);
+        } else {
+            accepted++;
         }
 
         if(i>=(int)(this->Nsteps*this->InitialFraction)){
@@ -61,9 +65,10 @@ vector<double> Metropolis::solve(bool allAverages){
     energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
     psi_bar_psi = psi_bar_psi/this->Nsteps/(1-this->InitialFraction);
     psi_bar_psi_EL = psi_bar_psi_EL/this->Nsteps/(1-this->InitialFraction);
+    ratio_accepted = (double) accepted/this->Nsteps;
 
 
-    return {energy, energy2 - pow(energy, 2), 2 * (psi_bar_psi_EL - psi_bar_psi * energy)};
+    return {energy, energy2 - pow(energy, 2), ratio_accepted, 2 * (psi_bar_psi_EL - psi_bar_psi * energy)};
 }
 
 
@@ -76,6 +81,8 @@ vector<double> Metropolis::solve(double h){
     int i=0, j=0, idx=0;
     double energy=0.0, energy2=0.0, tmp=0.0;
     double psi_old = 0.0, psi_new=0.0;
+    int accepted=0;
+    double ratio_accepted=0.0;
     vector<double> new_pos(this->system->getDimension(), 0.0);
 
     for(i=0; i<this->system->getNParticles(); i++){
@@ -104,6 +111,8 @@ vector<double> Metropolis::solve(double h){
                 new_pos[j] = -new_pos[j];
             }
             this->system->getParticles()[idx]->move(new_pos);
+        } else {
+            accepted++;
         }
 
         if(i>=(int)(this->Nsteps*this->InitialFraction)){
@@ -115,8 +124,9 @@ vector<double> Metropolis::solve(double h){
 
     energy = energy/this->Nsteps/(1-this->InitialFraction);
     energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
+    ratio_accepted = (double) accepted/this->Nsteps;
 
-    return {energy, energy2 - pow(energy, 2)};
+    return {energy, energy2 - pow(energy, 2), ratio_accepted};
 }
 
 double Metropolis::getStep(){
