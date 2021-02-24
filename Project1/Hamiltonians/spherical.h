@@ -14,6 +14,7 @@ class Spherical: public Hamiltonian{
         //Other functions
         double LocalEnergyAnalytic();
         double LocalEnergyNumeric(double h);
+        double LocalEnergyVariation(int idx, vector<double> old_pos, vector<double> new_pos);
 
     private:
         // Private attributes: access only via getters and setters

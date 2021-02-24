@@ -20,7 +20,7 @@ int main(){
 
     double omega = 1.0;
     const int dimension = 3;
-    const int Nparticles = 10;
+    const int Nparticles = 100;
 
     const int Nsteps = (int) 1e5;
     const double initialFraction = 0.1;
@@ -47,16 +47,20 @@ int main(){
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
     
-    
+    /*
     double initialAlpha = 0.4;
-    double gamma = 1e-2;
+    double gamma = 1e-3;
     double tolerance = 1e-8;
     int Nmax = 50;
     int Nsteps_gradient = (int) 1e4;
     functions.gradientDescent(initialAlpha, gamma, tolerance, Nmax, Nsteps_gradient);
-    
+    */
 
-    //functions.solve_varying_alpha((double) 0.1, (double) 1.1, (int) 10);
+    functions.solve_varying_alpha((double) 0.1, (double) 1.1, (int) 10);
+/*
+    vector<double> res = system.getSolver()->solve((bool) 0);
+    cout << res[0] << "\t" << res[1] << "\t" << res[2] << "\t" << endl;
+*/
 
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference

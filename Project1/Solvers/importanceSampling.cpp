@@ -16,17 +16,20 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     double arg = 0.0;
     int accepted=0;
     double ratio_accepted=0.0;
-    
-    vector<double> new_pos(this->system->getDimension(), 0.0);
+    bool last_accepted;
+    vector<double> pos_old(this->system->getDimension(), 0.0);
+    vector<double> pos_new(this->system->getDimension(), 0.0);
+    vector<double> pos_var(this->system->getDimension(), 0.0);
+
     vector<double> drift_old(this->system->getDimension(), 0.0);
     vector<double> drift_new(this->system->getDimension(), 0.0);
 
     for(i=0; i<this->system->getNParticles(); i++){
         for(j=0; j<this->system->getDimension(); j++){
-            new_pos[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->dt);
+            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->dt);
         }
 
-        this->system->getParticles()[i]->setPosition(new_pos);
+        this->system->getParticles()[i]->setPosition(pos_var);
     }
 
     //MCsteps
@@ -34,35 +37,44 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
+        pos_old = this->system->getParticles()[idx]->getPosition();
         psi_old = this->system->getWavefunction()->evaluateSing(idx);
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            new_pos[j] = this->D * drift_old[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
+            pos_var[j] = this->D * drift_old[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
         }
 
-        this->system->getParticles()[idx]->move(new_pos);
+        this->system->getParticles()[idx]->move(pos_var);
+        pos_new = this->system->getParticles()[idx]->getPosition();
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
         drift_new = this->system->getWavefunction()->DriftForce(idx);
                 
         arg = 0.0;
         for(j=0; j<this->system->getDimension(); j++){
-            arg += (drift_old[j] + drift_new[j]) * ( -2 * new_pos[j] + this->D * this->dt * (drift_old[j] - drift_new[j]) );
+            arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->D * this->dt * (drift_old[j] - drift_new[j]) );
         }
 
         arg *= 0.25;
 
         if( this->system->getRandomGenerator()->uniform(gen) > (exp(arg) * pow(psi_new, 2) / pow(psi_old, 2))){
-            for(j=0; j<this->system->getDimension(); j++){
-                new_pos[j] = -new_pos[j];
-            }
-            this->system->getParticles()[idx]->move(new_pos);
+            this->system->getParticles()[idx]->setPosition(pos_old);
+            last_accepted = 0;
         } else {
             accepted++;
+            last_accepted = 1;
         }
 
         if(i>=(int)(this->Nsteps*this->InitialFraction)){
-            tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
+
+             if(i==(int)(this->Nsteps*this->InitialFraction)){
+                tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
+            } else {
+                if(last_accepted){
+                    tmp1 += this->system->getHamiltonian()->LocalEnergyVariation(idx, pos_old, pos_new);
+                }
+            }
+
             energy += tmp1;
             energy2 += tmp1*tmp1;
 
@@ -106,7 +118,7 @@ vector<double> ImportanceSampling::solve(double h){
     }
 
     //MCsteps
-    for(i=0; i<this->Nsteps; i++){
+    for(i=1; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 

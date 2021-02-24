@@ -9,6 +9,7 @@ class Hamiltonian{
         /* uses analytic expression of the local energy to evaluate the result.
         At the moment this is implemented only for the non-interacting case */
         virtual double LocalEnergyAnalytic() = 0;
+        virtual double LocalEnergyVariation(int idx, vector<double> old_pos, vector<double> new_pos)=0;
         virtual double LocalEnergyNumeric(double h) = 0;
 
 };
