@@ -4,11 +4,13 @@
 class AsymmetricGaussian: public Wavefunction{
     public:
         AsymmetricGaussian(class System* s, double alpha, double beta); // Constructor
-        virtual double evaluateAll();
-        virtual double evaluateSing(int part_idx);
-        virtual double evaluateSecondDerivative();
-        virtual double numericalSecondDerivative(int part_idx, int direction, double h);
+        double evaluateAll();
+        double evaluateSing(int part_idx);
+        double analyticalSecondDerivative();
+        double analyticalAlphaDerivative();
+        double numericalSecondDerivative(int part_idx, int direction, double h);
+        vector<double> DriftForce(int part_idx);
     protected:
         double alpha; // Variational parameter
-        double beta;
+        double beta; // Asymmetric term
 };

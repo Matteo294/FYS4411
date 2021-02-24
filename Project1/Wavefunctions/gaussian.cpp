@@ -65,3 +65,14 @@ vector<double> Gaussian::DriftForce(int part_idx){
     
     return v;
 }
+
+
+double Gaussian::analyticalAlphaDerivative(){
+    double res=0.0;
+    for(int i=0; i<this->s->getNParticles(); i++){
+        for(int j=0; j<this->s->getDimension(); j++){
+            res += pow(this->s->getParticles()[i]->getPosition()[j], 2);
+        }
+    }
+    return -res * this->evaluateAll();
+}

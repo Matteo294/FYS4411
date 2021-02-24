@@ -20,7 +20,7 @@ class ImportanceSampling : public Solver{
         void setD(double D);
     
     // Other functions and attributes
-        vector<double> solve(); // uses LocalEnergyAnalytic()
+        vector<double> solve(bool allAverages); // uses LocalEnergyAnalytic()
         vector<double> solve(double h); // uses LocalEnergyNumeric()
     
     private:

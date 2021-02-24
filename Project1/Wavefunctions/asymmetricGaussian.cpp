@@ -9,36 +9,55 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta) : W
 }
 
 double AsymmetricGaussian::evaluateAll(){
-    double sum = 0.0; // Keeps track of the sum inside the exponetial
-    /* Important!!!!
-    When we have a sum all the constants that are repeatedly summed (e.g. alpha in this case) should be left outside of the sum
-    and added in the multiplication at the end. In this wave we make the code faster because the require only one step to be added
-    in the sum (otherwise N). */
+    double arg = 0.0; // Keeps track of the sum inside the exponetial
     for(int i=0; i<this->s->getNParticles(); i++){
         for(int j=0; j<2; j++){
-            sum += pow(this->s->getParticles()[i]->getPosition().at(j), 2);
+            arg += pow(this->s->getParticles()[i]->getPosition().at(j), 2);
         }
-        sum += beta * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
+        arg += beta * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
     }
-    sum *= -this->alpha;
-    return exp(sum);
+    arg *= -this->alpha;
+    return exp(arg);
 }
 
 double AsymmetricGaussian::evaluateSing(int part_idx){
     double arg = 0.0;
     for(int i=0; i<2; i++){
-        arg += pow( this->s->getParticles()[part_idx]->getPosition()[i], 2);
+        arg += pow(this->s->getParticles()[part_idx]->getPosition()[i], 2);
     }
     arg += this->beta * pow( this->s->getParticles()[part_idx]->getPosition()[2], 2);
     arg *= -this->alpha;
-
     return exp(arg);
 }
 
 /* !!!!!!!!!!!!! wrong, needs to be fixed !!!!!!!!!!!!!!!!!!! */
-double AsymmetricGaussian::evaluateSecondDerivative(){
+/*double AsymmetricGaussian::analyticalSecondDerivative(){
     double wavef = evaluateAll();
-    return (4*pow(this->alpha, 2) - 2*this->alpha) * wavef;
+    double sum = 0.0;
+    for(int i=0; i<this->s->getNParticles(); i++){
+        for(int j=0; j<2; j++){
+            sum += (double) (4*pow(this->alpha, 2)*pow(this->s->getParticles()[i]->getPosition()[j], 2) - 2*this->alpha);
+        }
+        sum += (double) (4*pow(this->alpha*this->beta, 2)*pow(this->s->getParticles()[i]->getPosition()[2], 2) - 2*this->alpha*this->beta);
+    }
+    return sum*wavef;
+}*/
+
+vector<double> AsymmetricGaussian::DriftForce(int part_idx) {
+    vector<double> x{3,0}; 
+    return x;
 }
+
+double AsymmetricGaussian::analyticalAlphaDerivative(){
+    double res=0.0;
+    for(int i=0; i<this->s->getNParticles(); i++){
+        for(int j=0; j<2; j++){
+            res += pow(this->s->getParticles()[i]->getPosition()[j], 2);
+        }
+        res += this->beta*pow(this->s->getParticles()[i]->getPosition()[2], 2);
+    }
+    return -res * this->evaluateAll();
+}
+
 
 double AsymmetricGaussian::numericalSecondDerivative(int part_idx, int direction, double h) {return 0.0;}

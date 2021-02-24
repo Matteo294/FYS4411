@@ -4,14 +4,14 @@ Metropolis::Metropolis(System* system, int Nsteps, double initialFraction, doubl
     this->step = step;
 }
 
-vector<double> Metropolis::solve(){
+vector<double> Metropolis::solve(bool allAverages){
     // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
     
     int i=0, j=0, idx=0;
-    double energy=0.0, energy2=0.0, tmp=0.0;
-    double old_val = 0.0;
+    double energy=0.0, energy2=0.0, psi_bar_psi=0.0, psi_bar_psi_EL=0.0, tmp1=0.0, tmp2=0.0;
+    double psi_old = 0.0, psi_new=0.0;
     vector<double> new_pos(this->system->getDimension(), 0.0);
 
     for(i=0; i<this->system->getNParticles(); i++){
@@ -31,10 +31,11 @@ vector<double> Metropolis::solve(){
             new_pos[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
         
-        old_val = this->system->getWavefunction()->evaluateSing(idx);
+        psi_old = this->system->getWavefunction()->evaluateSing(idx);
         this->system->getParticles()[idx]->move(new_pos);
+        psi_new = pow(this->system->getWavefunction()->evaluateSing(idx), 2);
 
-        if( this->system->getRandomGenerator()->uniform(gen) > (pow(this->system->getWavefunction()->evaluateSing(idx), 2) / pow(old_val, 2))){
+        if( this->system->getRandomGenerator()->uniform(gen) > (psi_new / pow(psi_old, 2))){
             for(j=0; j<this->system->getDimension(); j++){
                 new_pos[j] = -new_pos[j];
             }
@@ -42,14 +43,27 @@ vector<double> Metropolis::solve(){
         }
 
         if(i>=(int)(this->Nsteps*this->InitialFraction)){
-            tmp = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();            
-            energy += tmp;
-            energy2 += tmp*tmp;
+            tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();            
+            energy += tmp1;
+            energy2 += tmp1*tmp1;
+
+            if (allAverages){
+                tmp2 = this->system->getWavefunction()->analyticalAlphaDerivative() / this->system->getWavefunction()->evaluateAll();
+                psi_bar_psi += tmp2;
+                psi_bar_psi_EL += tmp2 * tmp1;
+            }
+            
         }
         
     }
 
-    return {energy/this->Nsteps/(1-this->InitialFraction), energy2/this->Nsteps/(1-this->InitialFraction) - energy*energy/this->Nsteps/(1-this->InitialFraction)/this->Nsteps/(1-this->InitialFraction)};
+    energy = energy/this->Nsteps/(1-this->InitialFraction);
+    energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
+    psi_bar_psi = psi_bar_psi/this->Nsteps/(1-this->InitialFraction);
+    psi_bar_psi_EL = psi_bar_psi_EL/this->Nsteps/(1-this->InitialFraction);
+
+
+    return {energy, energy2 - pow(energy, 2), 2 * (psi_bar_psi_EL - psi_bar_psi * energy)};
 }
 
 
@@ -61,7 +75,7 @@ vector<double> Metropolis::solve(double h){
     
     int i=0, j=0, idx=0;
     double energy=0.0, energy2=0.0, tmp=0.0;
-    double old_val = 0.0;
+    double psi_old = 0.0, psi_new=0.0;
     vector<double> new_pos(this->system->getDimension(), 0.0);
 
     for(i=0; i<this->system->getNParticles(); i++){
@@ -81,10 +95,11 @@ vector<double> Metropolis::solve(double h){
             new_pos[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
         
-        old_val = this->system->getWavefunction()->evaluateSing(idx);
+        psi_old = this->system->getWavefunction()->evaluateSing(idx);
         this->system->getParticles()[idx]->move(new_pos);
+        psi_new = this->system->getWavefunction()->evaluateSing(idx);
 
-        if( this->system->getRandomGenerator()->uniform(gen) > (pow(this->system->getWavefunction()->evaluateSing(idx), 2) / pow(old_val, 2))){
+        if( this->system->getRandomGenerator()->uniform(gen) > (pow(psi_new, 2) / pow(psi_old, 2))){
             for(j=0; j<this->system->getDimension(); j++){
                 new_pos[j] = -new_pos[j];
             }
@@ -96,10 +111,12 @@ vector<double> Metropolis::solve(double h){
             energy += tmp;
             energy2 += tmp*tmp;
         }
-        
     }
 
-    return {energy/this->Nsteps/(1-this->InitialFraction), energy2/this->Nsteps/(1-this->InitialFraction) - energy*energy/this->Nsteps/(1-this->InitialFraction)/this->Nsteps/(1-this->InitialFraction)};
+    energy = energy/this->Nsteps/(1-this->InitialFraction);
+    energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
+
+    return {energy, energy2 - pow(energy, 2)};
 }
 
 double Metropolis::getStep(){

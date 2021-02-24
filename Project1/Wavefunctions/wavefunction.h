@@ -27,6 +27,9 @@ class Wavefunction{
         /* evaluates the drift force associated to the part_idx-th particle */
         virtual vector<double> DriftForce(int part_idx) = 0;
         
+        /* evaluates the analytical derivative with respect to alpha */
+        virtual double analyticalAlphaDerivative() = 0;
+        
         /* This is a pointer to the system. We could have passed the system entirely but it would have slown down the code a lot.
         Just think that for 10 particles and 10000 integration steps we end up with 6x10x10000 variables (positions + velocities) that 
         should be passed one by one if we pass the entire system. Instead by passing the pointer we pass one single variable, the memory address */
