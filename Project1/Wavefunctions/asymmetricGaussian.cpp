@@ -31,7 +31,7 @@ double AsymmetricGaussian::evaluateSing(int part_idx){
 }
 
 /* !!!!!!!!!!!!! wrong, needs to be fixed !!!!!!!!!!!!!!!!!!! */
-/*double AsymmetricGaussian::analyticalSecondDerivative(){
+double AsymmetricGaussian::analyticalSecondDerivative(){
     double wavef = evaluateAll();
     double sum = 0.0;
     for(int i=0; i<this->s->getNParticles(); i++){
@@ -41,7 +41,7 @@ double AsymmetricGaussian::evaluateSing(int part_idx){
         sum += (double) (4*pow(this->alpha*this->beta, 2)*pow(this->s->getParticles()[i]->getPosition()[2], 2) - 2*this->alpha*this->beta);
     }
     return sum*wavef;
-}*/
+}
 
 vector<double> AsymmetricGaussian::DriftForce(int part_idx) {
     vector<double> x{3,0}; 

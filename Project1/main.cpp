@@ -10,6 +10,7 @@
 #include "Wavefunctions/gaussian.h"
 #include "Wavefunctions/asymmetricGaussian.h"
 #include "Hamiltonians/spherical.h"
+#include "Hamiltonians/elliptical.h"
 #include "Solvers/metropolis.h"
 #include "Solvers/importanceSampling.h"
 #include "Others/random_generator.h"
@@ -31,16 +32,25 @@ int main(){
     
 
     System system(dimension, Nparticles);
+
+    // Hamiltonians
     Spherical spherical(&system, omega);
+    Elliptical elliptical(&system, omega, omega + omega/10);
+
+    // Wavefunctions
     Gaussian gaussian(&system, alpha);
-    AsymmetricGaussian wf(&system, alpha, (double) 5.0);
+    AsymmetricGaussian asymmgaussian(&system, alpha, (double) 1);
+
+    // Solvers
     Metropolis metropolis(&system, Nsteps, initialFraction, step);
     //ImportanceSampling importance(&system, Nsteps, initialFraction, dt, D);
+
     RandomGenerator randomgenerator;
     Functions functions(&system);
 
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
+    // Choose options
+    system.setHamiltonian(&elliptical);
+    system.setWavefunction(&asymmgaussian);
     system.setSolver(&metropolis);
     //system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
