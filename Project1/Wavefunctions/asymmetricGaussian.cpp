@@ -12,22 +12,21 @@ double AsymmetricGaussian::evaluateAll(){
     double arg = 0.0; // Keeps track of the sum inside the exponetial
     for(int i=0; i<this->s->getNParticles(); i++){
         for(int j=0; j<2; j++){
-            arg += pow(this->s->getParticles()[i]->getPosition().at(j), 2);
+            arg += (double) pow(this->s->getParticles()[i]->getPosition().at(j), 2);
         }
-        arg += beta * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
+        arg += (double) this->getParameter(1) * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
     }
-    arg *= -this->alpha;
+    arg *= -this->getParameter(0);
     return exp(arg);
 }
 
 double AsymmetricGaussian::evaluateSing(int part_idx){
     double arg = 0.0;
     for(int i=0; i<2; i++){
-        arg += pow(this->s->getParticles()[part_idx]->getPosition()[i], 2);
+        arg += pow( this->s->getParticles()[part_idx]->getPosition()[i] , 2);
     }
-    arg += this->beta * pow( this->s->getParticles()[part_idx]->getPosition()[2], 2);
-    arg *= -this->alpha;
-    return exp(arg);
+    arg += pow(this->s->getParticles()[part_idx]->getPosition()[2] , 2);
+    return exp( -this->getParameter(0) * arg );
 }
 
 /* !!!!!!!!!!!!! wrong, needs to be fixed !!!!!!!!!!!!!!!!!!! */

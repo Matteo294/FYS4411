@@ -18,7 +18,6 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     double ratio_accepted=0.0;
     bool last_accepted;
     vector<double> pos_old(this->system->getDimension(), 0.0);
-    vector<double> pos_new(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
 
     vector<double> drift_old(this->system->getDimension(), 0.0);
@@ -46,7 +45,6 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         }
 
         this->system->getParticles()[idx]->move(pos_var);
-        pos_new = this->system->getParticles()[idx]->getPosition();
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
         drift_new = this->system->getWavefunction()->DriftForce(idx);
         
@@ -71,7 +69,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
                 tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
             } else {
                 if(last_accepted){
-                    tmp1 += this->system->getHamiltonian()->LocalEnergyVariation(idx, pos_old, pos_new);
+                    tmp1 = this->system->getHamiltonian()->LocalEnergyAnalytic();
                 }
             }
 

@@ -16,7 +16,6 @@ vector<double> Metropolis::solve(bool allAverages){
     double ratio_accepted=0.0;
     bool last_accepted;
     vector<double> pos_old(this->system->getDimension(), 0.0);
-    vector<double> pos_new(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
 
     for(i=0; i<this->system->getNParticles(); i++){
@@ -38,7 +37,6 @@ vector<double> Metropolis::solve(bool allAverages){
         }
 
         this->system->getParticles()[idx]->move(pos_var);
-        pos_new = this->system->getParticles()[idx]->getPosition();
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
 
         if( this->system->getRandomGenerator()->uniform(gen) > ( pow(psi_new,2) / pow(psi_old,2) )){
@@ -49,13 +47,13 @@ vector<double> Metropolis::solve(bool allAverages){
             last_accepted = 1;
         }
 
-        if( i>=(int)(this->Nsteps*this->InitialFraction)){
+        if( i>=(int)(this->Nsteps*this->InitialFraction) ){
             
             if(i==(int)(this->Nsteps*this->InitialFraction)){
                 tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
             } else {
                 if(last_accepted){
-                    tmp1 += this->system->getHamiltonian()->LocalEnergyVariation(idx, pos_old, pos_new);
+                    tmp1 = this->system->getHamiltonian()->LocalEnergyAnalytic();
                 }
             }
             energy += tmp1;

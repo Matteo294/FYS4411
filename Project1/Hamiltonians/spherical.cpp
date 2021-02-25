@@ -25,22 +25,6 @@ double Spherical::LocalEnergyAnalytic(){
 
 }
 
-double Spherical::LocalEnergyVariation(int idx, vector<double> old_pos, vector<double> new_pos){
-    // !!!! Hard-code! this is true only for the chosen model
-    double alpha = this->system->getWavefunction()->getParameter(0);
-    double mass = this->system->getParticles()[0]->getMass(); 
-    int i=0, j=0;
-    double var = 0;
-
-    for(j=0; j < this->system->getDimension(); j++){
-        var = var - pow(old_pos[j], 2) + pow(new_pos[j], 2);
-    }
-
-    var *= 0.5 * mass * pow(this->omega, 2) - 2 * pow(alpha, 2) / mass;
-
-    return var;
-
-}
 
 
 double Spherical::LocalEnergyNumeric(double h){

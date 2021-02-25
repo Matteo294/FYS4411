@@ -17,7 +17,7 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
 
         // set alpha
         this->system->getWavefunction()->setParameter(0, alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas );
-
+        
         // solve
         results_prov = this->system->getSolver()->solve((bool) 0);
         
