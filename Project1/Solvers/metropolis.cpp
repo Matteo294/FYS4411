@@ -58,7 +58,6 @@ vector<double> Metropolis::solve(bool allAverages){
                     tmp1 += this->system->getHamiltonian()->LocalEnergyVariation(idx, pos_old, pos_new);
                 }
             }
-
             energy += tmp1;
             energy2 += tmp1*tmp1;
 
@@ -82,7 +81,7 @@ vector<double> Metropolis::solve(bool allAverages){
 }
 
 
-
+/* here there are a LOT of things to fix, but we need to ask to morten before proceeding*/
 vector<double> Metropolis::solve(double h){
     // initialize random variable
     random_device rd;

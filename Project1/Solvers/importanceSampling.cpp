@@ -49,7 +49,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         pos_new = this->system->getParticles()[idx]->getPosition();
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
         drift_new = this->system->getWavefunction()->DriftForce(idx);
-                
+        
         arg = 0.0;
         for(j=0; j<this->system->getDimension(); j++){
             arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->D * this->dt * (drift_old[j] - drift_new[j]) );
@@ -91,10 +91,12 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     psi_bar_psi = psi_bar_psi/this->Nsteps/(1-this->InitialFraction);
     psi_bar_psi_EL = psi_bar_psi_EL/this->Nsteps/(1-this->InitialFraction);
     ratio_accepted = (double) accepted/this->Nsteps;
+
     return {energy, energy2 - pow(energy, 2), ratio_accepted, 2 * (psi_bar_psi_EL - psi_bar_psi * energy)};
 }
 
 
+/* here there are a LOT of things to fix, but we need to ask to morten before proceeding*/
 vector<double> ImportanceSampling::solve(double h){
     random_device rd;
     mt19937_64 gen(rd());

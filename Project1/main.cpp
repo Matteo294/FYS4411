@@ -41,8 +41,8 @@ int main(){
 
     system.setHamiltonian(&spherical);
     system.setWavefunction(&gaussian);
-    //system.setSolver(&metropolis);
-    system.setSolver(&importance);
+    system.setSolver(&metropolis);
+    //system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
@@ -57,10 +57,6 @@ int main(){
     */
 
     functions.solve_varying_alpha((double) 0.1, (double) 1.1, (int) 10);
-/*
-    vector<double> res = system.getSolver()->solve((bool) 0);
-    cout << res[0] << "\t" << res[1] << "\t" << res[2] << "\t" << endl;
-*/
 
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
