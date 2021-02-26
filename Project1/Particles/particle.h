@@ -16,6 +16,9 @@ class Particle{
         // Getters
         vector<double> getPosition();
         double getMass() {return this->mass;}
+        vector<double> getRelativePosition(int idx);
+        double getRelativeDistance(int idx);
+        
 
         // Other functions
         void move(vector<double> delta_pos);

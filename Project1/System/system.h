@@ -36,6 +36,9 @@ class System{
 
         // Other functions
         void addParticle(double mass, vector<double> pos);
+        double r2(double parameter); 
+        double r2(vector<double> vect, double parameter); 
+        double cdot(vector<double> v1, vector<double> v2);
 
     private:
         // Attributes

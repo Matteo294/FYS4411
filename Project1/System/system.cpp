@@ -30,6 +30,42 @@ void System::addParticle(double mass, vector<double> pos){
     this->Nparticles++;
 }
 
+
+/* returns (x^2 + y^2 + param * z^2) for particle part_idx*/
+double System::r2(vector<double> vect, double parameter){
+    double res = 0.0;
+    for(int i=0; i<(this->dimension - 1); i++){
+        res += pow(vect[i], 2);
+    }
+    res += parameter * pow(vect.back(), 2);
+
+    return res;
+}
+
+/* returns the sum over all particles of (x^2 + y^2 + param * z^2) */
+double System::r2(double parameter){
+    double res = 0.0;
+    vector<double> pos(this->dimension, 0.0);
+
+    for(int i=0; i<this->Nparticles; i++){
+        pos = this->getParticles()[i]->getPosition();
+        res += this->r2(pos, parameter);
+    }
+    
+    return res;
+}
+
+
+double System::cdot(vector<double> v1, vector<double> v2){
+    double res = 0.0;
+    for(int i=0; i<this->dimension; i++){
+        res += v1[i] * v2[i];
+    }
+
+    return res;
+}
+
+
 // Getters
         class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
         class Wavefunction* System::getWavefunction() {return this->wavefunction;}
