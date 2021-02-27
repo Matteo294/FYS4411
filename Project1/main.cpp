@@ -22,17 +22,17 @@ int main(){
     double omegaXY = 1.0;
     double omegaZ = 1.0;
     const int dimension = 3;
-    const int Nparticles = 2;
+    const int Nparticles = 5;
 
-    const int Nsteps = (int) 1e1;
+    const int Nsteps = (int) 1e6;
     const int Nsteps_final = (int) 1e7;
     const double initialFraction = 0.1;
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
-    const double alpha = 2.0;
-    const double beta = 2.0;
-    const double a = 2.0;
+    const double alpha = 0.5;
+    const double beta = 1.0;
+    const double a = 0.0;
     
     System system(dimension, Nparticles);
 
@@ -55,21 +55,13 @@ int main(){
     // Choose options
     system.setHamiltonian(&elliptical);
     system.setWavefunction(&asymmgaussian);
-    //system.setSolver(&metropolis);
-    system.setSolver(&importance);
+    system.setSolver(&metropolis);
+    //system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-
-    vector<double> pos(system.getDimension(), 0.0);
-
-    for(int i=0; i<system.getNParticles(); i++){
-        pos = {(double) i, (double) i, (double) i};
-        system.getParticles()[i]->setPosition(pos);
-        cout << system.getParticles()[i]->getPosition().at(0) << system.getParticles()[i]->getPosition().at(1) << system.getParticles()[i]->getPosition().at(2)<< endl; 
-    }
-
-    system.getHamiltonian()->LocalEnergyAnalytic();
+    
+    cout << system.getSolver()->solve((bool) 0)[0] << endl;
 
     /*
     cout << system.getWavefunction()->evaluateAll() << endl;

@@ -37,5 +37,5 @@ vector<double> Particle::getRelativePosition(int idx){
 
 double Particle::getRelativeDistance(int idx){
     vector<double> rel_pos = this->getRelativePosition(idx);
-    return this->system->r2(rel_pos, (double) 1.0);
+    return sqrt(this->system->r2(rel_pos, (double) 1.0));
 }

@@ -23,31 +23,50 @@ double Elliptical::LocalEnergyAnalytic(){
     double alpha = this->system->getWavefunction()->getParameter(0);
     double beta = this->system->getWavefunction()->getParameter(1);
     double a = this->system->getWavefunction()->getParameter(2);
+    int Nparticles = this->system->getNParticles();
+
     int i=0, j=0, m=0;
     double res = 0.0;
-    vector<double> vec(this->system->getDimension(), 0.0);
-    vector<double> vec2(this->system->getDimension(), 0.0);
-    double tmp=0.0;
+    vector<double> pos_i(this->system->getDimension(), 0.0);
+    vector<double> pos_im(this->system->getDimension(), 0.0);
+    vector<double> sum_m(this->system->getDimension(), 0.0);
+    vector<double> pos_ij(this->system->getDimension(), 0.0);
+    double dist_im=0.0;
+    double dist_ij=0.0;
 
-    for(i=0; i<this->system->getNParticles(); i++){
-        
-        for(m=0; m<this->system->getNParticles(); m++){
-            if(m!=i){
-                vec = this->system->getParticles()[i]->getRelativePosition(m);
-                //cout << vec[0] << vec[1] << vec[2] << endl;
-                tmp = this->system->getParticles()[i]->getRelativeDistance(m);
-                //cout << tmp << endl;
-                transform(vec.begin(), vec.end(), vec.begin(), bind1st(multiplies<double>(), a / tmp / (tmp - a)));
+
+    for(i=0; i<Nparticles; i++){
+        pos_i = this->system->getParticles()[i]->getPosition();
+        pos_i.back() *= beta; // I modify pos_i, the only place where I use pos_i is inside the j-cycle
+
+        for(j=0; j<Nparticles; j++){
+            if(j!=i){
+                pos_ij = this->system->getParticles()[i]->getRelativePosition(j);
+                dist_ij = this->system->getParticles()[i]->getRelativeDistance(j);
+
+                for(m=0; m<Nparticles; m++){
+                    fill(sum_m.begin(), sum_m.end(), (double) 0.0); // reset sum_m to {0,0,0}
+                    if(m!=i){
+                        pos_im = this->system->getParticles()[i]->getRelativePosition(m);
+                        dist_im = this->system->getParticles()[i]->getRelativeDistance(m);
+                        transform(pos_im.begin(), pos_im.end(), pos_im.begin(), bind1st(multiplies<double>(), a / pow(dist_im,2) / (dist_im - a)));
+                        transform(sum_m.begin(), sum_m.end(), pos_im.begin(), sum_m.begin(), plus<double>());
+                    }
+                }
+                
+                res += this->system->cdot(sum_m, pos_ij);
+                res += -4 * alpha * this->system->cdot(pos_i, pos_ij) + 2 + (a - 2 * dist_ij) / (dist_ij - a);
+                res *= a / pow(dist_ij, 2) / (dist_ij - a);
+
             }
 
-            transform(vec2.begin(), vec2.end(), vec.begin(), vec2.begin(), plus<double>());
         }
 
     }
 
-    cout << vec2[0] << " " << vec2[1] << " " << vec2[2] << endl;
+    res += 4 * pow(alpha, 2) * this->system->r2(pow(beta, 2)) + this->system->r2(pow(this->getOmegaZ(), 2));
 
-    return 0.0;
+    return res/2;
 }
 
 double Elliptical::LocalEnergyNumeric(double h){return 0.0;}
