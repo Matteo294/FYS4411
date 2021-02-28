@@ -8,5 +8,6 @@
         "iosfwd": "cpp",
         "*.tcc": "cpp",
         "ostream": "cpp"
-    }
+    },
+    "python.pythonPath": "/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7"
 }
