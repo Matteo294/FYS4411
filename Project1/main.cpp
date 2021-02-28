@@ -20,18 +20,18 @@ using namespace std;
 int main(){
 
     double omegaXY = 1.0;
-    double omegaZ = 1.0;
+    double omegaZ = 1.3;
     const int dimension = 3;
-    const int Nparticles = 5;
+    const int Nparticles = 10;
 
-    const int Nsteps = (int) 1e6;
+    const int Nsteps = (int) 1e4;
     const int Nsteps_final = (int) 1e7;
     const double initialFraction = 0.1;
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
     const double alpha = 0.5;
-    const double beta = 1.0;
+    const double beta = 0.7;
     const double a = 0.0;
     
     System system(dimension, Nparticles);
@@ -53,32 +53,16 @@ int main(){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&elliptical);
-    system.setWavefunction(&asymmgaussian);
+    system.setHamiltonian(&spherical);
+    system.setWavefunction(&gaussian);
     system.setSolver(&metropolis);
     //system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
     
-    cout << system.getSolver()->solve((bool) 0)[0] << endl;
+    functions.gradientDescent((double) 0.4, (double) 0.01, (double) 1e-8,  (int) 50, (int) 1e4);
 
-    /*
-    cout << system.getWavefunction()->evaluateAll() << endl;
-    system.getParticles().at(0)->setPosition({1.0, 1.0, 1.0});
-    cout << system.getWavefunction()->evaluateAll() << "\t" << system.getWavefunction()->evaluateSing(0) << endl;
-    */
-
-    /*
-    functions.solve_varying_alpha((double) 0.1, (double) 1.1, (int) 10);
-    system.setWavefunction(&asymmgaussian);
-    functions.solve_varying_alpha((double) 0.1, (double) 1.1, (int) 10);
-    */
-    
-    /*
-    vector<double> res = system.getSolver()->solve((bool) 0);
-    cout << res[0] << "\t" << res[1] << endl;
-    */
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
     cout << endl << "Simulation termined. Simulation time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl << endl; // Print run time

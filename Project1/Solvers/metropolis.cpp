@@ -65,7 +65,7 @@ vector<double> Metropolis::solve(bool allAverages){
                 psi_bar_psi_EL += tmp2 * tmp1;
             }
             
-        }
+        }       
         
     }
 
