@@ -69,59 +69,43 @@ The local energy for the considered system can be estimated recurring to the num
 where $h$ is a sufficiently small step. This method allows to avoid all the analytical calculations cited above, but provides less accurate results and a much greater computational effort. In fact, we can deduce that, according to Eq.\,\ref{hamiltonian} and Eq.\,\ref{local_energy}, to get the local energy for a $D$-dimensional system constituted by $N$ particles we need to evaluate the trial wavefunction $3ND$ times. The analytical approach described above is thus preferable, however this numerical alternative will be implemented for a comparison.
 
 
-\subsection{METROPOLIS ALGORITHM}
-As discussed in the previous section, by using a Monte Carlo approach our problem is reduced to simulate a random walk in the space of configurations for our system. Each new proposed state must be sampled from a given distribution: as a consequence, each possible configuration of the system should in principle be reachable within a sufficient number of steps. An algorithm that obeys this condition is called ergodic and this constitutes an essential requirement for a correct reconstruction of the PDF within a random walk in the configuration space. With the ergodic hypothesis we are trying to ensure that the results are not biased by the fact that the system remains always in the most probable configurations. 
 
-A very simple and effective erogidic algorithm typically used with the Monte Carlo schematics for the generation of the new configuration at every step is the Metropolis one: it is based on the concept of Markov chain. We consider a generic PDF $P_i^{(n)}$ which provides the probability of finding the system in a state $i$ at time step $n$ (assuming to have discrete time). We can then introduce the so-called transition probability matrix $W(j \rightarrow i) = W_{ij}$ which instead gives the probability of a transition from state $i$ to state $j$ (in this context $P_i^{(n)}$ can be interpreted an element of a vector). For a Markov process it is true that
-\begin{equation}
-    P_i^{(n+1)} = \sum_{i} ( j \rightarrow i) P_j^{(n)} \iff \bm{P}^{(n+1)} = \bm{W} \bm{P}^{(n)}
-    \label{markovchain}
-\end{equation}
-namely the probability of finding the system in state $i$ at time step $n+1$ depends only on the set of probabilities related to the previous instant. The following conditions must be also satisfied at every time step, due to the normalization of the probabilities
-\begin{equation*}
-    \sum_i P_i^{(n)} = \sum_j W_{ij} = 1
-\end{equation*}
-A Markov chain is said to be convergent if for sufficiently long times the temporal dependence contained in Eq.\,\ref{markovchain} disappears, in formulas
-\begin{equation*}
-     \bm{P}^{(n)} = \bm{W} \bm{P}^{(n)} \qquad \mbox{for } n \rightarrow \infty
-\end{equation*}
-It is possible to demonstrate that for a converging Markov chain the vector $\bm{P}^{(SS)} = \lim_{n\rightarrow \infty} \bm{P}^{(n)}$ representing the steady state (SS) for the chain coincides with the eigenvector of the transition probability matrix with eigenvalue $\lambda = 1$, which is also the highest eigenvalue for that matrix. The vector $\bm{P}^{(SS)}$ will then obey the following
-\begin{equation}
-    \bm{P}^{(SS)} = \bm{W} \bm{P}^{(SS)}
-    \label{convergence_markov_chain}
-\end{equation}
-Assuming now the convergence of the Markov chain describing our system, we can go further in building the algorithm by modelling the elements of transition probability matrix as products between an acceptance probability and a transition probability
+
+\subsection{METROPOLIS ALGORITHM}
+A very simple and effective algorithm usually implemented in the framework of a VMC simulation to discriminate between the acceptance and the rejection of a proposed move is the Metropolis one. This is intimately linked with the concept of Markov chains (\textit{insert citation here}), which constitute the theoretical basis for all the possible implementation of a Monte Carlo simulation. In this framework, $P_i^{(n)}$ provides the probability of finding the system in a state $i$ at time step $n$ (assuming to have discrete time) and the transition probability matrix $W(j \rightarrow i) = W_{ij}$ gives the probability of a transition from state $i$ to state $j$. The elements $W_{ij}$ are modelled as products between an acceptance probability and a transition probability
 \begin{equation*}
     W(j\rightarrow i) = A(j\rightarrow i) T(j\rightarrow i)
 \end{equation*}
-This is completely legitimate, as in general the form of $\bm{W}$ is unknown. For both the matrices $A$ and $T$ the following condition applies
+and this is completely legitimate, as in general the form of $W$ is unknown. For both the matrices $A$ and $T$ the following condition applies
 \begin{equation*}
     \sum_j A(j\rightarrow i) = \sum_j T(j\rightarrow i) = 1
 \end{equation*}
-
-
-The condition contained in Eq.\ref{convergence_markov_chain} becomes then
-\begin{align*}
-    P_i^{(SS)} &= \sum_j \left[ A(j\rightarrow i) T(j\rightarrow i) P_j^{(SS)} + (1 - A(i\rightarrow j)) T(i\rightarrow j) P_i^{(SS)} \right] \\
-    &= \sum_j A(j\rightarrow i) T(j\rightarrow i) P_j^{(SS)} + P_i^{(SS)} \cancelto{1}{\sum_j T(i\rightarrow j)} - P_i^{(SS)} \sum_j A(i\rightarrow j) T(i\rightarrow j)  \\
-    &= P_i^{(SS)} + \sum_j \left[ A(j\rightarrow i) T(j\rightarrow i) P_j^{(SS)} -  A(i\rightarrow j) T(i\rightarrow j) P_i^{(SS)}  \right]
-\end{align*}
-In principle imposing that the sum is null does not prevent cyclic solutions for Eq.\,\ref{convergence_markov_chain}, and thus a stronger statement is required. Setting each term of the sum to be null guarantees the validity of the equation and we obtain the detailed balance condition
+The evolution of the Markov chain is then described by
+\begin{align}
+\begin{split}
+    P_i^{(n+1)} &= \sum_j \bigg[ A(j\rightarrow i) T(j\rightarrow i) P_j^{(n)} + \\
+    &\quad + (1 - A(i\rightarrow j)) T(i\rightarrow j) P_i^{(n)} \bigg] \\
+\end{split}
+\label{markovchain}
+\end{align}
+which expresses the fact that at each step of the simulation the state $i$ can be reached after a transition from the state $j$ or after the rejection of a proposed move. Ideally, for a converging Markov chain the steady state distribution $P$ is reached after an infinite number of steps, then
+\begin{equation*}
+    P=WP \qquad, \qquad P = \lim_{n\rightarrow \infty} P^{(n)}
+\end{equation*}
+Inserting this condition into Eq.\,\ref{markovchain}, we obtain the detailed balance condition
 \begin{equation}
-    \frac{A(j\rightarrow i)}{A(i\rightarrow j)} =  \frac{ T(i\rightarrow j) P_i^{(SS)}}{T(j\rightarrow i) P_j^{(SS)}}
+    \frac{A(j\rightarrow i)}{A(i\rightarrow j)} =  \frac{ T(i\rightarrow j) P_i}{T(j\rightarrow i) P_j}
     \label{metropolis_ratio}
 \end{equation}
 This is the driving equation for the Metropolis algorithm that we are going to use for the VMC code implemented in this project. The algorithm is built in such a way that, starting from a state $j$ it will propose a transition to a state $i$ with a given probability $T(j\rightarrow i)$, but then the move will indeed be accepted with a probability $A(j\rightarrow i)$. This last function is modelled by the Metropolis algorithm as
 \begin{equation*}
-    A(j\rightarrow i ) = \text{min} \bigg\{ 1, \frac{T(i \rightarrow j) P_i^{(SS)}}{T(j\rightarrow i) P_j^{(SS)}} \bigg\}
+    A(j\rightarrow i ) = \text{min} \bigg\{ 1, \frac{T(i \rightarrow j) P_i}{T(j\rightarrow i) P_j} \bigg\}
 \end{equation*}
-With this we impose that the system will surely move to a new proposed state if the ratio of Eq.\,\ref{metropolis_ratio} is greater than 1, otherwise the move will be accepted only if a generated random number is smaller than the ratio itself. This choice for the acceptance probability ensures that every possible state of the system can in principle be explored within a sufficiently long amount of steps and thus the ergodic hypothesis is preserved. Moreover, since we are considering the ratio of two PDFs $P_i$ and $P_j$, any problem due to the evaluation of multidimensional integrals totally disappears. 
+With this we impose that the system will surely move to a new proposed state if the ratio of Eq.\,\ref{metropolis_ratio} is greater than 1, otherwise the move will be accepted only if a generated random number is smaller than the ratio itself. This choice for the acceptance probability ensures that every possible state of the system can in principle be explored within a sufficiently long amount of steps and thus the ergodic hypothesis for the Markov process is preserved. Moreover, since we are considering the ratio of two PDFs $P_i$ and $P_j$, any problem due to the evaluation of multidimensional integrals totally disappears. 
 
 Possible models for the transition probability matrix $T(j\rightarrow i)$ and for the generation of the new configurations for the system are discussed below.
 
-
-
-\subsection{Brute-force Metropolis algorithm}
+\subsubsection{BRUTE-FORCE METROPOLIS ALGORITHM}
 A suitable choice for the transition probability matrix consists in imposing a symmetry condition, namely $T( i\rightarrow j) = T(j \rightarrow i)$. For each step of the VMC simulation the algorithm acts as follows
 \begin{itemize}
     \item considering a randomly selected particle, each  component $k = \{x,\,y,\,z\}$ of its position vector is modified according to
@@ -131,28 +115,22 @@ A suitable choice for the transition probability matrix consists in imposing a s
     where $\eta \in (-0.5, 0.5)$ is a random number generated from a uniform distribution and $\Delta x$ is a step length chosen by the user;
     \item this move gets actually accepted if $\eta' < A(j\rightarrow i)$, with $\eta' \in (0,1)$ is another random number generated from a uniform distribution and
     \begin{equation*}
-        A(j \rightarrow i) = \text{min} \bigg\{ 1, \frac{P_i}{P_j} \bigg\}
+        A(j \rightarrow i) = \text{min} \bigg\{ 1, \frac{\vert \Psi_T(\bm{R}_i, \alpha) \vert^2 }{\vert \Psi_T(\bm{R}_j, \alpha) \vert^2 } \bigg\}
     \end{equation*}
 \end{itemize}
-We notice that in order to let the algorithm work correctly it is necessary to choose a proper step $\Delta x$: a too short value would imply that a higher number of Monte Carlo step is needed to reach the convergence of the Markov chain and to explore all the configurations of the system. On the contrary, a too large step would produce a very low fraction of accepted moves during the computation, especially if the wavefunction is particularly peaked in a specific region of the space. Generally the step length used for the brute-force Metropolis algorithm is set by a comparison with the typical length which characterises the system. For our specific case, starting from the hamiltonian of Eq.\,\ref{hamiltonian} it is possible to demonstrate (see \textit{Appendix B}) that this typical length unit corresponds to 
-\begin{equation*}
-    \Delta x = \sqrt{\frac{m \omega}{\hbar}}
-\end{equation*}
-In any case, as a rule of thumb we could state that a properly chosen step length should provide a $50\%$ acceptance ratio. 
+We notice that in order to let the algorithm work correctly it is necessary to choose a proper step $\Delta x$: a too short value would imply that a higher number of Monte Carlo step is needed to reach the convergence of the Markov chain and to explore all the configurations of the system. On the contrary, a too large step would produce a very low fraction of accepted moves during the computation, especially if the wavefunction is particularly peaked in a specific region of the space. Generally the step length used for the brute-force Metropolis algorithm is set by a comparison with the typical length which characterises the system. As a rule of thumb we could state that a properly chosen step length should provide a $50\%$ acceptance ratio. 
 
 
 
 
-
-
-\subsection{Importance Sampling}
-In the brute-force Metropolis algorithm the generation of the new possible state for the system is entirely based on a uniformly distributed random variable and the information provided by the PDF for the system comes to play only at the moment of the evaluation of the acceptance probability. On the contrary, one could think of exploiting the PDF already at the moment of the generation of the proposed transition so that the system is more likely to go towards high-probability configurations. This would lead to an increased acceptance ratio, meaning a more efficient simulation. This is the core of the Importance sampling method in the context of Metropolis algorithm.
+\subsubsection{IMPORTANCE SAMPLING}
+In the brute-force Metropolis algorithm the generation of the new possible state for the system is entirely based on a uniformly distributed random variable and the information provided by the wavefunction comes to play only at the moment of the evaluation of the acceptance probability. On the contrary, one could think of exploiting the PDF already at the moment of the generation of the proposed transition so that the system is more likely to go towards high-probability configurations. This would lead to an increased acceptance ratio, meaning a more efficient simulation. This is the core of the Importance sampling method in the context of Metropolis algorithm.
 
 The idea just illustrated can be implemented starting from the Fokker-Plank equation, which describes the behaviour of a time-dependent PDF $P(\bm{r}, t)$ associated to a diffusive process characterized by a diffusion coefficient $D$. The equation reads
 \begin{equation*}
     \frac{\partial P(\bm{r}, t)}{\partial t} = D \sum_i \frac{\partial}{\partial \bm{r}_i} \left( \frac{\partial}{\partial \bm{r}_i} - \bm{F}_i \right) P(\bm{r}, t)
 \end{equation*}
-where $i$ is an index running on the components $\{x,\,y,\,z\}$. The function $\bm{F}$ represent the aforementioned drift force term that we want to introduce in order to guide the system towards high-probability regions of the configurations space. The form of this drift force can be deduced by requiring that after the thermalization of the system (namely after a sufficiently long simulation time) the PDF will converge to a time-independent steady-state solution $P(\bm{r})$. It is possible to proof that this condition is reached if $\bm{F}$ assumes the following form
+where $i$ is an index running on the components of vector $\bm{r}$. The function $\bm{F}$ represent the aforementioned drift force term that we want to introduce in order to guide the system towards high-probability regions of the configurations space. The form of this drift force can be deduced by requiring that after the thermalization of the system (namely after a sufficiently long simulation time) the PDF will converge to a time-independent steady-state solution $P(\bm{r})$. It is possible to proof (see \textit{Appendix} \ref{appendix:drift_force_general}) that this condition is reached if $\bm{F}$ assumes the following form
 \begin{equation*}
     \bm{F}(\bm{r}) = \frac{1}{P(\bm{r})} \nabla P(\bm{r})
 \end{equation*}
@@ -164,7 +142,7 @@ By solving this differential equation assuming a discrete time step $\delta t$, 
 \begin{equation*}
     \bm{r}' = \bm{r} + D \bm{F}(\bm{r}) \delta t + \xi \sqrt{\delta t}
 \end{equation*}
-where $\xi$ is a gaussian random variable with null mean value and unitary standard deviation. Here we can clearly appreciate the effect of the drift force: in fact it will introduce a tendency for the particles to generate high-probability configurations by pushing them towards regions where the PDF is flat and high-valued. A single move is then more likely to be accepted. We notice that even with this new way of generating the propose for the new position of the particles, the erogdicity of the algorithm is still preserved, since every state can possibly be reached within a sufficiently high number of steps. 
+where $\xi$ is a gaussian random variable with null mean value and unitary standard deviation. Here we can clearly appreciate the effect of the drift force: in fact it will introduce a tendency for the particles to generate high-probability configurations by pushing them towards regions where the PDF is flat and high-valued. A single move is then more likely to be accepted. We notice that even with this new way of generating the propose for the new position of the particles, the erogdic hypothesis on the Markov chain is still preserved, since every state can possibly be reached within a sufficiently high number of steps. 
 
 Finally, by solving the Fokker-Plank equation it is possible to derive an expression form for the transition probability appearing in Eq.\,\ref{metropolis_ratio}, which results to be in the form of the Green's function, namely
 \begin{equation*}
@@ -177,12 +155,10 @@ The importance sampling algorithm will then act as follows:
     \begin{equation*}
         (\bm{r}')_k = (\bm{r})_k + D \delta t \bm{F}_k + \xi \sqrt{\delta t}
     \end{equation*}
-    where $\xi$ is a gaussian random variable with $\mu = 0$ and $\sigma=1$, while $\Delta t$ is the time step chosen by the user;
+    where $\xi$ is a gaussian random variable with $\mu = 0$ and $\sigma=1$, while $\delta t$ is the time step chosen by the user;
     \item this move gets actually accepted if $\eta < A(j\rightarrow i)$, with $\eta \in (0,1)$ is a random number generated from a uniform distribution and
     \begin{equation*}
-        A(j \rightarrow i) = \text{min} \bigg\{ 1, \frac{P(\bm{r}')}{P(\bm{r})} \frac{G(\bm{r}', \bm{r}, \delta t)}{G(\bm{r}, \bm{r}', \delta t)} \bigg\}
+        A(j \rightarrow i) = \text{min} \bigg\{ 1, \frac{\vert \Psi_T(\bm{R}_i, \alpha)\vert^2}{\vert \Psi_T(\bm{R}_j, \alpha)\vert^2} \frac{G(\bm{r}', \bm{r}, \delta t)}{G(\bm{r}, \bm{r}', \delta t)} \bigg\}
     \end{equation*}
 \end{itemize}
-
-
 
