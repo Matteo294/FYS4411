@@ -10,17 +10,16 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, dou
 double AsymmetricGaussian::evaluateAll(){
     double arg = 0.0; // Keeps track of the sum inside the exponetial
     double f = 1.0; // this accounts for the interaction term that multipies the gaussian
+    int k=0, j=0;
     
     for(int i=0; i<this->s->getNParticles(); i++){
-        for(int k=0; k<i; k++){
+        for(k=0; k<i; k++){
             f *= (1 - this->params[2] / this->s->getParticles()[i]->getRelativeDistance(k));
-            cout << "k=" << k << "\t i=" << i << endl;
         }
         
-
-
-        for(int j=0; j<2; j++){
+        for(j=0; j<2; j++){
             arg += (double) pow(this->s->getParticles()[i]->getPosition().at(j), 2);
+           
         }
         arg += (double) this->getParameter(1) * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
     }
