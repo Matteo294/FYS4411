@@ -10,11 +10,17 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, dou
 double AsymmetricGaussian::evaluateAll(){
     double arg = 0.0; // Keeps track of the sum inside the exponetial
     double f = 1.0; // this accounts for the interaction term that multipies the gaussian
+    double a = this->params[2];
+    double relative_dist=0.0;
     int k=0, j=0;
     
     for(int i=0; i<this->s->getNParticles(); i++){
         for(k=0; k<i; k++){
-            f *= (1 - this->params[2] / this->s->getParticles()[i]->getRelativeDistance(k));
+            relative_dist = this->s->getParticles()[i]->getRelativeDistance(k);
+            if(relative_dist<a){
+                f=0.0; 
+            }
+            f *= (1 - this->params[2] / relative_dist);
         }
         
         for(j=0; j<2; j++){
@@ -30,10 +36,17 @@ double AsymmetricGaussian::evaluateAll(){
 double AsymmetricGaussian::evaluateSing(int part_idx){
     double arg = 0.0;
     double f = 1.0;
+    double relative_dist = 0.0;
+    double a = this->s->getWavefunction()->getParameter(2);
 
     for(int i=0; i<this->s->getNParticles(); i++){
+        
         if(i!=part_idx){
-            f *= 1 - this->params[2] / this->s->getParticles()[part_idx]->getRelativeDistance(i);
+            relative_dist = this->s->getParticles()[part_idx]->getRelativeDistance(i);
+            if(relative_dist<a){
+                f=0.0;
+            }
+            f *= 1 - this->params[2] / relative_dist;
         }
     }
 

@@ -20,20 +20,23 @@ using namespace std;
 int main(){
 
     double omegaXY = 1.0;
-    double omegaZ = 1.0;
+    double omegaZ = 2.82843;
     const int dimension = 3;
-    const int Nparticles = 10;
+    const int Nparticles = 2;
 
-    const int Nsteps = (int) 1e6;
+    const int Nsteps = (int) 1e5;
     const int Nsteps_final = (int) 1e7;
     const double initialFraction = 0.1;
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
-    const double alpha = 0.5;
-    const double beta = 1.0;
-    const double a = 0.0;
-    
+    const double alpha = 0.50;
+    const double beta = 2.82843;
+    const double a = 0.0043;
+
+    // Plotting flags: turn True to save data to make the plots
+    bool dt_analysis = false;
+
     System system(dimension, Nparticles);
 
     // Hamiltonians
@@ -41,8 +44,8 @@ int main(){
     Elliptical elliptical(&system, omegaXY, omegaZ);
 
     // Wavefunctions
-    Gaussian gaussian(&system, alpha);
-    //AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
+    //Gaussian gaussian(&system, alpha);
+    AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
 
     // Solvers
     Metropolis metropolis(&system, Nsteps, initialFraction, step);
@@ -53,37 +56,34 @@ int main(){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
+    system.setHamiltonian(&elliptical);
+    system.setWavefunction(&asymmgaussian);
     system.setSolver(&metropolis);
     //system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-
-    /*
+    
     system.getParticles()[0]->setPosition({1.0, 1.0, 1.0});
-    system.getParticles()[1]->setPosition({2.0, 2.0, 2.0});
-    vector<double> res = system.getParticles()[0]->getPosition();
-    cout << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
+    //cout << system.getParticles()[0]->getPosition()[0] << system.getParticles()[0]->getPosition()[1] << system.getParticles()[0]->getPosition()[2] << endl;
+    system.EvaluateRelativePosition();
+    system.EvaluateRelativeDistance();
     
-    res = system.getParticles()[1]->getPosition();
-    cout << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
-    cout << endl << endl;
-    cout << system.getWavefunction()->evaluateAll() << endl;
-    
-    system.setWavefunction(&gaussian);
-    cout << system.getWavefunction()->evaluateAll() << endl;
+    for(int i=0; i<Nparticles; i++){
+        for(int j=0; j<Nparticles; j++)
+        cout << system.relative_distance[i][j] << endl;
+    }
 
-    */
-  
+
+
     
-    vector<double> res = system.getSolver()->solve((bool) 0);
-    cout << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
+    
+
+    //vector<double> res = system.getSolver()->solve((bool) 0);
+    //cout << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
     
     //functions.solve_varying_alpha((double) 0.3, (double) 0.7, (int) 4);
     
-
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
     cout << endl << "Simulation termined. Simulation time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl << endl; // Print run time

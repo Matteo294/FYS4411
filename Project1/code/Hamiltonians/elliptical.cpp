@@ -34,7 +34,6 @@ double Elliptical::LocalEnergyAnalytic(){
     double dist_im=0.0;
     double dist_ij=0.0;
 
-
     for(i=0; i<Nparticles; i++){
         pos_i = this->system->getParticles()[i]->getPosition();
         pos_i.back() *= beta; // I modify pos_i, the only place where I use pos_i is inside the j-cycle
@@ -43,9 +42,10 @@ double Elliptical::LocalEnergyAnalytic(){
             if(j!=i){
                 pos_ij = this->system->getParticles()[i]->getRelativePosition(j);
                 dist_ij = this->system->getParticles()[i]->getRelativeDistance(j);
+                
+                fill(sum_m.begin(), sum_m.end(), (double) 0.0); // reset sum_m to {0,0,0}
 
                 for(m=0; m<Nparticles; m++){
-                    fill(sum_m.begin(), sum_m.end(), (double) 0.0); // reset sum_m to {0,0,0}
                     if(m!=i){
                         pos_im = this->system->getParticles()[i]->getRelativePosition(m);
                         dist_im = this->system->getParticles()[i]->getRelativeDistance(m);
@@ -62,11 +62,14 @@ double Elliptical::LocalEnergyAnalytic(){
 
         }
 
+        res *= - 0.5;
+
     }
 
-    res += 4 * pow(alpha, 2) * this->system->r2(pow(beta, 2)) + this->system->r2(pow(this->getOmegaZ(), 2));
+    res += -2 * pow(alpha, 2) * this->system->r2(pow(beta, 2)) + 0.5 * this->system->r2(pow(this->getOmegaZ(), 2));
+    res += alpha * (2 + beta) * Nparticles;
 
-    return res/2;
+    return res;
 }
 
 double Elliptical::LocalEnergyNumeric(double h){return 0.0;}

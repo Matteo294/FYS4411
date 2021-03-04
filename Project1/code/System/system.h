@@ -35,10 +35,18 @@ class System{
         void setRandomGenerator(class RandomGenerator* randomgenerator);
 
         // Other functions
-        void addParticle(double mass, vector<double> pos);
-        double r2(double parameter); 
+        void addParticle(double mass, vector<double> pos); 
+        double r2(double parameter);
         double r2(vector<double> vect, double parameter); 
+        //double norm(vector<double>);
         double cdot(vector<double> v1, vector<double> v2);
+
+        // Matrices
+        vector<vector<vector<double>>> relative_position;
+        vector<vector<double>> relative_distance;
+        void EvaluateRelativeDistance();
+        void EvaluateRelativePosition();
+        
 
     private:
         // Attributes
@@ -49,6 +57,7 @@ class System{
         class RandomGenerator* randomgenerator;
 
         // Access this data only via getters
-        int dimension; 
+        int dimension;
         int Nparticles;
+        
 };

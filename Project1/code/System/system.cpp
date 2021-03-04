@@ -4,15 +4,19 @@
 then I proceed with the initialization.
 I initialize all the particles in the origin (with proper dimensions), each mass is set to 1 */
 
-System::System(int dim, int Npart){
+System::System(int dim, int Npart) : relative_position(Npart), relative_distance(Npart){
     assert(dim>0 && Npart>=0);
     int i=0;
     this->dimension=dim;
     this->Nparticles=Npart;
 
-    // we create all the particles in the origin
     vector<double> pos(dim, 0.0);
+    for(int i=0; i<Npart; i++){
+        this->relative_distance[i].resize(this->Nparticles, 0);
+        this->relative_position[i].resize(this->Nparticles, pos);
+    }     
 
+    // we create all the particles in the origin
     for(i=0; i<this->dimension; i++){
         pos.push_back((double) 0.0);
     }
@@ -37,10 +41,11 @@ double System::r2(vector<double> vect, double parameter){
     for(int i=0; i<(this->dimension - 1); i++){
         res += pow(vect[i], 2);
     }
-    res += parameter * pow(vect.back(), 2);
-
+    res += parameter * pow(vect[this->dimension - 1], 2);
     return res;
 }
+
+
 
 /* returns the sum over all particles of (x^2 + y^2 + param * z^2) */
 double System::r2(double parameter){
@@ -54,6 +59,7 @@ double System::r2(double parameter){
     
     return res;
 }
+
 
 
 double System::cdot(vector<double> v1, vector<double> v2){
@@ -75,9 +81,40 @@ double System::cdot(vector<double> v1, vector<double> v2){
         int System::getNParticles() {return this->Nparticles;}
         vector<class Particle*> System::getParticles(){return this->particles;}
         
+        
 
 // Setters
         void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
         void System::setSolver(class Solver* solver) {this->solver = solver;}
         void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}
         void System::setRandomGenerator(class RandomGenerator* randomgenerator) { this->randomgenerator = randomgenerator; }
+
+
+// Others
+        void System::EvaluateRelativePosition(){
+
+            vector<double> rel_pos(this->dimension, 0.0);
+            vector<double> pos_j(this->dimension, 0.0);         
+
+            for(int i=0; i<this->Nparticles; i++){
+                rel_pos = this->getParticles()[i]->getPosition();
+                
+                for(int j=0; j<i; j++){
+                    pos_j = this->getParticles()[j]->getPosition();
+                    transform(rel_pos.begin(), rel_pos.end(), pos_j.begin(), rel_pos.begin(), minus<double>());
+                    this->relative_position[i][j] = rel_pos;
+                    transform(rel_pos.begin(), rel_pos.end(), rel_pos.begin(), bind1st(multiplies<double>(), -1.0));
+                    this->relative_position[j][i] = rel_pos;
+                }
+            }
+        }
+
+
+        void System::EvaluateRelativeDistance(){
+            for(int i=0; i<Nparticles; i++){
+                for(int j=0; j<i; j++){
+                    this->relative_distance[i][j] = sqrt(this->r2(this->relative_position[i][j], (double) 1.0));
+                    this->relative_distance[j][i] = this->relative_distance[i][j];
+                }
+            }
+        }

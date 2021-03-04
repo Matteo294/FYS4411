@@ -26,6 +26,9 @@ vector<double> Metropolis::solve(bool allAverages){
     }
 
     //MCsteps
+    #pragma omp parallel for reduction(+:energy) reduction(+:energy2) \
+    firstprivate(gen, idx, pos_old, psi_old, pos_var, j, psi_new, last_accepted, tmp1, tmp2, psi_bar_psi, psi_bar_psi_EL) \
+    shared(accepted, allAverages)
     for(i=1; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
