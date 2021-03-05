@@ -38,7 +38,6 @@ class System{
         void addParticle(double mass, vector<double> pos); 
         double r2(double parameter);
         double r2(vector<double> vect, double parameter); 
-        //double norm(vector<double>);
         double cdot(vector<double> v1, vector<double> v2);
 
         // Matrices
@@ -46,6 +45,8 @@ class System{
         vector<vector<double>> relative_distance;
         void EvaluateRelativeDistance();
         void EvaluateRelativePosition();
+        void EvaluateRelativePosition(int idx);
+        void EvaluateRelativeDistance(int idx);
         
 
     private:

@@ -14,11 +14,6 @@ System::System(int dim, int Npart) : relative_position(Npart), relative_distance
     for(int i=0; i<Npart; i++){
         this->relative_distance[i].resize(this->Nparticles, 0);
         this->relative_position[i].resize(this->Nparticles, pos);
-    }     
-
-    // we create all the particles in the origin
-    for(i=0; i<this->dimension; i++){
-        pos.push_back((double) 0.0);
     }
 
     this->particles.resize(Nparticles);
@@ -72,6 +67,66 @@ double System::cdot(vector<double> v1, vector<double> v2){
 }
 
 
+// Matrices
+void System::EvaluateRelativePosition(){
+
+    vector<double> rel_pos(this->dimension, 0.0);
+    vector<double> pos_i(this->dimension, 0.0);
+    vector<double> pos_j(this->dimension, 0.0);         
+
+    for(int i=0; i<this->Nparticles; i++){
+        pos_i = this->getParticles()[i]->getPosition();
+        
+        for(int j=0; j<i; j++){
+            pos_j = this->getParticles()[j]->getPosition();
+            transform(pos_i.begin(), pos_i.end(), pos_j.begin(), rel_pos.begin(), minus<double>());
+            this->relative_position[i][j] = rel_pos;
+            transform(rel_pos.begin(), rel_pos.end(), rel_pos.begin(), bind1st(multiplies<double>(), -1.0));
+            this->relative_position[j][i] = rel_pos;
+        }
+
+        fill(this->relative_position[i][i].begin(), this->relative_position[i][i].end(), 0.0);
+    }
+
+}
+
+void System::EvaluateRelativePosition(int idx){
+    vector<double> rel_pos(this->dimension, 0.0);
+    vector<double> pos_i(this->dimension, 0.0);
+    vector<double> pos_j(this->dimension, 0.0);         
+    pos_i = this->getParticles()[idx]->getPosition();
+
+    for(int j=0; j<this->Nparticles; j++){
+        if(j==idx){
+            fill(this->relative_position[j][j].begin(), this->relative_position[j][j].end(), 0.0);
+        } else {
+            pos_j = this->getParticles()[j]->getPosition();
+            transform(pos_i.begin(), pos_i.end(), pos_j.begin(), rel_pos.begin(), minus<double>());
+            this->relative_position[idx][j] = rel_pos;
+            transform(rel_pos.begin(), rel_pos.end(), rel_pos.begin(), bind1st(multiplies<double>(), -1.0));
+            this->relative_position[j][idx] = rel_pos;
+        }
+    }
+
+}
+
+void System::EvaluateRelativeDistance(){
+    for(int i=0; i<Nparticles; i++){
+        for(int j=0; j<i; j++){
+            this->relative_distance[i][j] = sqrt(this->r2(this->relative_position[i][j], (double) 1.0));
+            this->relative_distance[j][i] = this->relative_distance[i][j];
+        }
+    }
+}
+
+void System::EvaluateRelativeDistance(int idx){
+    for(int i=0; i<Nparticles; i++){
+        this->relative_distance[idx][i] = sqrt(this->r2(this->relative_position[idx][i], (double) 1.0));
+        this->relative_distance[i][idx] = this->relative_distance[idx][i];
+    }
+}
+
+
 // Getters
         class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
         class Wavefunction* System::getWavefunction() {return this->wavefunction;}
@@ -88,33 +143,3 @@ double System::cdot(vector<double> v1, vector<double> v2){
         void System::setSolver(class Solver* solver) {this->solver = solver;}
         void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}
         void System::setRandomGenerator(class RandomGenerator* randomgenerator) { this->randomgenerator = randomgenerator; }
-
-
-// Others
-        void System::EvaluateRelativePosition(){
-
-            vector<double> rel_pos(this->dimension, 0.0);
-            vector<double> pos_j(this->dimension, 0.0);         
-
-            for(int i=0; i<this->Nparticles; i++){
-                rel_pos = this->getParticles()[i]->getPosition();
-                
-                for(int j=0; j<i; j++){
-                    pos_j = this->getParticles()[j]->getPosition();
-                    transform(rel_pos.begin(), rel_pos.end(), pos_j.begin(), rel_pos.begin(), minus<double>());
-                    this->relative_position[i][j] = rel_pos;
-                    transform(rel_pos.begin(), rel_pos.end(), rel_pos.begin(), bind1st(multiplies<double>(), -1.0));
-                    this->relative_position[j][i] = rel_pos;
-                }
-            }
-        }
-
-
-        void System::EvaluateRelativeDistance(){
-            for(int i=0; i<Nparticles; i++){
-                for(int j=0; j<i; j++){
-                    this->relative_distance[i][j] = sqrt(this->r2(this->relative_position[i][j], (double) 1.0));
-                    this->relative_distance[j][i] = this->relative_distance[i][j];
-                }
-            }
-        }
