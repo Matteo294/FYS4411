@@ -15,6 +15,7 @@ vector<double> Metropolis::solve(bool allAverages){
     int accepted=0;
     double ratio_accepted=0.0;
     bool last_accepted;
+    bool usematrix=this->system->getUseMatrix();
     vector<double> pos_old(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
 
@@ -24,11 +25,14 @@ vector<double> Metropolis::solve(bool allAverages){
         }
         this->system->getParticles()[i]->setPosition(pos_var);
     }
+    
+    if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
+
 
     //MCsteps
-    #pragma omp parallel for reduction(+:energy) reduction(+:energy2) \
-    firstprivate(gen, idx, pos_old, psi_old, pos_var, j, psi_new, last_accepted, tmp1, tmp2, psi_bar_psi, psi_bar_psi_EL) \
-    shared(accepted, allAverages)
+    //#pragma omp parallel for reduction(+:energy) reduction(+:energy2) \
+    //firstprivate(gen, idx, pos_old, psi_old, pos_var, j, psi_new, last_accepted, tmp1, tmp2, psi_bar_psi, psi_bar_psi_EL) \
+    //shared(accepted, allAverages)
     for(i=1; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
@@ -40,10 +44,12 @@ vector<double> Metropolis::solve(bool allAverages){
         }
 
         this->system->getParticles()[idx]->move(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
 
         if( this->system->getRandomGenerator()->uniform(gen) > ( pow(psi_new,2) / pow(psi_old,2) )){
             this->system->getParticles()[idx]->setPosition(pos_old);
+            if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
             last_accepted = 0;
         } else {
             accepted++;
@@ -68,7 +74,7 @@ vector<double> Metropolis::solve(bool allAverages){
                 psi_bar_psi_EL += tmp2 * tmp1;
             }
             
-        }       
+        }
         
     }
 
@@ -91,16 +97,18 @@ vector<double> Metropolis::solve(double h){
     int i=0, j=0, idx=0;
     double energy=0.0, energy2=0.0, tmp=0.0;
     double psi_old = 0.0, psi_new=0.0;
-    int accepted=0;
+    int accepted = 0;
+    bool usematrix = this->system->getUseMatrix();
     double ratio_accepted=0.0;
-    vector<double> new_pos(this->system->getDimension(), 0.0);
+    vector<double> pos_old(this->system->getDimension(), 0.0);
+    vector<double> pos_var(this->system->getDimension(), 0.0);
 
     for(i=1; i<this->system->getNParticles(); i++){
         for(j=0; j<this->system->getDimension(); j++){
-            new_pos[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
+            pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
-
-        this->system->getParticles()[i]->setPosition(new_pos);
+        this->system->getParticles()[i]->setPosition(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
     }
 
     //MCsteps
@@ -109,18 +117,17 @@ vector<double> Metropolis::solve(double h){
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
         for(j=0; j<this->system->getDimension(); j++){
-            new_pos[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
+            pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
         
         psi_old = this->system->getWavefunction()->evaluateSing(idx);
-        this->system->getParticles()[idx]->move(new_pos);
+        this->system->getParticles()[idx]->move(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
 
         if( this->system->getRandomGenerator()->uniform(gen) > (pow(psi_new, 2) / pow(psi_old, 2))){
-            for(j=0; j<this->system->getDimension(); j++){
-                new_pos[j] = -new_pos[j];
-            }
-            this->system->getParticles()[idx]->move(new_pos);
+            this->system->getParticles()[idx]->setPosition(pos_old);
+            if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } else {
             accepted++;
         }

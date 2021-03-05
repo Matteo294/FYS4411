@@ -5,6 +5,7 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, dou
     this->setParameter(0, alpha);
     this->setParameter(1, beta);
     this->setParameter(2, a);
+    this->s->setUseMatrix(true);
 }
 
 double AsymmetricGaussian::evaluateAll(){
@@ -16,16 +17,14 @@ double AsymmetricGaussian::evaluateAll(){
     
     for(int i=0; i<this->s->getNParticles(); i++){
         for(k=0; k<i; k++){
-            relative_dist = this->s->getParticles()[i]->getRelativeDistance(k);
-            if(relative_dist<a){
+            if(this->s->relative_distance[i][k]<a){
                 f=0.0; 
             }
-            f *= (1 - this->params[2] / relative_dist);
+            f *= (1 - this->params[2] / this->s->relative_distance[i][k]);
         }
         
         for(j=0; j<2; j++){
             arg += (double) pow(this->s->getParticles()[i]->getPosition().at(j), 2);
-           
         }
         arg += (double) this->getParameter(1) * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
     }
@@ -42,11 +41,10 @@ double AsymmetricGaussian::evaluateSing(int part_idx){
     for(int i=0; i<this->s->getNParticles(); i++){
         
         if(i!=part_idx){
-            relative_dist = this->s->getParticles()[part_idx]->getRelativeDistance(i);
-            if(relative_dist<a){
+            if(this->s->relative_distance[part_idx][i]<a){
                 f=0.0;
             }
-            f *= 1 - this->params[2] / relative_dist;
+            f *= 1 - this->params[2] / this->s->relative_distance[part_idx][i];
         }
     }
 

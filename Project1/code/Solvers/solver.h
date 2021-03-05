@@ -26,5 +26,4 @@ class Solver{
     protected:
         int Nsteps;
         double InitialFraction;
-
 };

@@ -19,20 +19,26 @@ using namespace std;
 
 int main(){
 
-    double omegaXY = 1.0;
-    double omegaZ = 2.82843;
     const int dimension = 3;
     const int Nparticles = 10;
 
-    const int Nsteps = (int) 1e5;
+    const int Nsteps = (int) 1e4;
     const int Nsteps_final = (int) 1e7;
     const double initialFraction = 0.1;
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
+    double omegaXY = 1.0;
     const double alpha = 0.50;
+
+    double omegaZ = 1.0;
+    const double beta = 1.0;
+    const double a = 0.0;
+    /*
+    double omegaZ = 2.82843;
     const double beta = 2.82843;
     const double a = 0.0043;
+    */
 
     // Plotting flags: turn True to save data to make the plots
     bool dt_analysis = false;
@@ -44,7 +50,7 @@ int main(){
     Elliptical elliptical(&system, omegaXY, omegaZ);
 
     // Wavefunctions
-    //Gaussian gaussian(&system, alpha);
+    Gaussian gaussian(&system, alpha);
     AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
 
     // Solvers
@@ -64,9 +70,8 @@ int main(){
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
 
-
-    //vector<double> res = system.getSolver()->solve((bool) 0);
-    //cout << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
+    vector<double> res = system.getSolver()->solve(false);
+    cout << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
     
     //functions.solve_varying_alpha((double) 0.3, (double) 0.7, (int) 4);
     

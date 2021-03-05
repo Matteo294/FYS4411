@@ -9,6 +9,7 @@ System::System(int dim, int Npart) : relative_position(Npart), relative_distance
     int i=0;
     this->dimension=dim;
     this->Nparticles=Npart;
+    this->usematrix = true; // this will be adjusted within the wavefunction class
 
     vector<double> pos(dim, 0.0);
     for(int i=0; i<Npart; i++){
@@ -29,7 +30,6 @@ void System::addParticle(double mass, vector<double> pos){
     this->Nparticles++;
 }
 
-
 /* returns (x^2 + y^2 + param * z^2) for particle part_idx*/
 double System::r2(vector<double> vect, double parameter){
     double res = 0.0;
@@ -39,7 +39,6 @@ double System::r2(vector<double> vect, double parameter){
     res += parameter * pow(vect[this->dimension - 1], 2);
     return res;
 }
-
 
 
 /* returns the sum over all particles of (x^2 + y^2 + param * z^2) */
@@ -54,8 +53,6 @@ double System::r2(double parameter){
     
     return res;
 }
-
-
 
 double System::cdot(vector<double> v1, vector<double> v2){
     double res = 0.0;
@@ -119,6 +116,7 @@ void System::EvaluateRelativeDistance(){
     }
 }
 
+
 void System::EvaluateRelativeDistance(int idx){
     for(int i=0; i<Nparticles; i++){
         this->relative_distance[idx][i] = sqrt(this->r2(this->relative_position[idx][i], (double) 1.0));
@@ -135,6 +133,7 @@ void System::EvaluateRelativeDistance(int idx){
         int System::getDimension() {return this->dimension;}
         int System::getNParticles() {return this->Nparticles;}
         vector<class Particle*> System::getParticles(){return this->particles;}
+        bool System::getUseMatrix(){ return this->usematrix;}
         
         
 
@@ -143,3 +142,4 @@ void System::EvaluateRelativeDistance(int idx){
         void System::setSolver(class Solver* solver) {this->solver = solver;}
         void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}
         void System::setRandomGenerator(class RandomGenerator* randomgenerator) { this->randomgenerator = randomgenerator; }
+        void System::setUseMatrix(bool usematrix){ this->usematrix = usematrix; }

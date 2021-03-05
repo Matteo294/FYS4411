@@ -13,12 +13,7 @@ double Spherical::LocalEnergyAnalytic(){
     int i=0, j=0;
     double res = 0;
 
-    for(i=0; i<this->system->getNParticles(); i++){
-        for(j=0; j < this->system->getDimension(); j++){
-            res += pow(this->system->getParticles()[i]->getPosition()[j], 2);
-        }
-    }
-
+    res = this->system->r2((double) 1.0);
     res *= 0.5 * mass * pow(this->omega, 2) - 2 * pow(alpha, 2) / mass;
 
     return res + alpha * this->system->getDimension() * this->system->getNParticles() / mass;
@@ -42,12 +37,6 @@ double Spherical::LocalEnergyNumeric(double h){
 
     res *= -0.5 / mass / this->system->getWavefunction()->evaluateAll();
     
-    double pot = 0.0;
-    for(int i=0; i<this->system->getNParticles(); i++){
-        for(int j=0; j<this->system->getDimension(); j++){
-            pot += pow(this->system->getParticles()[i]->getPosition().at(j), 2); // xi^2 + yi^2 + zi^2 for each particle
-        }
-    }
-    res += 0.5 * mass * pow(this->omega, 2) * pot;
+    res += 0.5 * mass * pow(this->omega, 2) * this->system->r2((double) 1.0);
     return res;
 }

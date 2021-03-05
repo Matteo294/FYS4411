@@ -26,13 +26,14 @@ class System{
         int getDimension();
         int getNParticles();
         vector<class Particle*> getParticles();
-
+        bool getUseMatrix();
 
         // Setters
         void setHamiltonian(class Hamiltonian* hamiltonian);
         void setSolver(class Solver* solver);
         void setWavefunction(class Wavefunction* wavefunction);
         void setRandomGenerator(class RandomGenerator* randomgenerator);
+        void setUseMatrix(bool usematrix);
 
         // Other functions
         void addParticle(double mass, vector<double> pos); 
@@ -48,6 +49,7 @@ class System{
         void EvaluateRelativePosition(int idx);
         void EvaluateRelativeDistance(int idx);
         
+        
 
     private:
         // Attributes
@@ -60,5 +62,6 @@ class System{
         // Access this data only via getters
         int dimension;
         int Nparticles;
+        bool usematrix;
         
 };

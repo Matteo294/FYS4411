@@ -36,7 +36,7 @@ class Wavefunction{
         class System* s;
 
         // Get and set variational parameters
-        double setParameter(int idx, double value);
+        void setParameter(int idx, double value);
         double getParameter(int idx);
         
     protected:

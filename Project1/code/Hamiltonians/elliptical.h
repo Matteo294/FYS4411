@@ -15,7 +15,6 @@ class Elliptical: public Hamiltonian{
         //Other functions
         double LocalEnergyAnalytic();
         double LocalEnergyNumeric(double h);
-        double potential();
 
     private:
         // Private attributes: access only via getters and setters

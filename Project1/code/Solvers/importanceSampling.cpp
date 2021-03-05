@@ -17,6 +17,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     int accepted=0;
     double ratio_accepted=0.0;
     bool last_accepted;
+    bool usematrix = this->system->getUseMatrix();
     vector<double> pos_old(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
 
@@ -29,6 +30,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         }
 
         this->system->getParticles()[i]->setPosition(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
     }
 
     //MCsteps
@@ -45,6 +47,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         }
 
         this->system->getParticles()[idx]->move(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
         drift_new = this->system->getWavefunction()->DriftForce(idx);
         
@@ -57,6 +60,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
 
         if( this->system->getRandomGenerator()->uniform(gen) > (exp(arg) * pow(psi_new, 2) / pow(psi_old, 2))){
             this->system->getParticles()[idx]->setPosition(pos_old);
+            if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
             last_accepted = 0;
         } else {
             accepted++;
@@ -105,17 +109,22 @@ vector<double> ImportanceSampling::solve(double h){
     double ratio_accepted=0.0;
     double psi_old = 0.0, psi_new = 0.0;
     double arg = 0.0;
-    vector<double> new_pos(this->system->getDimension(), 0.0);
+    bool usematrix= this->system->getUseMatrix();
+    vector<double> pos_old(this->system->getDimension(), 0.0);
+    vector<double> pos_var(this->system->getDimension(), 0.0);
     vector<double> drift_old(this->system->getDimension(), 0.0);
     vector<double> drift_new(this->system->getDimension(), 0.0);
 
     for(i=0; i<this->system->getNParticles(); i++){
         for(j=0; j<this->system->getDimension(); j++){
-            new_pos[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->dt);
+            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->dt);
         }
 
-        this->system->getParticles()[i]->setPosition(new_pos);
+        this->system->getParticles()[i]->setPosition(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
     }
+
+
 
     //MCsteps
     for(i=1; i<this->Nsteps; i++){
@@ -126,25 +135,24 @@ vector<double> ImportanceSampling::solve(double h){
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            new_pos[j] = this->D * drift_old[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
+            pos_var[j] = this->D * drift_old[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
         }
         
-        this->system->getParticles()[idx]->move(new_pos);
+        this->system->getParticles()[idx]->move(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
         drift_new = this->system->getWavefunction()->DriftForce(idx);
         
         for(j=0; j<this->system->getDimension(); j++){
-            arg += (drift_old[j] + drift_new[j]) * ( -2 * new_pos[j] + this->D * this->dt * (drift_old[j] - drift_new[j]) );
+            arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->D * this->dt * (drift_old[j] - drift_new[j]) );
         }
 
         arg *= 0.25;
         
 
         if( this->system->getRandomGenerator()->uniform(gen) > (exp(arg) * pow(psi_new, 2) / pow(psi_old, 2))){
-            for(j=0; j<this->system->getDimension(); j++){
-                new_pos[j] = -new_pos[j];
-            }
-            this->system->getParticles()[idx]->move(new_pos);
+            this->system->getParticles()[idx]->setPosition(pos_old);
+            if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } else {
             accepted++;
         }
