@@ -1,7 +1,7 @@
 #include "metropolis.h"
 
-Metropolis::Metropolis(System* system, int Nsteps, double initialFraction, double step) : Solver(system, Nsteps, initialFraction){
-    this->step = step;
+Metropolis::Metropolis(System* system, int Nsteps, double initialFraction, double step) : Solver(system, Nsteps, initialFraction, 1){
+    this->setParameter(0, step);
 }
 
 vector<double> Metropolis::solve(bool allAverages){
@@ -21,7 +21,7 @@ vector<double> Metropolis::solve(bool allAverages){
 
     for(i=0; i<this->system->getNParticles(); i++){
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
+            pos_var[j] = 2*this->params[0]*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
         this->system->getParticles()[i]->setPosition(pos_var);
     }
@@ -40,7 +40,7 @@ vector<double> Metropolis::solve(bool allAverages){
         psi_old = this->system->getWavefunction()->evaluateSing(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
+            pos_var[j] = 2*this->params[0]*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
 
         this->system->getParticles()[idx]->move(pos_var);
@@ -69,7 +69,7 @@ vector<double> Metropolis::solve(bool allAverages){
             energy2 += tmp1*tmp1;
 
             if (allAverages){
-                tmp2 = this->system->getWavefunction()->analyticalAlphaDerivative() / this->system->getWavefunction()->evaluateAll();
+                tmp2 = this->system->getWavefunction()->psibar_psi();
                 psi_bar_psi += tmp2;
                 psi_bar_psi_EL += tmp2 * tmp1;
             }
@@ -105,7 +105,7 @@ vector<double> Metropolis::solve(double h){
 
     for(i=1; i<this->system->getNParticles(); i++){
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
+            pos_var[j] = 2*this->params[0]*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
         this->system->getParticles()[i]->setPosition(pos_var);
         if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
@@ -117,7 +117,7 @@ vector<double> Metropolis::solve(double h){
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
+            pos_var[j] = 2*this->params[0]*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
         
         psi_old = this->system->getWavefunction()->evaluateSing(idx);
@@ -146,6 +146,3 @@ vector<double> Metropolis::solve(double h){
     return {energy, energy2 - pow(energy, 2), ratio_accepted};
 }
 
-double Metropolis::getStep(){
-    return this->step;
-}

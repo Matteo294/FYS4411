@@ -11,66 +11,67 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, dou
 double AsymmetricGaussian::evaluateAll(){
     double arg = 0.0; // Keeps track of the sum inside the exponetial
     double f = 1.0; // this accounts for the interaction term that multipies the gaussian
-    double a = this->params[2];
     double relative_dist=0.0;
     int k=0, j=0;
     
     for(int i=0; i<this->s->getNParticles(); i++){
         for(k=0; k<i; k++){
-            if(this->s->relative_distance[i][k]<a){
+            if(this->s->relative_distance[i][k]<this->params[2]){
                 f=0.0; 
             }
             f *= (1 - this->params[2] / this->s->relative_distance[i][k]);
         }
-        
-        for(j=0; j<2; j++){
-            arg += (double) pow(this->s->getParticles()[i]->getPosition().at(j), 2);
-        }
-        arg += (double) this->getParameter(1) * pow(this->s->getParticles()[i]->getPosition().at(2), 2); // Asymmetric therm
     }
-    arg *= -this->getParameter(0);
-    return exp(arg) * f;
+    
+    return exp( - this->params[0] * this->s->r2((double) this->params[1])) * f;
 }
 
 double AsymmetricGaussian::evaluateSing(int part_idx){
     double arg = 0.0;
     double f = 1.0;
     double relative_dist = 0.0;
-    double a = this->s->getWavefunction()->getParameter(2);
 
     for(int i=0; i<this->s->getNParticles(); i++){
-        
         if(i!=part_idx){
-            if(this->s->relative_distance[part_idx][i]<a){
+            if(this->s->relative_distance[part_idx][i]<this->params[2]){
                 f=0.0;
             }
             f *= 1 - this->params[2] / this->s->relative_distance[part_idx][i];
         }
     }
-
-    for(int i=0; i<2; i++){
-        arg += pow( this->s->getParticles()[part_idx]->getPosition()[i], 2);
-    }
-    arg += this->getParameter(1) * pow(this->s->getParticles()[part_idx]->getPosition()[2] , 2);
-    return exp( -this->getParameter(0) * arg ) * f;
+    
+    return exp( - this->params[0] * this->s->r2(this->s->getParticles()[part_idx]->getPosition(), (double) this->params[1]) ) * f;
 }
 
 /* need to be fixed */
 vector<double> AsymmetricGaussian::DriftForce(int part_idx) {
-    vector<double> x{3,0}; 
-    return x;
+    // reducing the notation, we will call part_idx as i in nominanting vectors
+    vector<double> r_ij(3, 0.0);
+    vector<double> res(3, 0.0);
+    double dist_ij=0.0;
+
+    vector<double> r_i = this->s->getParticles()[part_idx]->getPosition();
+    r_i[2] *= this->params[1]; // I multiply the third element by beta
+    transform(r_i.begin(), r_i.end(), r_i.begin(), bind1st(multiplies<double>(), - 2 * this->params[0])); // I multiply the vector by -2*alpha
+    
+    for(int j=0; j<this->s->getNParticles(); j++){
+        if(j!=part_idx){
+            r_ij = this->s->relative_position[part_idx][j];
+            dist_ij = this->s->relative_distance[part_idx][j];
+            transform(r_ij.begin(), r_ij.end(), r_ij.begin(), bind1st(multiplies<double>(), this->params[2] / (dist_ij - this->params[2]) / pow(dist_ij, 2) ) );
+            transform(res.begin(), res.end(), r_ij.begin(), res.begin(), plus<double>());
+        }
+    }
+    //at the end of the cycle I evaluated the whole sum over j appearing in the analytical expression
+    // now I add the last term
+    transform(res.begin(), res.end(), r_i.begin(), res.begin(), plus<double>());
+    transform(res.begin(), res.end(), res.begin(), bind1st(multiplies<double>(), 2.0) );
+    return res;
 }
 
-/* need to be fixed */
-double AsymmetricGaussian::analyticalAlphaDerivative(){
-    double res=0.0;
-    for(int i=0; i<this->s->getNParticles(); i++){
-        for(int j=0; j<2; j++){
-            res += pow(this->s->getParticles()[i]->getPosition()[j], 2);
-        }
-        res += this->getParameter(1)*pow(this->s->getParticles()[i]->getPosition()[2], 2);
-    }
-    return -res * this->evaluateAll();
+
+double AsymmetricGaussian::psibar_psi(){
+    return -this->s->r2(this->params[1]);
 }
 
 /* need to be fixed */

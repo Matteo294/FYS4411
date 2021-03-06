@@ -11,19 +11,8 @@ class ImportanceSampling : public Solver{
     public:
         ImportanceSampling(class System* system, int Nsteps, double initialFraction, double dt, double D);
     
-    // Getters
-        double getdt();
-        double getD();
-    
-    // Setters
-        void setdt(double dt);
-        void setD(double D);
-    
     // Other functions and attributes
         vector<double> solve(bool allAverages); // uses LocalEnergyAnalytic()
         vector<double> solve(double h); // uses LocalEnergyNumeric()
     
-    private:
-        double dt;
-        double D;
 };
