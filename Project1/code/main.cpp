@@ -81,12 +81,7 @@ int main(int argc, char *argv[]){
     system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
 
-    cout << system.getSolver()->solve(false)[0] << endl;
-    cout << system.getSolver()->solve(false)[0] << endl;
-    cout << system.getSolver()->solve(false)[0] << endl;
-
-    //vector<vector<double>> res = functions.solve_varying_N({2, 3, 4, 5});
-    //for(vector<double> r : res) cout << scientific << setprecision(5) << "energy: " << r[0] << "\t variance: " << r[1] << "\t acceptance: " << r[2] << endl; 
+    functions.solve_varying_alpha(0.2, 0.8, 8, true);
 
     /*auto start = chrono::steady_clock::now(); // Store starting time to measure run time
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
