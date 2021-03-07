@@ -20,6 +20,4 @@ class Metropolis : public Solver{
         /// \see Solver::solve(double h)
         vector<double> solve(double h); // uses LocalEnergyNumeric(double h)
 
-    private:
-        double step;
 };

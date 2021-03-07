@@ -43,23 +43,12 @@ double Gaussian::numericalSecondDerivative(int part_idx, int direction, double h
 }
 
 vector<double> Gaussian::DriftForce(int part_idx){
-    
     vector<double> v = this->s->getParticles()[part_idx]->getPosition();
-
-    for(int i=0; i<this->s->getDimension(); i++){
-        v[i] *= -4 * this->getParameter(0);
-    }
-    
+    transform(v.begin(), v.end(), v.begin(), bind1st(multiplies<double>(), -4 * this->params[0]));  
     return v;
 }
 
 
-double Gaussian::analyticalAlphaDerivative(){
-    double res=0.0;
-    for(int i=0; i<this->s->getNParticles(); i++){
-        for(int j=0; j<this->s->getDimension(); j++){
-            res += pow(this->s->getParticles()[i]->getPosition()[j], 2);
-        }
-    }
-    return -res * this->evaluateAll();
+double Gaussian::psibar_psi(){
+    return  - this->s->r2((double) 1.0);
 }

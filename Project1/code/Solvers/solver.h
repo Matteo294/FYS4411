@@ -6,16 +6,19 @@ using namespace std;
 
 class Solver{
     public:
-        Solver(class System* system, int Nsteps, double initialFraction);
         ~Solver();
+        Solver(class System* system, int Nsteps, double initialFraction, int nparams);
 
     // Getters
         int getNsteps();
         double getInitialFraction();
+        double getParameter(int idx);
+        int getnparameter();
 
     // Setters
         void setNsteps(int Nsteps);
         void setInitialFraction(double initialFraction);
+        void setParameter(int idx, double value);
 
     // Other functions & attributes
         /** Performs a MC simulation to evaluate the energy of the ground state of the system
@@ -32,4 +35,6 @@ class Solver{
     protected:
         int Nsteps;
         double InitialFraction;
+        int nparams;
+        vector<double> params;
 };

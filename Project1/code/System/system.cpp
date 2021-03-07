@@ -91,6 +91,7 @@ double System::cdot(vector<double> v1, vector<double> v2){
 
 
 // Matrices
+// evaluates all the elements of the matrix
 void System::EvaluateRelativePosition(){
 
     vector<double> rel_pos(this->dimension, 0.0);
@@ -113,6 +114,7 @@ void System::EvaluateRelativePosition(){
 
 }
 
+// evaluates the elements of the matrix involving the idx-th particle
 void System::EvaluateRelativePosition(int idx){
     vector<double> rel_pos(this->dimension, 0.0);
     vector<double> pos_i(this->dimension, 0.0);
@@ -130,9 +132,9 @@ void System::EvaluateRelativePosition(int idx){
             this->relative_position[j][idx] = rel_pos;
         }
     }
-
 }
 
+// evaluates all the relative distances in the matrix
 void System::EvaluateRelativeDistance(){
     for(int i=0; i<Nparticles; i++){
         for(int j=0; j<i; j++){
@@ -142,7 +144,7 @@ void System::EvaluateRelativeDistance(){
     }
 }
 
-
+// evaluates the relative distances involving the idx-th particle
 void System::EvaluateRelativeDistance(int idx){
     for(int i=0; i<Nparticles; i++){
         this->relative_distance[idx][i] = sqrt(this->r2(this->relative_position[idx][i], (double) 1.0));

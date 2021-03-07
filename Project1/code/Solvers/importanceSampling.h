@@ -28,7 +28,4 @@ class ImportanceSampling : public Solver{
         /// \see Solver::solve(double h)
         vector<double> solve(double h); // uses LocalEnergyNumeric()
     
-    private:
-        double dt;
-        double D;
 };

@@ -24,13 +24,14 @@ class Functions{
          * \attention This function works only with the importance sampling solver
          * \see ImportanceSampling::ImportanceSampling()
         **/
-        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt); 
 
         /** This function calls recursively the solver (set it in the system class via the proper setter) for the values of number of particles
          * given via the vector N.
          * \note The parameters (for example those of the solver and wavefunction) should be set in advance
         **/
         vector<vector<double>> solve_varying_N(vector<int> N);
+        // solves for a bunch of dt values, uses solve((bool) 0), mandatory to use ImportanceSampling solver
+        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt); 
 
         /// Finds the best alpha parameter using gradient descent 
         double gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);

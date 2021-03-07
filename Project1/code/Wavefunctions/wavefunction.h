@@ -26,8 +26,8 @@ class Wavefunction{
         /// Evaluates the drift force associated to the part_idx-th particle
         virtual vector<double> DriftForce(int part_idx) = 0;
         
-        /// Evaluates the analytical derivative with respect to alpha
-        virtual double analyticalAlphaDerivative() = 0;
+        /* evaluates derivative of the function wrt alpha divided by the wavefunction */
+        virtual double psibar_psi() = 0;
         
         class System* s;
 

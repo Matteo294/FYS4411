@@ -3,9 +3,10 @@
 
 ImportanceSampling::~ImportanceSampling(){};
 
-ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initialFraction, double dt, double D) : Solver(system, Nsteps, initialFraction){
-    this->dt=dt;
-    this->D = D;
+
+ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initialFraction, double dt, double D) : Solver(system, Nsteps, initialFraction, 2){
+    this->setParameter(0, dt);
+    this->setParameter(1, D);
 }
 
 vector<double> ImportanceSampling::solve(bool allAverages){
@@ -28,7 +29,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
 
     for(i=0; i<this->system->getNParticles(); i++){
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->dt);
+            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
         }
 
         this->system->getParticles()[i]->setPosition(pos_var);
@@ -45,7 +46,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->D * drift_old[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
+            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getParameter(0));
         }
 
         this->system->getParticles()[idx]->move(pos_var);
@@ -55,7 +56,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         
         arg = 0.0;
         for(j=0; j<this->system->getDimension(); j++){
-            arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->D * this->dt * (drift_old[j] - drift_new[j]) );
+            arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->params[1] * this->params[0] * (drift_old[j] - drift_new[j]) );
         }
 
         arg *= 0.25;
@@ -83,7 +84,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             energy2 += tmp1*tmp1;
 
             if (allAverages){
-                tmp2 = this->system->getWavefunction()->analyticalAlphaDerivative() / this->system->getWavefunction()->evaluateAll();
+                tmp2 = this->system->getWavefunction()->psibar_psi();
                 psi_bar_psi += tmp2;
                 psi_bar_psi_EL += tmp2 * tmp1;
             }
@@ -119,7 +120,7 @@ vector<double> ImportanceSampling::solve(double h){
 
     for(i=0; i<this->system->getNParticles(); i++){
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->dt);
+            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
         }
 
         this->system->getParticles()[i]->setPosition(pos_var);
@@ -137,7 +138,7 @@ vector<double> ImportanceSampling::solve(double h){
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->D * drift_old[j] * this->dt + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getdt());
+            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getParameter(0));
         }
         
         this->system->getParticles()[idx]->move(pos_var);
@@ -146,7 +147,7 @@ vector<double> ImportanceSampling::solve(double h){
         drift_new = this->system->getWavefunction()->DriftForce(idx);
         
         for(j=0; j<this->system->getDimension(); j++){
-            arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->D * this->dt * (drift_old[j] - drift_new[j]) );
+            arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->params[1] * this->params[0] * (drift_old[j] - drift_new[j]) );
         }
 
         arg *= 0.25;
@@ -175,10 +176,3 @@ vector<double> ImportanceSampling::solve(double h){
 }
 
 
-// Gettes
-    double ImportanceSampling::getdt(){ return this->dt; }
-    double ImportanceSampling::getD(){ return this->D; }
-
-// Setters
-    void ImportanceSampling::setdt(double dt) { this->dt = dt; }
-    void ImportanceSampling::setD(double D) { this->D = D; }
