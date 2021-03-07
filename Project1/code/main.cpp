@@ -57,6 +57,21 @@ int main(int argc, char *argv[]){
     const float initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
     bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots
 
+    // Parameters for the various type of simulations
+    // Mode 1 - varying alpha
+    const double alpha_min = 0.2; // in mode 1 (varying alpha) minimum alpha
+    const double alpha_max = 0.8; // in mode 2 (varying alpha) maximum alpha
+    const int N_alpha = 100; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
+    const bool alpha_to_file = true; // set true to save data to file
+    // Mode 2 - varying dt
+    const double dt_min = 1e-8; // in mode 2 (varying dt) minimum dt
+    const double dt_max = 1e-2; // in mode 2 (varying dt) maximum dt
+    const int N_dt = 10; // in mode 2 (varying dt) number of different dts between dt_min dt_max
+    const bool dt_to_file = false; // set true to save data to file
+    // Mode 3 - varying N
+    vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
+    const bool N_to_file = false; // set true to save data to file
+
     System system(dimension, Nparticles);
 
     // Hamiltonians
@@ -81,14 +96,20 @@ int main(int argc, char *argv[]){
     system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
 
-    functions.solve_varying_alpha(0.2, 0.8, 8, true);
+    functions.printPresentation();
 
-    /*auto start = chrono::steady_clock::now(); // Store starting time to measure run time
+    // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
+    auto start = chrono::steady_clock::now(); // Store starting time to measure run time
+
+    switch(selector){
+        case 0: functions.printResultsSolver(system.getSolver()->solve(false)); break; // Simple simulation
+        case 1: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
+        case 2: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
+        case 3: functions.solve_varying_N(Ns, N_to_file); break;
+    }
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
-     cout << fixed << setprecision(5) << r[0] << "\t" << r[1] << "\t" << r[2] << endl;
-    
-    cout << endl << "Simulation termined. Simulation time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/
+    cout << endl << "Simulation termined. Total running time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/
 
     // Sasha's part
     /*ofstream myfile;

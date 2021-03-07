@@ -29,9 +29,9 @@ class Functions{
          * given via the vector N.
          * \note The parameters (for example those of the solver and wavefunction) should be set in advance
         **/
-        vector<vector<double>> solve_varying_N(vector<int> N);
+        vector<vector<double>> solve_varying_N(vector<int> N, bool toFile);
         // solves for a bunch of dt values, uses solve((bool) 0), mandatory to use ImportanceSampling solver
-        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt); 
+        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt, bool toFile); 
 
         /// Finds the best alpha parameter using gradient descent 
         double gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);
@@ -40,6 +40,8 @@ class Functions{
          * \note That the file should already be open
         **/
         void printToFile(double val, ofstream f, string s);
+        void printPresentation();
+        void printResultsSolver(vector<double> res);
     private:
         ofstream alphaFile, dtFile, Nfile;
 
