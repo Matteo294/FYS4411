@@ -1,4 +1,5 @@
 #include "metropolis.h"
+#include <omp.h>
 
 Metropolis::~Metropolis(){};
 
@@ -20,35 +21,35 @@ vector<double> Metropolis::solve(bool allAverages){
     bool usematrix=this->system->getUseMatrix();
     vector<double> pos_old(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
+    int thermalization_steps = (int)(this->Nsteps*this->InitialFraction);
 
-    for(i=0; i<this->system->getNParticles(); i++){
-        for(j=0; j<this->system->getDimension(); j++){
+    // Set random initial positions
+    #pragma omp parallel for collapse(2) firstprivate(pos_var)
+    for(j=0; j<this->system->getDimension(); j++){
+        for(i=0; i<this->system->getNParticles(); i++){
             pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
+            if(j==0) this->system->getParticles()[i]->setPosition(pos_var);
         }
-        this->system->getParticles()[i]->setPosition(pos_var);
     }
     
     if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
-    
-    
-    //MCsteps
-    #pragma omp parallel for reduction(+:energy, energy2) reduction(+: psi_bar_psi, psi_bar_psi_EL) \
-    firstprivate(gen, idx, pos_old, psi_old, pos_var, j, psi_new, last_accepted, tmp1, tmp2, accepted) \
-    shared(allAverages)
-    for(i=1; i<this->Nsteps; i++){
+
+    // MCsteps before thermalization
+    //#pragma omp parallel for default(shared) \
+    firstprivate(idx, pos_old, psi_old, pos_var, psi_new, last_accepted, gen, j)
+    for(i=1; i<thermalization_steps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
         pos_old = this->system->getParticles()[idx]->getPosition();
         psi_old = this->system->getWavefunction()->evaluateSing(idx);
-
+        
         for(j=0; j<this->system->getDimension(); j++){
             pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
-
+        
         this->system->getParticles()[idx]->move(pos_var);
         if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
-
         if( this->system->getRandomGenerator()->uniform(gen) > ( pow(psi_new,2) / pow(psi_old,2) )){
             this->system->getParticles()[idx]->setPosition(pos_old);
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
@@ -56,29 +57,52 @@ vector<double> Metropolis::solve(bool allAverages){
         } else {
             accepted++;
             last_accepted = 1;
+        }       
+        
+    }
+    
+    // MCsteps after thermalization
+    for(i=thermalization_steps; i<this->Nsteps; i++){
+        
+        idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
+        pos_old = this->system->getParticles()[idx]->getPosition();
+        psi_old = this->system->getWavefunction()->evaluateSing(idx);
+        
+        for(j=0; j<this->system->getDimension(); j++){
+            pos_var[j] = 2*this->step*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
-
-        if( i>=(int)(this->Nsteps*this->InitialFraction) ){
-            
-            if(i==(int)(this->Nsteps*this->InitialFraction)){
-                tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
-            } else {
-                if(last_accepted){
-                    tmp1 = this->system->getHamiltonian()->LocalEnergyAnalytic();
-                }
+        #pragma omp critical
+        {
+            this->system->getParticles()[idx]->move(pos_var);
+            if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
+        }
+        psi_new = this->system->getWavefunction()->evaluateSing(idx);
+        if( this->system->getRandomGenerator()->uniform(gen) > ( pow(psi_new,2) / pow(psi_old,2) )){
+            this->system->getParticles()[idx]->setPosition(pos_old);
+            if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
+            last_accepted = 0;
+        } else {
+            accepted++;
+            last_accepted = 1;
+        }        
+        
+        if(i==(int)(this->Nsteps*this->InitialFraction)){
+            tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
+        } else {
+            if(last_accepted){
+                tmp1 = this->system->getHamiltonian()->LocalEnergyAnalytic();
             }
-            energy += tmp1;
-            energy2 += tmp1*tmp1;
-
-            if (allAverages){
-                tmp2 = this->system->getWavefunction()->analyticalAlphaDerivative() / this->system->getWavefunction()->evaluateAll();
-                psi_bar_psi += tmp2;
-                psi_bar_psi_EL += tmp2 * tmp1;
-            }
-            
+        }
+        energy += tmp1;
+        energy2 += tmp1*tmp1;
+        if (allAverages){
+            tmp2 = this->system->getWavefunction()->analyticalAlphaDerivative() / this->system->getWavefunction()->evaluateAll();
+            psi_bar_psi += tmp2;
+            psi_bar_psi_EL += tmp2 * tmp1;
         }
         
     }
+
 
     energy = energy/this->Nsteps/(1-this->InitialFraction);
     energy2 = energy2/this->Nsteps/(1-this->InitialFraction);

@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
     double omegaZ = 1.0; 
 
     // Information for the wavefunction
-    double alpha = 0.60; // variational parameter
+    double alpha = 0.50; // variational parameter
     const double beta = 1.0; // Only for asymmetrical wavefunction
 
     // Gradient descent
@@ -81,44 +81,29 @@ int main(int argc, char *argv[]){
     system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
 
-    auto start = chrono::steady_clock::now(); // Store starting time to measure run time
+    cout << system.getSolver()->solve(false)[0] << endl;
+    cout << system.getSolver()->solve(false)[0] << endl;
+    cout << system.getSolver()->solve(false)[0] << endl;
+
+    //vector<vector<double>> res = functions.solve_varying_N({2, 3, 4, 5});
+    //for(vector<double> r : res) cout << scientific << setprecision(5) << "energy: " << r[0] << "\t variance: " << r[1] << "\t acceptance: " << r[2] << endl; 
+
+    /*auto start = chrono::steady_clock::now(); // Store starting time to measure run time
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
+     cout << fixed << setprecision(5) << r[0] << "\t" << r[1] << "\t" << r[2] << endl;
+    
+    cout << endl << "Simulation termined. Simulation time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/
 
-
-    for(int n=2; n<100; n++){
-        cout << "N particles: " << n << "\t";
-        system.addParticle(1.0, {0.0, 0.0, 0.0});
-
-        // Gradient descent
-        start = chrono::steady_clock::now(); // Store starting time to measure run time
-        alpha = functions.gradientDescent(alpha, gamma, tolerance, Nmax_gradient, Nsteps);
-        stop = chrono::steady_clock::now(); // Store starting time to measure run time
-        diff = stop - start; // Time difference
-        cout << "Best alpha found. Time taken: " << chrono::duration <double, milli> (diff).count()/1000 << " s \t Best alpha: " << alpha << endl; // Print run time
-
-        // Final simulation
-        system.getSolver()->setNsteps(Nsteps_final);
-        start = chrono::steady_clock::now();
-        vector<double> res = system.getSolver()->solve(false);
-        stop = chrono::steady_clock::now();
-        cout << fixed << setprecision(5) << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
-        diff = stop - start; // Time difference
-        
-        //functions.solve_varying_alpha((double) 0.3, (double) 0.7, (int) 4);
-        
-        cout << endl << "Simulation termined. Simulation time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time
-
-        // Sasha's part
-        /*ofstream myfile;
-        myfile.open ("energy.dat");
-        //myfile << "energy" << endl;
-        int i; 
-        for(i=0;i<100;i++){
-            vector<double> res = system.getSolver()->solve(h);
-            myfile << fixed << setprecision(24) << res[0] << endl;
-            cout << fixed << setprecision(24) << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
-        }*/
-    }
+    // Sasha's part
+    /*ofstream myfile;
+    myfile.open ("energy.dat");
+    //myfile << "energy" << endl;
+    int i; 
+    for(i=0;i<100;i++){
+        vector<double> res = system.getSolver()->solve(h);
+        myfile << fixed << setprecision(24) << res[0] << endl;
+        cout << fixed << setprecision(24) << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
+    }*/
 
 }

@@ -58,5 +58,17 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     return alpha;
 
 }
+vector<vector<double>> Functions::solve_varying_N(vector<int> N){
+    vector<vector<double>> res(N.size());
+    for(int n=0; n<N.size(); n++){
+        cout << n << " " << this->system->getNParticles() << " " << n - this->system->getNParticles() << endl;
+        for(int i=0; i<(N[n] - this->system->getNParticles()); i++){
+            this->system->addParticle(1.0, {0.0, 0.0, 0.0});
+        }           
+        res[n] = this->system->getSolver()->solve(false); 
+        cout << this->system->getNParticles() << " ";
+    }
+    return res;
+}
 
 void printToFile(double val, ofstream f, string s) {f << val << s;}
