@@ -25,9 +25,34 @@ System::System(int dim, int Npart) : relative_position(Npart), relative_distance
     }
 }
 
-/* Add a particle by adding a new pointer to the vector of pointer - not tested yet */
+/* Add a particle by adding a new pointer to the vector of pointers - not tested yet */
 void System::addParticle(double mass, vector<double> pos){
+    int i = this->Nparticles;
+    vector<double> pos_i(3), pos_j(3), rel_pos(3);
+    vector<vector<double>> y(i+1);
+    vector<double> x(i+1);
+    for(int k=0; k<i; k++){
+        this->relative_position[k].push_back({0.0, 0.0, 0.0});
+        this->relative_distance[k].push_back(0.0);
+        y[k].resize(3, 0.0);
+    }
+    y[i].resize(3, 0.0);
     this->particles.push_back(new Particle(this, mass, pos));
+    this->relative_position.push_back(y);
+    this->relative_distance.push_back(x);
+    if (this->usematrix){
+        pos_i = this->getParticles()[i]->getPosition();
+        for(int j=0; j<this->Nparticles; j++){
+            pos_j = this->getParticles()[j]->getPosition();
+            transform(pos_i.begin(), pos_i.end(), pos_j.begin(), rel_pos.begin(), minus<double>());
+            this->relative_position[j][i] = rel_pos;
+            transform(rel_pos.begin(), rel_pos.end(), rel_pos.begin(), bind1st(multiplies<double>(), -1.0));
+            this->relative_position[j][i] = rel_pos;
+            this->relative_distance[i][j] = sqrt(this->r2(this->relative_position[i][j], (double) 1.0));
+            this->relative_distance[j][i] = this->relative_distance[i][j];
+        }
+        fill(this->relative_position[i][i].begin(), this->relative_position[i][i].end(), 0.0);
+    }
     this->Nparticles++;
 }
 
@@ -70,7 +95,7 @@ void System::EvaluateRelativePosition(){
 
     vector<double> rel_pos(this->dimension, 0.0);
     vector<double> pos_i(this->dimension, 0.0);
-    vector<double> pos_j(this->dimension, 0.0);         
+    vector<double> pos_j(this->dimension, 0.0);
 
     for(int i=0; i<this->Nparticles; i++){
         pos_i = this->getParticles()[i]->getPosition();

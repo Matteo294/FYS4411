@@ -3,6 +3,7 @@
 #include <vector>
 #include <iomanip>
 #include <cmath>
+#include <fstream>
 
 class Functions{
 
@@ -25,8 +26,12 @@ class Functions{
         **/
         vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt); 
 
-        // finds the best alpha parameter using gradient descent 
-        double gradientDescent(double inizialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);
+        /// Finds the best alpha parameter using gradient descent 
+        double gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);
 
+        /** Prints the value to the file followed by the string s. Set c as the separation character (e.g. "," for csv) or newline character
+         * \note That the file should already be open
+        **/
+        void printToFile(double val, ofstream f, string s);
 
 };

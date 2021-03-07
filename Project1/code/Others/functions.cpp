@@ -36,7 +36,7 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     this->system->getSolver()->setNsteps(Nsteps);
     int i=0;
     double alpha=initialAlpha, deltaAlpha=0.0;
-    vector<double> results;
+    vector<double> results(3);
 
     // first solve --> we generate the first alphanew
     this->system->getWavefunction()->setParameter(0, alpha);
@@ -45,11 +45,11 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     deltaAlpha = - gamma * results[2];
     alpha = alpha + deltaAlpha;
     i++;
-
+    
     while((i<Nmax) && (abs(deltaAlpha)>tolerance)){
         this->system->getWavefunction()->setParameter(0, alpha);
         results = this->system->getSolver()->solve((bool) 1);
-        cout << fixed << setprecision(8) << "iteration=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\taccepted=" << results[2] << endl;
+        //cout << fixed << setprecision(8) << "iteration=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\taccepted=" << results[2] << endl;
         deltaAlpha = - gamma * results[3];
         alpha = alpha + deltaAlpha;
         i++;
@@ -58,3 +58,5 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     return alpha;
 
 }
+
+void printToFile(double val, ofstream f, string s) {f << val << s;}

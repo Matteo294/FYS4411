@@ -29,8 +29,8 @@ vector<double> Metropolis::solve(bool allAverages){
     }
     
     if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
-
-
+    
+    
     //MCsteps
     //#pragma omp parallel for reduction(+:energy) reduction(+:energy2) \
     //firstprivate(gen, idx, pos_old, psi_old, pos_var, j, psi_new, last_accepted, tmp1, tmp2, psi_bar_psi, psi_bar_psi_EL) \
