@@ -34,11 +34,7 @@ int main(){
     double omegaZ = 1.0;
     const double beta = 1.0;
     const double a = 0.0;
-    /*
-    double omegaZ = 2.82843;
-    const double beta = 2.82843;
-    const double a = 0.0043;
-    */
+    const double h = 1e-5;
 
     // Plotting flags: turn True to save data to make the plots
     bool dt_analysis = false;
