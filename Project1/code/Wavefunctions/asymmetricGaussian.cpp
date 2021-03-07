@@ -1,5 +1,7 @@
 #include "asymmetricGaussian.h"
 
+AsymmetricGaussian::~AsymmetricGaussian(){};
+
 AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, double a) : Wavefunction(s, 3){
     assert(s->getDimension() == 3); // Works only in 3D
     this->setParameter(0, alpha);

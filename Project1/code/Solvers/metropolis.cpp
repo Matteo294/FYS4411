@@ -1,5 +1,7 @@
 #include "metropolis.h"
 
+Metropolis::~Metropolis(){};
+
 Metropolis::Metropolis(System* system, int Nsteps, double initialFraction, double step) : Solver(system, Nsteps, initialFraction){
     this->step = step;
 }

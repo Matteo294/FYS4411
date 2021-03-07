@@ -1,0 +1,76 @@
+\hypertarget{classGaussian}{}\doxysection{Gaussian Class Reference}
+\label{classGaussian}\index{Gaussian@{Gaussian}}
+Inheritance diagram for Gaussian\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classGaussian}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classGaussian_a8592e6f15e965514cc28079a9812b930}\label{classGaussian_a8592e6f15e965514cc28079a9812b930}} 
+{\bfseries Gaussian} (class \mbox{\hyperlink{classSystem}{System}} $\ast$s, double alpha)
+\item 
+double \mbox{\hyperlink{classGaussian_a6d4fb1443d473d5ed637e946c37a5e7a}{evaluate\+All}} ()
+\item 
+double \mbox{\hyperlink{classGaussian_ade708a8e3126540b3c86035718ffce9f}{evaluate\+Sing}} (int part\+\_\+idx)
+\begin{DoxyCompactList}\small\item\em Evaluates the gaussian contribution relative to the part\+\_\+idx-\/th particle. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classGaussian_a52df05198c75dcd51cfda3de3f05b0d8}{numerical\+Second\+Derivative}} (int part\+\_\+idx, int direction, double h)
+\item 
+\mbox{\Hypertarget{classGaussian_aecc57afc7df33a91e496387db59f0092}\label{classGaussian_aecc57afc7df33a91e496387db59f0092}} 
+double \mbox{\hyperlink{classGaussian_aecc57afc7df33a91e496387db59f0092}{analytical\+Alpha\+Derivative}} ()
+\begin{DoxyCompactList}\small\item\em evaluates the analytical derivative with respect to alpha \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGaussian_af739599a0e8c6177be7ebf1a5d40e402}\label{classGaussian_af739599a0e8c6177be7ebf1a5d40e402}} 
+vector$<$ double $>$ \mbox{\hyperlink{classGaussian_af739599a0e8c6177be7ebf1a5d40e402}{Drift\+Force}} (int part\+\_\+idx)
+\begin{DoxyCompactList}\small\item\em evaluates the drift force associated to the part\+\_\+idx-\/th particle \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classGaussian_a6d4fb1443d473d5ed637e946c37a5e7a}\label{classGaussian_a6d4fb1443d473d5ed637e946c37a5e7a}} 
+\index{Gaussian@{Gaussian}!evaluateAll@{evaluateAll}}
+\index{evaluateAll@{evaluateAll}!Gaussian@{Gaussian}}
+\doxysubsubsection{\texorpdfstring{evaluateAll()}{evaluateAll()}}
+{\footnotesize\ttfamily double Gaussian\+::evaluate\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classWavefunction_a311dffd78692143dccdf167ba3bfacb9}{Wavefunction\+::evaluate\+All()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{classWavefunction_a311dffd78692143dccdf167ba3bfacb9}{Wavefunction}}.
+
+\mbox{\Hypertarget{classGaussian_ade708a8e3126540b3c86035718ffce9f}\label{classGaussian_ade708a8e3126540b3c86035718ffce9f}} 
+\index{Gaussian@{Gaussian}!evaluateSing@{evaluateSing}}
+\index{evaluateSing@{evaluateSing}!Gaussian@{Gaussian}}
+\doxysubsubsection{\texorpdfstring{evaluateSing()}{evaluateSing()}}
+{\footnotesize\ttfamily double Gaussian\+::evaluate\+Sing (\begin{DoxyParamCaption}\item[{int}]{part\+\_\+idx }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Evaluates the gaussian contribution relative to the part\+\_\+idx-\/th particle. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classGaussian_a6d4fb1443d473d5ed637e946c37a5e7a}{evaluate\+All()}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{classWavefunction_afc94154375eab6ce6e5e2cd301ac735a}{Wavefunction}}.
+
+\mbox{\Hypertarget{classGaussian_a52df05198c75dcd51cfda3de3f05b0d8}\label{classGaussian_a52df05198c75dcd51cfda3de3f05b0d8}} 
+\index{Gaussian@{Gaussian}!numericalSecondDerivative@{numericalSecondDerivative}}
+\index{numericalSecondDerivative@{numericalSecondDerivative}!Gaussian@{Gaussian}}
+\doxysubsubsection{\texorpdfstring{numericalSecondDerivative()}{numericalSecondDerivative()}}
+{\footnotesize\ttfamily double Gaussian\+::numerical\+Second\+Derivative (\begin{DoxyParamCaption}\item[{int}]{part\+\_\+idx,  }\item[{int}]{direction,  }\item[{double}]{h }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Evaluates numerically the second derivative with respect to the coordinate \char`\"{}direction\char`\"{} of particle \char`\"{}part\+\_\+idx\char`\"{}. The derivative is evaluated in the point in which the particles are in this moment. direction can be 0 (x), 1 (y), 2 (z), accordingly to the dimension of the system chosen. 
+
+Implements \mbox{\hyperlink{classWavefunction_a588aea4b63cc4a989778b49bedbaa84e}{Wavefunction}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Wavefunctions/gaussian.\+h\item 
+Wavefunctions/gaussian.\+cpp\end{DoxyCompactItemize}

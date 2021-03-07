@@ -1,5 +1,7 @@
 #include "solver.h"
 
+Solver::~Solver(){};
+
 Solver::Solver(System* system, int Nsteps, double initialFraction){
     this->system = system;
     this->Nsteps=Nsteps;

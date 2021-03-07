@@ -19,25 +19,30 @@ using namespace std;
 
 int main(){
 
+    // Information for the system
     const int dimension = 3;
     const int Nparticles = 10;
 
+    // Information for the solvers
     const int Nsteps = (int) 1e4;
     const int Nsteps_final = (int) 1e7;
-    const double initialFraction = 0.1;
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
-    double omegaXY = 1.0;
-    const double alpha = 0.50;
+    
+    // Information for the hamiltonian
+    const double a = 0.0; // Set the radius of the particles. a=0 is the non-interacting case
+    double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
+    double omegaZ = 1.0; 
 
-    double omegaZ = 1.0;
-    const double beta = 1.0;
-    const double a = 0.0;
-    const double h = 1e-5;
-
-    // Plotting flags: turn True to save data to make the plots
-    bool dt_analysis = false;
+    // Information for the wavefunction
+    const double alpha = 0.50; // variational parameter
+    const double beta = 1.0; // Only for asymmetrical wavefunction
+    
+    // Others
+    const double h = 1e-5; // Steplength for numerical derivatives and evaluations
+    const double initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
+    bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots
 
     System system(dimension, Nparticles);
 
@@ -61,13 +66,12 @@ int main(){
     system.setHamiltonian(&elliptical);
     system.setWavefunction(&asymmgaussian);
     system.setSolver(&metropolis);
-    //system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
 
     vector<double> res = system.getSolver()->solve(false);
-    cout << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
+    cout << fixed << setprecision(5) << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
     
     //functions.solve_varying_alpha((double) 0.3, (double) 0.7, (int) 4);
     
@@ -76,7 +80,7 @@ int main(){
     cout << endl << "Simulation termined. Simulation time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl << endl; // Print run time
 
     // Sasha's part
-    ofstream myfile;
+    /*ofstream myfile;
     myfile.open ("energy.dat");
     //myfile << "energy" << endl;
     int i; 
@@ -84,6 +88,6 @@ int main(){
         vector<double> res = system.getSolver()->solve(h);
         myfile << fixed << setprecision(24) << res[0] << endl;
         cout << fixed << setprecision(24) << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
-    } 
+    }*/
 
 }

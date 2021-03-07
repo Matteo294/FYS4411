@@ -1,6 +1,7 @@
 #include "functions.h"
 
 Functions::Functions(System* system) { this->system = system;}
+Functions::~Functions(){};
 
 
 

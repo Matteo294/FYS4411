@@ -1,0 +1,153 @@
+\hypertarget{classSystem}{}\doxysection{System Class Reference}
+\label{classSystem}\index{System@{System}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSystem_a09086c2feb35c171c50c6148bbc1cd08}\label{classSystem_a09086c2feb35c171c50c6148bbc1cd08}} 
+{\bfseries System} (int dim, int Npart)
+\item 
+\mbox{\Hypertarget{classSystem_a379bdcf6b2dcc2b6975d0af37f5395df}\label{classSystem_a379bdcf6b2dcc2b6975d0af37f5395df}} 
+class \mbox{\hyperlink{classHamiltonian}{Hamiltonian}} $\ast$ {\bfseries get\+Hamiltonian} ()
+\item 
+\mbox{\Hypertarget{classSystem_abdaeafc595f6cc02b6e010948cdc33ac}\label{classSystem_abdaeafc595f6cc02b6e010948cdc33ac}} 
+class \mbox{\hyperlink{classWavefunction}{Wavefunction}} $\ast$ {\bfseries get\+Wavefunction} ()
+\item 
+\mbox{\Hypertarget{classSystem_a3a3b38097417f0852da6d7253d436701}\label{classSystem_a3a3b38097417f0852da6d7253d436701}} 
+class \mbox{\hyperlink{classSolver}{Solver}} $\ast$ {\bfseries get\+Solver} ()
+\item 
+\mbox{\Hypertarget{classSystem_adbc86fb5a63405f36548faca12a39f22}\label{classSystem_adbc86fb5a63405f36548faca12a39f22}} 
+class \mbox{\hyperlink{classRandomGenerator}{Random\+Generator}} $\ast$ {\bfseries get\+Random\+Generator} ()
+\item 
+\mbox{\Hypertarget{classSystem_a4af836fc663b73431155d05eee190946}\label{classSystem_a4af836fc663b73431155d05eee190946}} 
+int {\bfseries get\+Dimension} ()
+\item 
+\mbox{\Hypertarget{classSystem_a4af97e1f63850ff18861845c68e51f9b}\label{classSystem_a4af97e1f63850ff18861845c68e51f9b}} 
+int {\bfseries get\+NParticles} ()
+\item 
+\mbox{\Hypertarget{classSystem_ad897ec82986dd8f1b16a1145fab2608a}\label{classSystem_ad897ec82986dd8f1b16a1145fab2608a}} 
+vector$<$ class \mbox{\hyperlink{classParticle}{Particle}} $\ast$ $>$ {\bfseries get\+Particles} ()
+\item 
+bool \mbox{\hyperlink{classSystem_a20f8c18b0e417f3db90fe3d83f5ee6e7}{get\+Use\+Matrix}} ()
+\item 
+\mbox{\Hypertarget{classSystem_a1ec4fa47a6aabc7ba000c0667ba7b486}\label{classSystem_a1ec4fa47a6aabc7ba000c0667ba7b486}} 
+void {\bfseries set\+Hamiltonian} (class \mbox{\hyperlink{classHamiltonian}{Hamiltonian}} $\ast$hamiltonian)
+\item 
+\mbox{\Hypertarget{classSystem_ab4a366874451ea9052baf8bab3e53c3f}\label{classSystem_ab4a366874451ea9052baf8bab3e53c3f}} 
+void {\bfseries set\+Solver} (class \mbox{\hyperlink{classSolver}{Solver}} $\ast$solver)
+\item 
+\mbox{\Hypertarget{classSystem_a79699e1c9c050b9508db1380bd7bdb41}\label{classSystem_a79699e1c9c050b9508db1380bd7bdb41}} 
+void {\bfseries set\+Wavefunction} (class \mbox{\hyperlink{classWavefunction}{Wavefunction}} $\ast$wavefunction)
+\item 
+\mbox{\Hypertarget{classSystem_ad21406cdfd1387748ef539d28c824246}\label{classSystem_ad21406cdfd1387748ef539d28c824246}} 
+void {\bfseries set\+Random\+Generator} (class \mbox{\hyperlink{classRandomGenerator}{Random\+Generator}} $\ast$randomgenerator)
+\item 
+void \mbox{\hyperlink{classSystem_ab09ebe2bea58668a9f41fdab5d3c84c9}{set\+Use\+Matrix}} (bool usematrix)
+\item 
+\mbox{\Hypertarget{classSystem_af17119aca8364f0ddccb3ece6818e61f}\label{classSystem_af17119aca8364f0ddccb3ece6818e61f}} 
+void {\bfseries add\+Particle} (double mass, vector$<$ double $>$ pos)
+\item 
+\mbox{\Hypertarget{classSystem_ad1d0cde3fe6392a9fb2672413bab30db}\label{classSystem_ad1d0cde3fe6392a9fb2672413bab30db}} 
+double \mbox{\hyperlink{classSystem_ad1d0cde3fe6392a9fb2672413bab30db}{r2}} (double parameter)
+\begin{DoxyCompactList}\small\item\em Evaluates the squared distance of particles and sums. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSystem_acf6ad9a7c43e5cf32a0eee01af3b3a70}\label{classSystem_acf6ad9a7c43e5cf32a0eee01af3b3a70}} 
+double \mbox{\hyperlink{classSystem_acf6ad9a7c43e5cf32a0eee01af3b3a70}{r2}} (vector$<$ double $>$ vect, double parameter)
+\begin{DoxyCompactList}\small\item\em Evaluates the sum of the square of the vector components. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSystem_ac4a2645e1647e80451bc01d044cb58b7}\label{classSystem_ac4a2645e1647e80451bc01d044cb58b7}} 
+double \mbox{\hyperlink{classSystem_ac4a2645e1647e80451bc01d044cb58b7}{cdot}} (vector$<$ double $>$ v1, vector$<$ double $>$ v2)
+\begin{DoxyCompactList}\small\item\em Scalar product between vector 1 and vector 2. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSystem_ad1b8b67f4c901f8b4d149e1c54320834}{Evaluate\+Relative\+Distance}} ()
+\begin{DoxyCompactList}\small\item\em Updates the relative\+\_\+distance matrix. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSystem_ae9f2c4cbcc609ab00f3dce9c2e1d4394}{Evaluate\+Relative\+Position}} ()
+\begin{DoxyCompactList}\small\item\em Updates the relative position matrix. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSystem_a2b41b18303f72fd65b1b474c3fd9d46c}{Evaluate\+Relative\+Position}} (int idx)
+\begin{DoxyCompactList}\small\item\em Updates a special row of the relative position matrix. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSystem_a0c655ebde25e61528bc504457efb6573}{Evaluate\+Relative\+Distance}} (int idx)
+\begin{DoxyCompactList}\small\item\em Updates a special row of the relative distance matrix. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSystem_aaf323ad914a9268970e4753f01d85d0f}\label{classSystem_aaf323ad914a9268970e4753f01d85d0f}} 
+vector$<$ vector$<$ vector$<$ double $>$ $>$ $>$ \mbox{\hyperlink{classSystem_aaf323ad914a9268970e4753f01d85d0f}{relative\+\_\+position}}
+\begin{DoxyCompactList}\small\item\em NxN matrix of 3d vectors. The ij-\/th element is a 3D vector containing posi -\/ posj. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSystem_aca1d4574b208021bceab2818847e94fd}\label{classSystem_aca1d4574b208021bceab2818847e94fd}} 
+vector$<$ vector$<$ double $>$ $>$ \mbox{\hyperlink{classSystem_aca1d4574b208021bceab2818847e94fd}{relative\+\_\+distance}}
+\begin{DoxyCompactList}\small\item\em NxN matrix of doubles. The ij-\/th element is the distance between particle i and particle j. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classSystem_ad1b8b67f4c901f8b4d149e1c54320834}\label{classSystem_ad1b8b67f4c901f8b4d149e1c54320834}} 
+\index{System@{System}!EvaluateRelativeDistance@{EvaluateRelativeDistance}}
+\index{EvaluateRelativeDistance@{EvaluateRelativeDistance}!System@{System}}
+\doxysubsubsection{\texorpdfstring{EvaluateRelativeDistance()}{EvaluateRelativeDistance()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void System\+::\+Evaluate\+Relative\+Distance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Updates the relative\+\_\+distance matrix. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classSystem_aca1d4574b208021bceab2818847e94fd}{relative\+\_\+distance}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classSystem_a0c655ebde25e61528bc504457efb6573}\label{classSystem_a0c655ebde25e61528bc504457efb6573}} 
+\index{System@{System}!EvaluateRelativeDistance@{EvaluateRelativeDistance}}
+\index{EvaluateRelativeDistance@{EvaluateRelativeDistance}!System@{System}}
+\doxysubsubsection{\texorpdfstring{EvaluateRelativeDistance()}{EvaluateRelativeDistance()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void System\+::\+Evaluate\+Relative\+Distance (\begin{DoxyParamCaption}\item[{int}]{idx }\end{DoxyParamCaption})}
+
+
+
+Updates a special row of the relative distance matrix. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classSystem_aca1d4574b208021bceab2818847e94fd}{relative\+\_\+distance}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classSystem_ae9f2c4cbcc609ab00f3dce9c2e1d4394}\label{classSystem_ae9f2c4cbcc609ab00f3dce9c2e1d4394}} 
+\index{System@{System}!EvaluateRelativePosition@{EvaluateRelativePosition}}
+\index{EvaluateRelativePosition@{EvaluateRelativePosition}!System@{System}}
+\doxysubsubsection{\texorpdfstring{EvaluateRelativePosition()}{EvaluateRelativePosition()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void System\+::\+Evaluate\+Relative\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Updates the relative position matrix. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classSystem_aaf323ad914a9268970e4753f01d85d0f}{relative\+\_\+position}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classSystem_a2b41b18303f72fd65b1b474c3fd9d46c}\label{classSystem_a2b41b18303f72fd65b1b474c3fd9d46c}} 
+\index{System@{System}!EvaluateRelativePosition@{EvaluateRelativePosition}}
+\index{EvaluateRelativePosition@{EvaluateRelativePosition}!System@{System}}
+\doxysubsubsection{\texorpdfstring{EvaluateRelativePosition()}{EvaluateRelativePosition()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void System\+::\+Evaluate\+Relative\+Position (\begin{DoxyParamCaption}\item[{int}]{idx }\end{DoxyParamCaption})}
+
+
+
+Updates a special row of the relative position matrix. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classSystem_aaf323ad914a9268970e4753f01d85d0f}{relative\+\_\+position}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classSystem_a20f8c18b0e417f3db90fe3d83f5ee6e7}\label{classSystem_a20f8c18b0e417f3db90fe3d83f5ee6e7}} 
+\index{System@{System}!getUseMatrix@{getUseMatrix}}
+\index{getUseMatrix@{getUseMatrix}!System@{System}}
+\doxysubsubsection{\texorpdfstring{getUseMatrix()}{getUseMatrix()}}
+{\footnotesize\ttfamily bool System\+::get\+Use\+Matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classSystem_aaf323ad914a9268970e4753f01d85d0f}{relative\+\_\+position}}, \mbox{\hyperlink{classSystem_aca1d4574b208021bceab2818847e94fd}{relative\+\_\+distance}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classSystem_ab09ebe2bea58668a9f41fdab5d3c84c9}\label{classSystem_ab09ebe2bea58668a9f41fdab5d3c84c9}} 
+\index{System@{System}!setUseMatrix@{setUseMatrix}}
+\index{setUseMatrix@{setUseMatrix}!System@{System}}
+\doxysubsubsection{\texorpdfstring{setUseMatrix()}{setUseMatrix()}}
+{\footnotesize\ttfamily void System\+::set\+Use\+Matrix (\begin{DoxyParamCaption}\item[{bool}]{usematrix }\end{DoxyParamCaption})}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classSystem_aaf323ad914a9268970e4753f01d85d0f}{relative\+\_\+position}}, \mbox{\hyperlink{classSystem_aca1d4574b208021bceab2818847e94fd}{relative\+\_\+distance}} 
+\end{DoxySeeAlso}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+System/system.\+h\item 
+System/system.\+cpp\end{DoxyCompactItemize}

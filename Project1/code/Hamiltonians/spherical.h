@@ -5,14 +5,17 @@
 class Spherical: public Hamiltonian{
     public:
 
-        // Constructor
+        // Constructor and destructor
         Spherical(class System* system, double omega);
+        ~Spherical();
 
         // Getters
         double getOmega() {return this->omega;}
 
-        //Other functions
+        // Other functions
+        /// \see LocalEnergyNumeric(double h), Hamiltonian::LocalEnergyAnalytic()
         double LocalEnergyAnalytic();
+        /// \see LocalEnergyAnalytic(), Hamiltonian::LocalEnergyNumeric()
         double LocalEnergyNumeric(double h);
 
     private:

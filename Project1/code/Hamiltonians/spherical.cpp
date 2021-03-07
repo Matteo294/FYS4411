@@ -1,5 +1,7 @@
 #include "spherical.h"
 
+Spherical::~Spherical(){};
+
 Spherical::Spherical(System* system, double omega) : Hamiltonian(system){
     this->omega=omega;
 }

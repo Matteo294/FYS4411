@@ -7,6 +7,7 @@ using namespace std;
 class Solver{
     public:
         Solver(class System* system, int Nsteps, double initialFraction);
+        ~Solver();
 
     // Getters
         int getNsteps();
@@ -17,9 +18,14 @@ class Solver{
         void setInitialFraction(double initialFraction);
 
     // Other functions & attributes
-        // performs a MC simulation to evaluate the energy and the std on the energy.
-        // if allAverages = 1 --> evaluates the derivative of the mean value of the energy with respect to alpha
+        /** Performs a MC simulation to evaluate the energy of the ground state of the system
+         *  if allAverages = 1 --> evaluates the derivative of the mean value of the energy with respect to alpha
+        **/
         virtual vector<double> solve(bool allAverages) = 0;
+        /** Performs a MC simulation to evaluate the energy of the ground state of the system
+         *  This function overrides solve(bool allAverages) fro numerical evaluations. 
+         * The parameter h is the steplength used to evaluat numerical derivatives 
+         **/
         virtual vector<double> solve(double h) = 0; // override when numerical local energy
         class System* system;
 

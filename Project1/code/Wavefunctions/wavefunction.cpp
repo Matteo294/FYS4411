@@ -1,5 +1,7 @@
 #include "wavefunction.h"
 
+Wavefunction::~Wavefunction(){};
+
 Wavefunction::Wavefunction(System *s, int nparams){
     this->s = s; // Simply saves the system pointer in the class
     this->params.resize(nparams, 0.0); // Set number of parameters, set all parameters to 0

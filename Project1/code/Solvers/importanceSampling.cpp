@@ -1,6 +1,8 @@
 #include "importanceSampling.h"
 #include <fstream>
 
+ImportanceSampling::~ImportanceSampling(){};
+
 ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initialFraction, double dt, double D) : Solver(system, Nsteps, initialFraction){
     this->dt=dt;
     this->D = D;

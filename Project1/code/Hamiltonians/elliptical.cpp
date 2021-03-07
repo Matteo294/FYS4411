@@ -1,5 +1,7 @@
 #include "elliptical.h"
 
+Elliptical::~Elliptical(){};
+
 Elliptical::Elliptical(System* system, double omegaXY, double omegaZ) : Hamiltonian(system){
     this->omegaXY = omegaXY;
     this->omegaZ = omegaZ;
