@@ -79,4 +79,15 @@ int main(){
     auto diff = stop - start; // Time difference
     cout << endl << "Simulation termined. Simulation time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl << endl; // Print run time
 
+    // Sasha's part
+    ofstream myfile;
+    myfile.open ("energy.dat");
+    //myfile << "energy" << endl;
+    int i; 
+    for(i=0;i<100;i++){
+        vector<double> res = system.getSolver()->solve(h);
+        myfile << fixed << setprecision(24) << res[0] << endl;
+        cout << fixed << setprecision(24) << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
+    } 
+
 }
