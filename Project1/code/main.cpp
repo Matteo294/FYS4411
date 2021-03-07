@@ -17,7 +17,15 @@
 #include "Others/functions.h"
 using namespace std;
 
-int main(){
+int main(int argc, char *argv[]){
+
+    // Select working mode
+    int selector = 0;
+    if(argc>1){
+        int a = stoi(argv[1]);
+        assert(a>0 && a<2);
+        selector = stoi(argv[1]);
+    }
 
     // Information for the system
     const int dimension = 3;
