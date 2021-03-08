@@ -12,15 +12,13 @@ System::System(int dim, int Npart) : relative_position(Npart), relative_distance
     this->Nparticles=Npart;
     this->usematrix = true; // this will be adjusted within the wavefunction class
 
+    this->particles.resize(Nparticles);
+
     vector<double> pos(dim, 0.0);
+    #pragma omp parallel for shared(pos)
     for(int i=0; i<Npart; i++){
         this->relative_distance[i].resize(this->Nparticles, 0);
         this->relative_position[i].resize(this->Nparticles, pos);
-    }
-
-    this->particles.resize(Nparticles);
-
-    for(int i=0; i<this->Nparticles; i++){
         this->particles[i] = new Particle(this, 1.0, pos);
     }
 }
@@ -42,6 +40,7 @@ void System::addParticle(double mass, vector<double> pos){
     this->relative_distance.push_back(x);
     if (this->usematrix){
         pos_i = this->getParticles()[i]->getPosition();
+        #pragma omp parallel for default(shared) private(pos_j)
         for(int j=0; j<this->Nparticles; j++){
             pos_j = this->getParticles()[j]->getPosition();
             transform(pos_i.begin(), pos_i.end(), pos_j.begin(), rel_pos.begin(), minus<double>());

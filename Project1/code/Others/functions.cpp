@@ -6,33 +6,33 @@ Functions::~Functions(){};
 
 vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas, bool toFile) {
     
-    vector<vector<double>> results(Nalphas + 1, vector<double>(4));
+    vector<vector<double>> results(Nalphas + 1);
     vector<double> results_prov(3, 0.0);
     int i=0, j=0, k=0, idx=0;
-
-    cout << toFile;
+    double kalpha;
 
     if(toFile){
         this->alphaFile.open("./plotting/data/varying_alpha.csv");
-        this->alphaFile << "alpha,energy,std";
+        this->alphaFile << "alpha,energy,std,acceptance";
     }
 
     for(k=0; k<=Nalphas; k++){
         // initialize random variable
         random_device rd;
         mt19937_64 gen(rd());
+        results[k].resize(3);
+
+        kalpha = alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas;
 
         // set alpha
-        this->system->getWavefunction()->setParameter(0, alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas );
+        this->system->getWavefunction()->setParameter(0, kalpha);
+        results[k] = this->system->getSolver()->solve(false);
         
         // solve
-        results_prov = this->system->getSolver()->solve((bool) 0);
-        
-        results[k] = {alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas, results_prov[0], results_prov[1], results_prov[2]};
-        cout << fixed << setprecision(5) << "alpha: " << results[k][0] << "\t ";
+        cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
         this->printResultsSolver(results[k]);
         cout << endl;
-        if(toFile) this->alphaFile << endl << results[k][0]/this->system->getNParticles() << "," << results[k][1] << "," << results[k][2];
+        if(toFile) this->alphaFile << endl << kalpha << "," << results[k][0]/this->system->getNParticles() << "," << results[k][1] << "," << results[k][2];
     }
     if(toFile) this->alphaFile.close();
 
@@ -137,5 +137,5 @@ void Functions::printPresentation(){
 }
 
 void Functions::printResultsSolver(vector<double> res){
-    cout << scientific << setprecision(5) << "energy: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
+    cout << scientific << setprecision(5) << "E/N: " << res[0]/this->system->getNParticles() << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
 }

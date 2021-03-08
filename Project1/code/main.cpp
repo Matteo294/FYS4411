@@ -19,20 +19,24 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 
-    // Select working mode
+
+
+    // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
     int selector = 0;
     if(argc>1){
         int a = stoi(argv[1]);
-        assert(a>0 && a<2);
+        assert(a>0 && a<4);
         selector = stoi(argv[1]);
     }
 
+
+
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 1;
+    const int Nparticles = 3;
 
     // Information for the solvers
-    const int Nsteps_final = (int) 1e6; // MC steps for the final simulation
+    const int Nsteps_final = (int) 1e5; // MC steps for the final simulation
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
@@ -57,20 +61,28 @@ int main(int argc, char *argv[]){
     const float initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
     bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots
 
+
+
+
     // Parameters for the various type of simulations
+
     // Mode 1 - varying alpha
-    const double alpha_min = 0.2; // in mode 1 (varying alpha) minimum alpha
-    const double alpha_max = 0.8; // in mode 2 (varying alpha) maximum alpha
+    const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
+    const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
     const int N_alpha = 100; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
     const bool alpha_to_file = true; // set true to save data to file
+
     // Mode 2 - varying dt
-    const double dt_min = 1e-8; // in mode 2 (varying dt) minimum dt
-    const double dt_max = 1e-2; // in mode 2 (varying dt) maximum dt
-    const int N_dt = 10; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = false; // set true to save data to file
+    const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
+    const double dt_max = 1e3; // in mode 2 (varying dt) maximum dt
+    const int N_dt = 100; // in mode 2 (varying dt) number of different dts between dt_min dt_max
+    const bool dt_to_file = true; // set true to save data to file
+
     // Mode 3 - varying N
     vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = false; // set true to save data to file
+    const bool N_to_file = true; // set true to save data to file
+
+
 
     System system(dimension, Nparticles);
 
@@ -83,16 +95,16 @@ int main(int argc, char *argv[]){
     AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
 
     // Solvers
-    Metropolis metropolis(&system, Nsteps, initialFraction, step);
-    ImportanceSampling importance(&system, Nsteps, initialFraction, dt, D);
+    Metropolis metropolis(&system, Nsteps_final, initialFraction, step);
+    ImportanceSampling importance(&system, Nsteps_final, initialFraction, dt, D);
     
     // Others
     RandomGenerator randomgenerator;
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&elliptical);
-    system.setWavefunction(&asymmgaussian);
+    system.setHamiltonian(&spherical);
+    system.setWavefunction(&gaussian);
     system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
 
