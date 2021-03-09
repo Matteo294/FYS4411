@@ -25,6 +25,8 @@ class ImportanceSampling : public Solver{
         // Other functions and attributes
         /// \see Solver::solve(bool AllAverages)
         vector<double> solve(bool allAverages); // uses LocalEnergyAnalytic()
+        /// \see Solver::solve(double r_max, int N_bins)
+        vector<double> solve(double r_max, int N_bins); 
         /// \see Solver::solve(double h)
         vector<double> solve(double h); // uses LocalEnergyNumeric()
     

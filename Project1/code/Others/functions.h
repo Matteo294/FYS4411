@@ -31,7 +31,7 @@ class Functions{
         **/
         vector<vector<double>> solve_varying_N(vector<int> N, bool toFile);
         // solves for a bunch of dt values, uses solve((bool) 0), mandatory to use ImportanceSampling solver
-        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt, bool toFile); 
+        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt, bool toFile);
 
         /// Finds the best alpha parameter using gradient descent 
         double gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);
@@ -43,6 +43,6 @@ class Functions{
         void printPresentation();
         void printResultsSolver(vector<double> res);
     private:
-        ofstream alphaFile, dtFile, Nfile;
+        ofstream alphaFile, dtFile, Nfile, onebodyFile;
 
 };

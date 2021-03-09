@@ -62,7 +62,7 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
         kexp = expmin + k*expstep;
         kdt = exp10(kexp);
-        cout << kdt << " " << endl;
+        //cout << kdt << " " << endl;
 
         // set alpha
         this->system->getSolver()->setParameter(0, kdt);
@@ -72,7 +72,7 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
         
         results[k] = {kdt, results_prov[0], results_prov[1], results_prov[2]};
         cout << fixed << setprecision(5) << "dt: " << kdt << "\t";
-        this->printResultsSolver(results[k]);
+        this->printResultsSolver(results_prov);
         cout << endl;
         if(toFile) this->dtFile << endl << results[k][0]/this->system->getNParticles() << "," << results[k][1] << "," << results[k][2];
     }
@@ -102,6 +102,10 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     return alpha;
 
 }
+
+
+
+
 vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool toFile){
     vector<vector<double>> results(N.size());
 
@@ -123,6 +127,8 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool toFile){
     if(toFile) this->Nfile.close();
     return results;
 }
+
+
 
 void Functions::printToFile(double val, ofstream f, string s) {f << val << s;}
 

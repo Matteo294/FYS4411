@@ -19,21 +19,17 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 
-
-
     // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
     int selector = 0;
     if(argc>1){
         int a = stoi(argv[1]);
-        assert(a>0 && a<4);
+        assert(a>0 && a<5);
         selector = stoi(argv[1]);
     }
 
-
-
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 3;
+    const int Nparticles = 10;
 
     // Information for the solvers
     const int Nsteps_final = (int) 1e5; // MC steps for the final simulation
@@ -42,7 +38,7 @@ int main(int argc, char *argv[]){
     const double dt = 0.01; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.0; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
     double omegaZ = 1.0; 
 
@@ -59,8 +55,8 @@ int main(int argc, char *argv[]){
     // Others
     const double h = 1e-5; // Steplength for numerical derivatives and evaluations
     const float initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
-    bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots
-
+    bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots           // IS THIS USEFUL?
+    
 
 
 
@@ -69,18 +65,18 @@ int main(int argc, char *argv[]){
     // Mode 1 - varying alpha
     const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
     const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
-    const int N_alpha = 100; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
-    const bool alpha_to_file = true; // set true to save data to file
+    const int N_alpha = 10; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
+    const bool alpha_to_file = false; // set true to save data to file
 
     // Mode 2 - varying dt
     const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
     const double dt_max = 1e3; // in mode 2 (varying dt) maximum dt
-    const int N_dt = 100; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = true; // set true to save data to file
+    const int N_dt = 10; // in mode 2 (varying dt) number of different dts between dt_min dt_max
+    const bool dt_to_file = false; // set true to save data to file
 
     // Mode 3 - varying N
     vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = true; // set true to save data to file
+    const bool N_to_file = false; // set true to save data to file
 
 
 
@@ -103,8 +99,8 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
+    system.setHamiltonian(&elliptical);
+    system.setWavefunction(&asymmgaussian);
     system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
 
@@ -118,6 +114,7 @@ int main(int argc, char *argv[]){
         case 1: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
         case 2: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
         case 3: functions.solve_varying_N(Ns, N_to_file); break;
+        case 4: functions.printResultsSolver(system.getSolver()->solve((double) 3.0, (int) 100)); break;
     }
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
