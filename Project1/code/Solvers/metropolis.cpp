@@ -117,7 +117,7 @@ vector<double> Metropolis::solve(bool allAverages){
 
 
 /* here there are a LOT of things to fix, but we need to ask to morten before proceeding*/
-vector<double> Metropolis::solve(double h){
+vector<double> Metropolis::solve(double h, bool tofile=0){
     // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
@@ -164,13 +164,17 @@ vector<double> Metropolis::solve(double h){
             tmp = (double) this->system->getHamiltonian()->LocalEnergyNumeric(h);            
             energy += tmp;
             energy2 += tmp*tmp;
+            if (tofile){
+                energytofile << tmp << endl;
+            }
+            
         }
     }
 
     energy = energy/this->Nsteps/(1-this->InitialFraction);
     energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
     ratio_accepted = (double) accepted/this->Nsteps;
-
+    energytofile.close();
     return {energy, energy2 - pow(energy, 2), ratio_accepted};
 }
 

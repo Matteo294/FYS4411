@@ -18,6 +18,6 @@ class Metropolis : public Solver{
         /// \see Solver::solve(bool allAverages)
         vector<double> solve(bool allAverages); // uses LocalEnergyAnalytic()
         /// \see Solver::solve(double h)
-        vector<double> solve(double h); // uses LocalEnergyNumeric(double h)
+        vector<double> solve(double h, bool tofile); // uses LocalEnergyNumeric(double h)
 
 };

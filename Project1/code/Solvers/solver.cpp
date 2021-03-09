@@ -8,6 +8,7 @@ Solver::Solver(System* system, int Nsteps, double initialFraction, int nparams){
     this->InitialFraction=initialFraction;
     this->nparams=nparams;
     this->params.resize(nparams, 0.0);
+    this->energytofile.open("./variance/energyateverystep.dat");
 }
 
 
