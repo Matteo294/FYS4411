@@ -82,7 +82,7 @@ class dataAnalysisClass:
 
     # Blocking
     @timeFunction
-    def blocking(self, blockSizeMax = 10):
+    def blocking(self, blockSizeMax = 500):
         self.func_name = "blocking"
         blockSizeMin = 1
 
