@@ -13,7 +13,6 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, dou
 double AsymmetricGaussian::evaluateAll(){
     double arg = 0.0; // Keeps track of the sum inside the exponetial
     double f = 1.0; // this accounts for the interaction term that multipies the gaussian
-    double relative_dist=0.0;
     int k=0, j=0;
     
     for(int i=0; i<this->s->getNParticles(); i++){
@@ -76,5 +75,32 @@ double AsymmetricGaussian::psibar_psi(){
     return -this->s->r2(this->params[1]);
 }
 
-/* need to be fixed */
-double AsymmetricGaussian::numericalSecondDerivative(int part_idx, int direction, double h) {return 0.0;}
+
+double AsymmetricGaussian::numericalSecondDerivative(int part_idx, int direction, double h) {
+    assert( direction < this->s->getDimension() );
+    assert ( part_idx < this->s->getNParticles() );
+    double res = 0.0;
+
+    // initialize a vector for moving the particle
+    vector<double> pos_var(this->s->getDimension(), 0.0);
+    
+    // evaluate wf(x+h)
+    pos_var[direction] = h;
+    this->s->getParticles()[part_idx]->move(pos_var);
+    this->s->EvaluateRelativePosition(part_idx); this->s->EvaluateRelativeDistance(part_idx);
+    double wf_forw = this->evaluateAll();
+
+    // evaluate wf(x-h)
+    pos_var[direction] = -2*h;
+    this->s->getParticles()[part_idx]->move(pos_var);
+    this->s->EvaluateRelativePosition(part_idx); this->s->EvaluateRelativeDistance(part_idx);
+    double wf_back = this->evaluateAll();
+
+    // final result
+    pos_var[direction] = h;
+    this->s->getParticles()[part_idx]->move(pos_var); // particles returns to its original position
+    this->s->EvaluateRelativePosition(part_idx); this->s->EvaluateRelativeDistance(part_idx);
+    res = wf_back + wf_forw - 2 * this->evaluateAll();
+
+    return res/pow(h, 2);
+}

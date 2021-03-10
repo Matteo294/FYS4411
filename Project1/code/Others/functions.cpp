@@ -143,5 +143,5 @@ void Functions::printPresentation(){
 }
 
 void Functions::printResultsSolver(vector<double> res){
-    cout << scientific << setprecision(5) << "E/N: " << res[0]/this->system->getNParticles() << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
+    cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
 }
