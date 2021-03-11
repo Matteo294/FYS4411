@@ -7,7 +7,7 @@ DATA_ID = "./"
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
 
-infile = open(data_path("energyateverystep.dat"),'r')
+#infile = open(data_path("energyateverystep.dat"),'r')
 
 from numpy import log2, zeros, mean, var, sum, loadtxt, arange, array, cumsum, dot, transpose, diagonal, sqrt
 from numpy.linalg import inv
@@ -24,9 +24,9 @@ def block(x):
     for i in arange(0,d):
         n = len(x)
         # estimate autocovariance of x
-        gamma[i] = (n)**(-1)*sum( (x[0:(n-1)]-mu)*(x[1:n]-mu) )
+        #gamma[i] = (n)**(-1)*sum( (x[0:(n-1)]-mu)*(x[1:n]-mu) )
         # estimate variance of x
-        s[i] = var(x)
+        s[i] = var(x)/n
         # perform blocking transformation
         x = 0.5*(x[0::2] + x[1::2])
     
@@ -46,13 +46,19 @@ def block(x):
         print("Warning: Use more data")
     return mu, s[k]/2**(d-k)
     '''
+    return mu, s
 
 
-x = loadtxt(infile)
+x = loadtxt("energyateverystep.dat")
 (mean, var) = block(x) 
 std = sqrt(var)
+
 import pandas as pd
 from pandas import DataFrame
-data ={'Mean':[mean], 'STDev':[std]}
+import matplotlib.pyplot as plt
+import numpy as np
+data ={'Mean':[mean], 'STDev':[std[-1]]}
 frame = pd.DataFrame(data,index=['Values'])
 print(frame)
+plt.plot(np.arange(0, len(std), 1), std)
+plt.show()

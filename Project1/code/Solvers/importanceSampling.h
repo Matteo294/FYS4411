@@ -9,7 +9,7 @@ using namespace std;
 
 class ImportanceSampling : public Solver{
     public:
-        ImportanceSampling(class System* system, int Nsteps, double initialFraction, double dt, double D);
+        ImportanceSampling(class System* system, int Nsteps, double initialFraction, double dt, double D, bool tofile);
         ~ImportanceSampling();
         
         // Other functions and attributes
@@ -18,6 +18,8 @@ class ImportanceSampling : public Solver{
         /// \see Solver::solve(double r_max, int N_bins)
         vector<double> solve(double r_max, int N_bins); 
         /// \see Solver::solve(double h)
-        vector<double> solve(double h, bool tofile); // uses LocalEnergyNumeric()
+        vector<double> solve(double h); // uses LocalEnergyNumeric()
+        
+        void thermalize();
     
 };

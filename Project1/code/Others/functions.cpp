@@ -142,14 +142,3 @@ void Functions::printPresentation(){
 void Functions::printResultsSolver(vector<double> res){
     cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
 }
-
-void Functions::solveParallel(System* s1, System* s2, int N){
-    int Ni = (int) N/2;
-    #pragma omp sections
-    {
-       #pragma omp section
-       cout << s1->getSolver()->solve(false)[0] << endl;
-       #pragma omp section
-       cout << s2->getSolver()->solve(false)[0] << endl;
-    }
-}

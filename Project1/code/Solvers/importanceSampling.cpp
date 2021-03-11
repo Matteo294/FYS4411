@@ -4,13 +4,12 @@
 ImportanceSampling::~ImportanceSampling(){};
 
 
-ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initialFraction, double dt, double D) : Solver(system, Nsteps, initialFraction, 2){
+ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initialFraction, double dt, double D, bool tofile=0) : Solver(system, Nsteps, initialFraction, 2, tofile){
     this->setParameter(0, dt);
     this->setParameter(1, D);
 }
 
 vector<double> ImportanceSampling::solve(bool allAverages){
-    cout << "partito" << endl;
     random_device rd;
     mt19937_64 gen(rd());
         
@@ -28,18 +27,9 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     vector<double> drift_old(this->system->getDimension(), 0.0);
     vector<double> drift_new(this->system->getDimension(), 0.0);
 
-    for(i=0; i<this->system->getNParticles(); i++){
-        for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
-        }
-
-        this->system->getParticles()[i]->setPosition(pos_var);
-    }
-
-    if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
-
+    
     //MCsteps
-    for(i=1; i<this->Nsteps; i++){
+    for(i=1; i<=this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
@@ -72,31 +62,25 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             last_accepted = 1;
         }
 
-        if(i>=(int)(this->Nsteps*this->InitialFraction)){
+        if(i==1 || last_accepted){
+            tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
+        } 
 
-             if(i==(int)(this->Nsteps*this->InitialFraction)){
-                tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
-            } else {
-                if(last_accepted){
-                    tmp1 = this->system->getHamiltonian()->LocalEnergyAnalytic();
-                }
-            }
+        energy += tmp1;
+        energy2 += tmp1*tmp1;
 
-            energy += tmp1;
-            energy2 += tmp1*tmp1;
-
-            if (allAverages){
-                tmp2 = this->system->getWavefunction()->psibar_psi();
-                psi_bar_psi += tmp2;
-                psi_bar_psi_EL += tmp2 * tmp1;
-            }
+        if (allAverages){
+            tmp2 = this->system->getWavefunction()->psibar_psi();
+            psi_bar_psi += tmp2;
+            psi_bar_psi_EL += tmp2 * tmp1;
         }
+        
     }
 
-    energy = energy/this->Nsteps/(1-this->InitialFraction);
-    energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
-    psi_bar_psi = psi_bar_psi/this->Nsteps/(1-this->InitialFraction);
-    psi_bar_psi_EL = psi_bar_psi_EL/this->Nsteps/(1-this->InitialFraction);
+    energy = energy/this->Nsteps;
+    energy2 = energy2/this->Nsteps;
+    psi_bar_psi = psi_bar_psi/this->Nsteps;
+    psi_bar_psi_EL = psi_bar_psi_EL/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
 
     return {energy, energy2 - pow(energy, 2), ratio_accepted, 2 * (psi_bar_psi_EL - psi_bar_psi * energy)};
@@ -130,25 +114,8 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
         r[i] = (double) i* r_max / N_bins;
     }
 
-    for(i=0; i<this->system->getNParticles(); i++){
-        for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
-        }
-        this->system->getParticles()[i]->setPosition(pos_var);
-        
-        dist = sqrt(this->system->r2(pos_var, (double) 1.0));
-        for(k=0; k<(N_bins); k++){
-            if((r[k] < dist) && (dist < r[k+1])){
-                counts[k]++;
-            }
-        }
-
-    }
-
-    if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
-
     //MCsteps
-    for(i=1; i<this->Nsteps; i++){
+    for(i=1; i<=this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
@@ -181,41 +148,33 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
             last_accepted = 1;
         }
 
-        if(i>=(int)(this->Nsteps*this->InitialFraction)){
-
-             if(i==(int)(this->Nsteps*this->InitialFraction)){
-                tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
-            } else {
-                if(last_accepted){
-                    tmp1 = this->system->getHamiltonian()->LocalEnergyAnalytic();
-                }
-            }
-
-            energy += tmp1;
-            energy2 += tmp1*tmp1;
-
-            for(j=0; j<this->system->getNParticles(); j++){
-                dist = sqrt(this->system->r2(this->system->getParticles()[j]->getPosition(), (double) 1.0));
-                for(k=0; k<(N_bins); k++){
-                    if((r[k] < dist) && (dist < r[k+1])){
-                        counts[k]++;
-                    }
-                }
-            }    
-
+        if(i==1 || last_accepted){
+            tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
         }
     }
 
-    energy = energy/this->Nsteps/(1-this->InitialFraction);
-    energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
+    energy += tmp1;
+    energy2 += tmp1*tmp1;
+
+    for(j=0; j<this->system->getNParticles(); j++){
+        dist = sqrt(this->system->r2(this->system->getParticles()[j]->getPosition(), (double) 1.0));
+        for(k=0; k<(N_bins); k++){
+            if((r[k] < dist) && (dist < r[k+1])){
+                counts[k]++;
+            }
+        }
+    }
+
+    energy = energy/this->Nsteps;
+    energy2 = energy2/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
     
 
     ofstream onebodyFile;
-    onebodyFile.open("./plotting/data/onebody_density.csv");
+    onebodyFile.open("../plotting/data/onebody_density.csv");
     onebodyFile << "r,counts";
     for(i=0; i<N_bins; i++){
-        onebodyFile << endl << r[i] + 0.5 * r_max / N_bins << "," << (double) counts[i] / this->Nsteps/(1-this->InitialFraction) / this->system->getNParticles();
+        onebodyFile << endl << r[i] + 0.5 * r_max / N_bins << "," << (double) counts[i] / this->Nsteps/1 / this->system->getNParticles();
     }
     onebodyFile.close();
     
@@ -224,7 +183,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
 
 
 
-vector<double> ImportanceSampling::solve(double h, bool tofile=0){
+vector<double> ImportanceSampling::solve(double h){
     random_device rd;
     mt19937_64 gen(rd());
         
@@ -235,6 +194,78 @@ vector<double> ImportanceSampling::solve(double h, bool tofile=0){
     int accepted=0;
     double ratio_accepted=0.0;
     bool last_accepted;
+    bool usematrix = this->system->getUseMatrix();
+    vector<double> pos_old(this->system->getDimension(), 0.0);
+    vector<double> pos_var(this->system->getDimension(), 0.0);
+
+    vector<double> drift_old(this->system->getDimension(), 0.0);
+    vector<double> drift_new(this->system->getDimension(), 0.0);
+
+    //MCsteps
+    for(i=1; i<=this->Nsteps; i++){
+        
+        idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
+
+        pos_old = this->system->getParticles()[idx]->getPosition();
+        psi_old = this->system->getWavefunction()->evaluateSing(idx);
+        drift_old = this->system->getWavefunction()->DriftForce(idx);
+
+        for(j=0; j<this->system->getDimension(); j++){
+            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getParameter(0));
+        }
+
+        this->system->getParticles()[idx]->move(pos_var);
+        if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
+        psi_new = this->system->getWavefunction()->evaluateSing(idx);
+        drift_new = this->system->getWavefunction()->DriftForce(idx);
+        
+        arg = 0.0;
+        for(j=0; j<this->system->getDimension(); j++){
+            arg += (drift_old[j] + drift_new[j]) * ( -2 * pos_var[j] + this->params[1] * this->params[0] * (drift_old[j] - drift_new[j]) );
+        }
+
+        arg *= 0.25;
+
+        if( this->system->getRandomGenerator()->uniform(gen) > (exp(arg) * pow(psi_new, 2) / pow(psi_old, 2))){
+            this->system->getParticles()[idx]->setPosition(pos_old);
+            if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
+            last_accepted = 0;
+        } else {
+            accepted++;
+            last_accepted = 1;
+        }
+
+        if(i==1 || last_accepted){
+            tmp1 = (double) this->system->getHamiltonian()->LocalEnergyNumeric(h);
+        } 
+
+        energy += tmp1;
+        energy2 += tmp1*tmp1;
+
+        if(this->tofile){
+            energytofile << tmp1 << endl; 
+        }
+        }
+
+    if(this->tofile){ energytofile.close();} 
+    
+    energy = energy/this->Nsteps;
+    energy2 = energy2/this->Nsteps;
+    ratio_accepted = (double) accepted/this->Nsteps;
+    
+    return {energy, energy2 - pow(energy, 2), ratio_accepted};
+}
+
+
+
+
+void ImportanceSampling::thermalize(){
+    random_device rd;
+    mt19937_64 gen(rd());
+        
+    int i=0, j=0, idx=0;
+    double psi_old = 0.0, psi_new=0.0;
+    double arg = 0.0;
     bool usematrix = this->system->getUseMatrix();
     vector<double> pos_old(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
@@ -253,7 +284,7 @@ vector<double> ImportanceSampling::solve(double h, bool tofile=0){
     if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
 
     //MCsteps
-    for(i=1; i<this->Nsteps; i++){
+    for(i=1; i<=this->NstepsThermal; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
@@ -280,36 +311,7 @@ vector<double> ImportanceSampling::solve(double h, bool tofile=0){
         if( this->system->getRandomGenerator()->uniform(gen) > (exp(arg) * pow(psi_new, 2) / pow(psi_old, 2))){
             this->system->getParticles()[idx]->setPosition(pos_old);
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
-            last_accepted = 0;
-        } else {
-            accepted++;
-            last_accepted = 1;
-        }
+        } 
 
-        if(i>=(int)(this->Nsteps*this->InitialFraction)){
-
-             if(i==(int)(this->Nsteps*this->InitialFraction)){
-                tmp1 = (double) this->system->getHamiltonian()->LocalEnergyNumeric(h);
-            } else {
-                if(last_accepted){
-                    tmp1 = this->system->getHamiltonian()->LocalEnergyNumeric(h);
-                }
-            }
-
-            energy += tmp1;
-            energy2 += tmp1*tmp1;
-
-            if(tofile){
-                energytofile << tmp1 << endl; 
-            }
-        }
     }
-    energytofile.close();
-    energy = energy/this->Nsteps/(1-this->InitialFraction);
-    energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
-    ratio_accepted = (double) accepted/this->Nsteps;
-    
-    return {energy, energy2 - pow(energy, 2), ratio_accepted};
 }
-
-

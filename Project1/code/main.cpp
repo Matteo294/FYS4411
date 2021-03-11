@@ -5,6 +5,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <omp.h>
 
 #include "System/system.h"
 #include "Wavefunctions/gaussian.h"
@@ -32,20 +33,20 @@ int main(int argc, char *argv[]){
     const int Nparticles = 3;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
-    const float initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
+    const int Nsteps_final = (int) pow(2,17); // MC steps for the final simulation
+    const int NstepsThermal = (int) 1e4; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.043; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0.0; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
-    double omegaZ = sqrt(8); 
+    double omegaZ = 1.0; 
 
     // Information for the wavefunction
-    double alpha = 0.49; // variational parameter
-    const double beta = sqrt(8); // Only for asymmetrical wavefunction
+    double alpha = 0.5; // variational parameter
+    const double beta = 1.0; // Only for asymmetrical wavefunction
 
     // Gradient descent
     const double gamma = 1e-2; // Learning rate
@@ -78,8 +79,8 @@ int main(int argc, char *argv[]){
     vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
     const bool N_to_file = false; // set true to save data to file
 
+    
     System system(dimension, Nparticles);
-    System s2(dimension, Nparticles);
 
     // Hamiltonians
     Spherical spherical(&system, omegaXY);
@@ -90,38 +91,47 @@ int main(int argc, char *argv[]){
     AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
 
     // Solvers
-    Metropolis metropolis(&system, Nsteps_final, initialFraction, step);
-    ImportanceSampling importance(&system, Nsteps_final, initialFraction, dt, D);
+    Metropolis metropolis(&system, Nsteps_final, NstepsThermal, step, false);
+    ImportanceSampling importance(&system, Nsteps_final, NstepsThermal, dt, D, false);
     
     // Others
     RandomGenerator randomgenerator;
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
+    system.setHamiltonian(&elliptical);
+    system.setWavefunction(&asymmgaussian);
     system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
-    s2.setHamiltonian(&spherical);
-    s2.setWavefunction(&gaussian);
-    s2.setSolver(&importance);
-    s2.setRandomGenerator(&randomgenerator);
-
     functions.printPresentation();
-
+    
     // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
+    
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
 
     switch(selector){
-        case 0: functions.printResultsSolver(system.getSolver()->solve(false)); break; // Simple simulation
+        case 0: system.getSolver()->thermalize();
+                functions.printResultsSolver(system.getSolver()->solve(false));  break; // Simple simulation
         case 1: functions.printResultsSolver(system.getSolver()->solve(h, tofile)); break; // Simple simulation with numerical derivative
         case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
         case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
         case 4: functions.solve_varying_N(Ns, N_to_file); break;
         case 5: ; break;
         case 6: functions.printResultsSolver(system.getSolver()->solve((double) 3.0, (int) 100)); break;
-        case 7: functions.solveParallel(&system, &s2, 1e5);
+        case 7: 
+                system.getSolver()->thermalize();
+                int Nthreads = omp_get_max_threads();
+                int Ni = (int) Nsteps_final/Nthreads;
+                omp_set_num_threads(Nthreads);
+                cout << "Nthreads: " << Nthreads << endl;
+                #pragma omp parallel for shared(Ni) private(system())
+                for(int i=0; i<Nthreads; i++){
+                    system.getSolver()->setNsteps(Ni);
+                    cout << omp_get_thread_num() << "\t" << system.getSolver()->solve(false)[0] << endl;
+                } 
+               
     }
+    
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
     cout << endl << "Simulation termined. Total running time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/

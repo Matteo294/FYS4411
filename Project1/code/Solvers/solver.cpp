@@ -2,19 +2,21 @@
 
 Solver::~Solver(){};
 
-Solver::Solver(System* system, int Nsteps, double initialFraction, int nparams){
+Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool tofile){
     this->system = system;
     this->Nsteps=Nsteps;
-    this->InitialFraction=initialFraction;
+    this->NstepsThermal=NstepsThermal;
     this->nparams=nparams;
+    this->tofile = tofile;
     this->params.resize(nparams, 0.0);
-    this->energytofile.open("./variance/energyateverystep.dat");
+    if (tofile){
+        this->energytofile.open("./variance/energyateverystep.dat");
+    }
 }
-
 
 // Getters
     int Solver::getNsteps() { return this->Nsteps; }
-    double Solver::getInitialFraction() { return this->InitialFraction; }
+    double Solver::getNstepsThermal() { return this->NstepsThermal; }
     int Solver::getnparameter(){ return this->nparams; }
     double Solver::getParameter(int idx){
         assert(idx < this->nparams);
@@ -23,7 +25,7 @@ Solver::Solver(System* system, int Nsteps, double initialFraction, int nparams){
 
 // Setters
     void Solver::setNsteps(int Nsteps) { this->Nsteps = Nsteps; }
-    void Solver::setInitialFraction(double initialFraction) { this->InitialFraction = initialFraction; }
+    void Solver::setNstepsThermal(int NstepsThermal) { this->NstepsThermal = NstepsThermal; }
     void Solver::setParameter(int idx, double value){
         assert(idx < this->nparams);
         this->params[idx] = value;
