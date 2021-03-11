@@ -1,4 +1,5 @@
 #include "functions.h"
+#include <omp.h>
 
 Functions::Functions(System* system) { this->system = system;}
 Functions::~Functions(){};
@@ -128,15 +129,11 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool toFile){
     return results;
 }
 
-
-
-void Functions::printToFile(double val, ofstream f, string s) {f << val << s;}
-
 void Functions::printPresentation(){
     cout << endl;
     cout << "***********************************************************" << endl;
     cout << "Emiliano Staffoli, Matteo Zortea, Alexander Ferraro" << endl;
-    cout << "Variational Monte-Carlo for trapped bosons" << endl;
+    cout << "Variational Monte Carlo for trapped bosons" << endl;
     cout << "March 2021, University of Oslo" << endl;
     cout << "***********************************************************" << endl;
     cout << endl;
@@ -144,4 +141,15 @@ void Functions::printPresentation(){
 
 void Functions::printResultsSolver(vector<double> res){
     cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
+}
+
+void Functions::solveParallel(System* s1, System* s2, int N){
+    int Ni = (int) N/2;
+    #pragma omp sections
+    {
+       #pragma omp section
+       cout << s1->getSolver()->solve(false)[0] << endl;
+       #pragma omp section
+       cout << s2->getSolver()->solve(false)[0] << endl;
+    }
 }

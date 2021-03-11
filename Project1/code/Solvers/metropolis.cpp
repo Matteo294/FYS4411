@@ -8,6 +8,7 @@ Metropolis::Metropolis(System* system, int Nsteps, double initialFraction, doubl
 }
 
 vector<double> Metropolis::solve(bool allAverages){
+    cout << "partito" << endl;
     // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());

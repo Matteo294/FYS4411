@@ -11,10 +11,8 @@ def timeFunction(f):
     def wrap(*args):
         time1 = time.time()
         ret = f(*args)
-        #print("jhonny", *args)
         time2 = time.time()
-        #print(dataAnalysis.inputFileName)
-        #print ('%s Function Took: \t %0.3f s' % (f.func_name.title(), (time2-time1)))
+        print ('Function Took:', "{:.4f}".format((time2-time1)), 's')
         return ret
     return wrap
 
@@ -23,7 +21,7 @@ class dataAnalysisClass:
     def __init__(self, fileName, size=0):
         self.inputFileName = fileName
         self.loadData(size)
-        self.createOutputFolder()
+        #self.createOutputFolder()
         self.avg = np.average(self.data)
         self.var = np.var(self.data)
         self.std = np.std(self.data)
@@ -184,12 +182,14 @@ class dataAnalysisClass:
         plt.ylabel('Variance', **font)
         plt.xlabel('Block Size', **font)
         plt.title('Blocking', **font)
-        plt.savefig(self.outName + "/blocking.eps")
-        plt.savefig(self.outName + "/blocking.png")
-        plt.clf()
+        plt.show()
+        #plt.savefig(self.outName + "/blocking.eps")
+        #plt.savefig(self.outName + "/blocking.png")
+        #plt.clf()
 
     # Print Stuff to the Terminal
     def printOutput(self):
+        
         print ("\nSample Size:    \t", len(self.data))
         print ("\n=========================================\n")
         print ("Sample Average: \t", self.avg)
@@ -217,6 +217,12 @@ if len(argv) > 2:
 else:
     dataAnalysis = dataAnalysisClass(argv[1])
 
+
+
+dataAnalysis.blocking()
+dataAnalysis.plotBlocking()
+
+'''
 # Run Analyses
 dataAnalysis.runAllAnalyses()
 
@@ -225,3 +231,4 @@ dataAnalysis.plotAll()
 
 # Print Some Output
 dataAnalysis.printOutput()
+'''

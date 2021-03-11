@@ -36,12 +36,9 @@ class Functions{
         /// Finds the best alpha parameter using gradient descent 
         double gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);
 
-        /** Prints the value to the file followed by the string s. Set c as the separation character (e.g. "," for csv) or newline character
-         * \note That the file should already be open
-        **/
-        void printToFile(double val, ofstream f, string s);
         void printPresentation();
         void printResultsSolver(vector<double> res);
+        void solveParallel(System* s1, System* s2, int N);
     private:
         ofstream alphaFile, dtFile, Nfile, onebodyFile;
 

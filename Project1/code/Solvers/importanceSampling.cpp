@@ -10,6 +10,7 @@ ImportanceSampling::ImportanceSampling(System* system, int Nsteps, double initia
 }
 
 vector<double> ImportanceSampling::solve(bool allAverages){
+    cout << "partito" << endl;
     random_device rd;
     mt19937_64 gen(rd());
         

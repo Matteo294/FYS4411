@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     int selector = 0;
     if(argc>1){
         int a = stoi(argv[1]);
-        assert(a>=0 && a<=6);
+        assert(a>=0 && a<=7);
         selector = stoi(argv[1]);
     }
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
     const int Nparticles = 3;
 
     // Information for the solvers
-    const int Nsteps_final = (int) 1e5; // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
     const float initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
@@ -76,12 +76,10 @@ int main(int argc, char *argv[]){
 
     // Mode 3 - varying N
     vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = true; // set true to save data to file
-    
-
-
+    const bool N_to_file = false; // set true to save data to file
 
     System system(dimension, Nparticles);
+    System s2(dimension, Nparticles);
 
     // Hamiltonians
     Spherical spherical(&system, omegaXY);
@@ -102,8 +100,12 @@ int main(int argc, char *argv[]){
     // Choose options
     system.setHamiltonian(&spherical);
     system.setWavefunction(&gaussian);
-    system.setSolver(&importance);
+    system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
+    s2.setHamiltonian(&spherical);
+    s2.setWavefunction(&gaussian);
+    s2.setSolver(&importance);
+    s2.setRandomGenerator(&randomgenerator);
 
     functions.printPresentation();
 
@@ -118,6 +120,7 @@ int main(int argc, char *argv[]){
         case 4: functions.solve_varying_N(Ns, N_to_file); break;
         case 5: ; break;
         case 6: functions.printResultsSolver(system.getSolver()->solve((double) 3.0, (int) 100)); break;
+        case 7: functions.solveParallel(&system, &s2, 1e5);
     }
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
