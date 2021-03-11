@@ -23,7 +23,7 @@ vector<double> Metropolis::solve(bool allAverages){
     vector<double> pos_var(this->system->getDimension(), 0.0);
 
     // particles arrive here already thermalized
-    for(i=1; i<=this->Nsteps; i++){
+    for(i=0; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
         pos_old = this->system->getParticles()[idx]->getPosition();
@@ -46,8 +46,7 @@ vector<double> Metropolis::solve(bool allAverages){
             last_accepted = 1;
         }
 
-                
-        if(i==1 || last_accepted){
+        if(i==0 || last_accepted){
             tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
         }
 
@@ -60,14 +59,14 @@ vector<double> Metropolis::solve(bool allAverages){
             psi_bar_psi_EL += tmp2 * tmp1;
         }
 
-        if(i%(int)1e2 == 0){
-            cout << "\rprogress " << 100 * (double) i / this->Nsteps;
+        if(i%(int)100 == 0){
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
         }
        
     
     }
 
-    cout << "\r \t\t \r";
+    cout << "\33[2K\r";
     energy = energy/(this->Nsteps);
     energy2 = energy2/(this->Nsteps); 
     psi_bar_psi = psi_bar_psi/this->Nsteps;
@@ -101,7 +100,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         r[i] = (double) i* r_max / N_bins;
     }
 
-    for(i=1; i<=this->Nsteps; i++){
+    for(i=0; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
         pos_old = this->system->getParticles()[idx]->getPosition();
@@ -125,7 +124,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         }
 
         
-        if(i==1 || last_accepted){
+        if(i==0 || last_accepted){
             tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
         }
 
@@ -142,11 +141,13 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         energy2 += tmp1*tmp1;
 
         if(i%(int)1e2 == 0){
-            cout << "\rprogress " << 100 * (double) i / this->Nsteps;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
         }
-        
-    }   
-    cout << "\r \t\t \r";
+       
+    
+    }
+
+    cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps; 
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -181,7 +182,7 @@ vector<double> Metropolis::solve(double h){
     vector<double> pos_old(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
 
-    for(i=1; i<=this->Nsteps; i++){
+    for(i=0; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
         pos_old = this->system->getParticles()[idx]->getPosition();
@@ -205,7 +206,7 @@ vector<double> Metropolis::solve(double h){
         }
 
 
-        if(i==1 || last_accepted){
+        if(i==0 || last_accepted){
             tmp1 = (double) this->system->getHamiltonian()->LocalEnergyNumeric(h);
         } 
         energy += tmp1;
@@ -216,11 +217,13 @@ vector<double> Metropolis::solve(double h){
         }
 
         if(i%(int)1e2 == 0){
-            cout << "\rprogress " << 100 * (double) i / this->Nsteps;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
         }
-        
+       
+    
     }
-    cout << "\r \t\t \r";
+
+    cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps; 
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -251,7 +254,7 @@ void Metropolis::thermalize(){
     
     if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
 
-    for(i=1; i<=this->NstepsThermal; i++){
+    for(i=0; i<this->NstepsThermal; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
         pos_old = this->system->getParticles()[idx]->getPosition();
@@ -271,9 +274,10 @@ void Metropolis::thermalize(){
         } 
 
         if(i%(int)1e2 == 0){
-            cout << "\rprogress thermalization " << 100 * (double) i / this->Nsteps;
+            cout << fixed << setprecision(2) <<"\rprogress thermalization " << 100 * (double) i / this->Nsteps << "%";
         }
 
     }
+    cout << "\33[2K\r";
     
 }

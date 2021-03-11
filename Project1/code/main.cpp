@@ -5,7 +5,6 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
-#include <omp.h>
 
 #include "System/system.h"
 #include "Wavefunctions/gaussian.h"
@@ -30,11 +29,11 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 3;
+    const int Nparticles = 10;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,17); // MC steps for the final simulation
-    const int NstepsThermal = (int) 1e4; // Fraction of septs to wait for the system thermalization
+    const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
+    const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
@@ -57,7 +56,7 @@ int main(int argc, char *argv[]){
     // Others
     const double h = 1e-5; // Steplength for numerical derivatives and evaluations
     bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots
-    bool tofile = true; // Print on external file for resampling analysis (numerical methods)
+    bool tofile = false; // Print on external file for resampling analysis (numerical methods)
 
 
 
@@ -88,20 +87,20 @@ int main(int argc, char *argv[]){
 
     // Wavefunctions
     Gaussian gaussian(&system, alpha);
-    AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
+    //AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
 
     // Solvers
-    Metropolis metropolis(&system, Nsteps_final, NstepsThermal, step, false);
-    ImportanceSampling importance(&system, Nsteps_final, NstepsThermal, dt, D, false);
+    Metropolis metropolis(&system, Nsteps_final, NstepsThermal, step, tofile);
+    ImportanceSampling importance(&system, Nsteps_final, NstepsThermal, dt, D, tofile);
     
     // Others
     RandomGenerator randomgenerator;
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&elliptical);
-    system.setWavefunction(&asymmgaussian);
-    system.setSolver(&metropolis);
+    system.setHamiltonian(&spherical);
+    system.setWavefunction(&gaussian);
+    system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();
     
@@ -112,24 +111,15 @@ int main(int argc, char *argv[]){
     switch(selector){
         case 0: system.getSolver()->thermalize();
                 functions.printResultsSolver(system.getSolver()->solve(false));  break; // Simple simulation
-        case 1: functions.printResultsSolver(system.getSolver()->solve(h, tofile)); break; // Simple simulation with numerical derivative
+        case 1: system.getSolver()->thermalize();
+                functions.printResultsSolver(system.getSolver()->solve(h)); break; // Simple simulation with numerical derivative
         case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
         case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
         case 4: functions.solve_varying_N(Ns, N_to_file); break;
         case 5: ; break;
         case 6: functions.printResultsSolver(system.getSolver()->solve((double) 3.0, (int) 100)); break;
-        case 7: 
-                system.getSolver()->thermalize();
-                int Nthreads = omp_get_max_threads();
-                int Ni = (int) Nsteps_final/Nthreads;
-                omp_set_num_threads(Nthreads);
-                cout << "Nthreads: " << Nthreads << endl;
-                #pragma omp parallel for shared(Ni) private(system())
-                for(int i=0; i<Nthreads; i++){
-                    system.getSolver()->setNsteps(Ni);
-                    cout << omp_get_thread_num() << "\t" << system.getSolver()->solve(false)[0] << endl;
-                } 
-               
+        case 7: system.getSolver()->thermalize();
+                functions.solveParallel(&system, Nsteps_final); break;
     }
     
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time

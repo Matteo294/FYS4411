@@ -29,7 +29,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
 
     
     //MCsteps
-    for(i=1; i<=this->Nsteps; i++){
+    for(i=0; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
@@ -62,7 +62,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             last_accepted = 1;
         }
 
-        if(i==1 || last_accepted){
+        if(i==0 || last_accepted){
             tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
         } 
 
@@ -75,8 +75,14 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             psi_bar_psi_EL += tmp2 * tmp1;
         }
         
+        if(i%(int)1e2 == 0){
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        }
+       
+    
     }
 
+    cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     psi_bar_psi = psi_bar_psi/this->Nsteps;
@@ -115,7 +121,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
     }
 
     //MCsteps
-    for(i=1; i<=this->Nsteps; i++){
+    for(i=0; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
 
@@ -148,23 +154,29 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
             last_accepted = 1;
         }
 
-        if(i==1 || last_accepted){
+        if(i==0 || last_accepted){
             tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
         }
-    }
 
-    energy += tmp1;
-    energy2 += tmp1*tmp1;
+        energy += tmp1;
+        energy2 += tmp1*tmp1;
 
-    for(j=0; j<this->system->getNParticles(); j++){
-        dist = sqrt(this->system->r2(this->system->getParticles()[j]->getPosition(), (double) 1.0));
-        for(k=0; k<(N_bins); k++){
-            if((r[k] < dist) && (dist < r[k+1])){
-                counts[k]++;
+        for(j=0; j<this->system->getNParticles(); j++){
+            dist = sqrt(this->system->r2(this->system->getParticles()[j]->getPosition(), (double) 1.0));
+            for(k=0; k<(N_bins); k++){
+                if((r[k] < dist) && (dist < r[k+1])){
+                    counts[k]++;
+                }
             }
         }
+
+        if(i%(int)1e2 == 0){
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        }
+    
     }
 
+    cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -235,7 +247,7 @@ vector<double> ImportanceSampling::solve(double h){
             last_accepted = 1;
         }
 
-        if(i==1 || last_accepted){
+        if(i==0 || last_accepted){
             tmp1 = (double) this->system->getHamiltonian()->LocalEnergyNumeric(h);
         } 
 
@@ -245,10 +257,14 @@ vector<double> ImportanceSampling::solve(double h){
         if(this->tofile){
             energytofile << tmp1 << endl; 
         }
-        }
 
+        if(i%(int)1e2 == 0){
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        }
+    }
+
+    cout << "\33[2K\r";
     if(this->tofile){ energytofile.close();} 
-    
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -313,5 +329,11 @@ void ImportanceSampling::thermalize(){
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } 
 
+         if(i%(int)1e2 == 0){
+            cout << fixed << setprecision(2) << "\rprogress thermalization " << 100 * (double) i / this->Nsteps << "%";
+        }
+       
     }
+
+    cout << "\33[2K\r";
 }
