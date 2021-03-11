@@ -198,7 +198,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
 
 
 
-vector<double> Metropolis::solve(double h){
+vector<double> Metropolis::solve(double h, bool tofile=0){
     // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
@@ -258,6 +258,10 @@ vector<double> Metropolis::solve(double h){
             }
             energy += tmp1;
             energy2 += tmp1*tmp1;
+
+            if (tofile){
+                energytofile << tmp1 << endl;
+            }
             
         }
         
@@ -266,6 +270,6 @@ vector<double> Metropolis::solve(double h){
     energy = energy/this->Nsteps/(1-this->InitialFraction);
     energy2 = energy2/this->Nsteps/(1-this->InitialFraction); 
     ratio_accepted = (double) accepted/this->Nsteps;
-
+    energytofile.close();
     return {energy, energy2 - pow(energy, 2), ratio_accepted};
 }

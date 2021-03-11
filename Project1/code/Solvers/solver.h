@@ -38,7 +38,7 @@ class Solver{
          *  This function overrides solve(bool allAverages) fro numerical evaluations. 
          * The parameter h is the steplength used to evaluat numerical derivatives 
          **/
-        virtual vector<double> solve(double h) = 0; // override when numerical local energy
+        virtual vector<double> solve(double h, bool tofile) = 0; // override when numerical local energy
         class System* system;
 
     protected:
@@ -46,4 +46,5 @@ class Solver{
         double InitialFraction;
         int nparams;
         vector<double> params;
+        ofstream energytofile;
 };

@@ -223,7 +223,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
 
 
 
-vector<double> ImportanceSampling::solve(double h){
+vector<double> ImportanceSampling::solve(double h, bool tofile=0){
     random_device rd;
     mt19937_64 gen(rd());
         
@@ -297,9 +297,13 @@ vector<double> ImportanceSampling::solve(double h){
 
             energy += tmp1;
             energy2 += tmp1*tmp1;
+
+            if(tofile){
+                energytofile << tmp1 << endl; 
+            }
         }
     }
-
+    energytofile.close();
     energy = energy/this->Nsteps/(1-this->InitialFraction);
     energy2 = energy2/this->Nsteps/(1-this->InitialFraction);
     ratio_accepted = (double) accepted/this->Nsteps;

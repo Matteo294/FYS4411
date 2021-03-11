@@ -61,8 +61,8 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
         mt19937_64 gen(rd());
 
         kexp = expmin + k*expstep;
-        kdt = exp10(kexp);
-        //cout << kdt << " " << endl;
+        kdt = pow(10,kexp);
+        cout << kdt << " " << endl;
 
         // set alpha
         this->system->getSolver()->setParameter(0, kdt);

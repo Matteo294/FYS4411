@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     int selector = 0;
     if(argc>1){
         int a = stoi(argv[1]);
-        assert(a>0 && a<7);
+        assert(a>=0 && a<=6);
         selector = stoi(argv[1]);
     }
 
@@ -54,8 +54,9 @@ int main(int argc, char *argv[]){
     const double tolerance = 1e-8; // Conditoin to stop the gradient descent
     
     // Others
-    const double h = 1e-4; // Steplength for numerical derivatives and evaluations
-    
+    const double h = 1e-5; // Steplength for numerical derivatives and evaluations
+    bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots
+    bool tofile = true; // Print on external file for resampling analysis (numerical methods)
 
 
 
@@ -75,7 +76,8 @@ int main(int argc, char *argv[]){
 
     // Mode 3 - varying N
     vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = false; // set true to save data to file
+    const bool N_to_file = true; // set true to save data to file
+    
 
 
 
@@ -110,7 +112,7 @@ int main(int argc, char *argv[]){
 
     switch(selector){
         case 0: functions.printResultsSolver(system.getSolver()->solve(false)); break; // Simple simulation
-        case 1: functions.printResultsSolver(system.getSolver()->solve(h)); break; // Simple simulation with numerical derivative
+        case 1: functions.printResultsSolver(system.getSolver()->solve(h, tofile)); break; // Simple simulation with numerical derivative
         case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
         case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
         case 4: functions.solve_varying_N(Ns, N_to_file); break;
@@ -120,16 +122,4 @@ int main(int argc, char *argv[]){
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
     cout << endl << "Simulation termined. Total running time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/
-
-    // Sasha's part
-    /*ofstream myfile;
-    myfile.open ("energy.dat");
-    //myfile << "energy" << endl;
-    int i; 
-    for(i=0;i<100;i++){
-        vector<double> res = system.getSolver()->solve(h);
-        myfile << fixed << setprecision(24) << res[0] << endl;
-        cout << fixed << setprecision(24) << res[0] << "\t" << res[1] << "\t" << res[2] << endl;
-    }*/
-
 }

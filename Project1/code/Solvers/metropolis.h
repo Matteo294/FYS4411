@@ -16,7 +16,7 @@ class Metropolis : public Solver{
         /// \see Solver::solve(double r_max, int N_bins)
         vector<double> solve(double r_max, int N_bins);
         /// \see Solver::solve(double h)
-        vector<double> solve(double h); // uses LocalEnergyNumeric(double h)
+        vector<double> solve(double h, bool tofile); // uses LocalEnergyNumeric(double h)
 
 
 };
