@@ -23,28 +23,29 @@ int main(int argc, char *argv[]){
     int selector = 0;
     if(argc>1){
         int a = stoi(argv[1]);
-        assert(a>0 && a<5);
+        assert(a>0 && a<7);
         selector = stoi(argv[1]);
     }
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 10;
+    const int Nparticles = 3;
 
     // Information for the solvers
     const int Nsteps_final = (int) 1e5; // MC steps for the final simulation
+    const float initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0.043; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
-    double omegaZ = 1.0; 
+    double omegaZ = sqrt(8); 
 
     // Information for the wavefunction
-    double alpha = 0.50; // variational parameter
-    const double beta = 1.0; // Only for asymmetrical wavefunction
+    double alpha = 0.49; // variational parameter
+    const double beta = sqrt(8); // Only for asymmetrical wavefunction
 
     // Gradient descent
     const double gamma = 1e-2; // Learning rate
@@ -53,9 +54,7 @@ int main(int argc, char *argv[]){
     const double tolerance = 1e-8; // Conditoin to stop the gradient descent
     
     // Others
-    const double h = 1e-5; // Steplength for numerical derivatives and evaluations
-    const float initialFraction = 0.1; // Fraction of septs to wait for the system thermalization
-    bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots           // IS THIS USEFUL?
+    const double h = 1e-4; // Steplength for numerical derivatives and evaluations
     
 
 
@@ -99,9 +98,9 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&elliptical);
-    system.setWavefunction(&asymmgaussian);
-    system.setSolver(&metropolis);
+    system.setHamiltonian(&spherical);
+    system.setWavefunction(&gaussian);
+    system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
 
     functions.printPresentation();
@@ -111,10 +110,12 @@ int main(int argc, char *argv[]){
 
     switch(selector){
         case 0: functions.printResultsSolver(system.getSolver()->solve(false)); break; // Simple simulation
-        case 1: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
-        case 2: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
-        case 3: functions.solve_varying_N(Ns, N_to_file); break;
-        case 4: functions.printResultsSolver(system.getSolver()->solve((double) 3.0, (int) 100)); break;
+        case 1: functions.printResultsSolver(system.getSolver()->solve(h)); break; // Simple simulation with numerical derivative
+        case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
+        case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
+        case 4: functions.solve_varying_N(Ns, N_to_file); break;
+        case 5: ; break;
+        case 6: functions.printResultsSolver(system.getSolver()->solve((double) 3.0, (int) 100)); break;
     }
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference

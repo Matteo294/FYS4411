@@ -21,22 +21,22 @@ double Gaussian::numericalSecondDerivative(int part_idx, int direction, double h
     double res = 0.0;
 
     // initialize a vector for moving the particle
-    vector<double> drift(this->s->getDimension(), 0.0);
+    vector<double> pos_var(this->s->getDimension(), 0.0);
     
     // evaluate wf(x+h)
-    drift[direction] = h;
-    this->s->getParticles()[part_idx]->move(drift);
-    double wf_forw = evaluateAll();
+    pos_var[direction] = h;
+    this->s->getParticles()[part_idx]->move(pos_var);
+    double wf_forw = this->evaluateAll();
 
     // evaluate wf(x-h)
-    drift[direction] = -2*h;
-    this->s->getParticles()[part_idx]->move(drift);
-    double wf_back = evaluateAll();
+    pos_var[direction] = -2*h;
+    this->s->getParticles()[part_idx]->move(pos_var);
+    double wf_back = this->evaluateAll();
 
     // final result
-    drift[direction] = h;
-    this->s->getParticles()[part_idx]->move(drift); // particles returns to its original position
-    res = wf_back + wf_forw - 2*evaluateAll();
+    pos_var[direction] = h;
+    this->s->getParticles()[part_idx]->move(pos_var); // particles returns to its original position
+    res = wf_back + wf_forw - 2 * this->evaluateAll();
 
     return res/pow(h, 2);
 
