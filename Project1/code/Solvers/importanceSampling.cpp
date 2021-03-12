@@ -28,6 +28,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     vector<double> drift_new(this->system->getDimension(), 0.0);
 
     
+
     //MCsteps
     for(i=0; i<this->Nsteps; i++){
         
@@ -75,10 +76,10 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             psi_bar_psi_EL += tmp2 * tmp1;
         }
         
-        if(i%(int)1e2 == 0){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        if(i%10000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
-       
+        
     
     }
 
@@ -170,8 +171,8 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
             }
         }
 
-        if(i%(int)1e2 == 0){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        if(i%10000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
     
     }
@@ -258,8 +259,8 @@ vector<double> ImportanceSampling::solve(double h){
             energytofile << tmp1 << endl; 
         }
 
-        if(i%(int)1e2 == 0){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        if(i%10000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
     }
 
@@ -329,8 +330,8 @@ void ImportanceSampling::thermalize(){
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } 
 
-         if(i%(int)1e2 == 0){
-            cout << fixed << setprecision(2) << "\rprogress thermalization " << 100 * (double) i / this->Nsteps << "%";
+        if(i%1000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
        
     }

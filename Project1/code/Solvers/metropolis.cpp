@@ -59,8 +59,8 @@ vector<double> Metropolis::solve(bool allAverages){
             psi_bar_psi_EL += tmp2 * tmp1;
         }
 
-        if(i%(int)100 == 0){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        if(i%10000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
        
     
@@ -140,8 +140,8 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         energy += tmp1;
         energy2 += tmp1*tmp1;
 
-        if(i%(int)1e2 == 0){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        if(i%10000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
        
     
@@ -216,8 +216,8 @@ vector<double> Metropolis::solve(double h){
             energytofile << tmp1 << endl;
         }
 
-        if(i%(int)1e2 == 0){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%";
+        if(i%10000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
        
     
@@ -273,8 +273,8 @@ void Metropolis::thermalize(){
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } 
 
-        if(i%(int)1e2 == 0){
-            cout << fixed << setprecision(2) <<"\rprogress thermalization " << 100 * (double) i / this->Nsteps << "%";
+        if(i%1000==0){
+            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
 
     }

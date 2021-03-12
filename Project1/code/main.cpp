@@ -32,20 +32,20 @@ int main(int argc, char *argv[]){
     const int Nparticles = 10;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
-    const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
+    const int Nsteps_final = (int) 1e6; // MC steps for the final simulation
+    const int NstepsThermal = (int) 1e4; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
-    const double dt = 0.01; // only for importance sampling
+    const double dt = 0.1; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.0; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
-    double omegaZ = 1.0; 
+    double omegaZ = sqrt(8); 
 
     // Information for the wavefunction
     double alpha = 0.5; // variational parameter
-    const double beta = 1.0; // Only for asymmetrical wavefunction
+    const double beta = sqrt(8); // Only for asymmetrical wavefunction
 
     // Gradient descent
     const double gamma = 1e-2; // Learning rate
@@ -78,7 +78,6 @@ int main(int argc, char *argv[]){
     vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
     const bool N_to_file = false; // set true to save data to file
 
-    
     System system(dimension, Nparticles);
 
     // Hamiltonians
@@ -87,7 +86,7 @@ int main(int argc, char *argv[]){
 
     // Wavefunctions
     Gaussian gaussian(&system, alpha);
-    //AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
+    AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
 
     // Solvers
     Metropolis metropolis(&system, Nsteps_final, NstepsThermal, step, tofile);
@@ -98,8 +97,8 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
+    system.setHamiltonian(&elliptical);
+    system.setWavefunction(&asymmgaussian);
     system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();

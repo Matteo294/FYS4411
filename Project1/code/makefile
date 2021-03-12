@@ -1,6 +1,6 @@
 CXX = g++
 
-CXXFLAGS = -std=c++11 -fopenmp
+CXXFLAGS = -std=c++11 -O3 -fopenmp
 
 SOURCES = $(wildcard *.cpp) $(wildcard **/*.cpp)
 
