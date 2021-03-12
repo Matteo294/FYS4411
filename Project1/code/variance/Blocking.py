@@ -43,10 +43,10 @@ def block(x):
     if (k >= d-1):
         print("Warning: Use more data")
     
-    for i in arange(0,k):
+    for i in arange(0,d):
         s[i] = s[i]/2**(d-i)
     
-    return mu, s[0:k]
+    return mu, s
 
 
 x = loadtxt(infile)

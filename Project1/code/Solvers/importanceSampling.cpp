@@ -81,7 +81,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         }
         
         if(i%10000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
         
     
@@ -181,7 +181,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
         }
 
         if(i%10000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
     
     }
@@ -194,7 +194,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
     
 
     ofstream onebodyFile;
-    onebodyFile.open("../plotting/data/onebody_density.csv");
+    onebodyFile.open("./plotting/data/onebody_density.csv");
     onebodyFile << "r,counts";
     for(i=0; i<N_bins; i++){
         onebodyFile << endl << r[i] + 0.5 * r_max / N_bins << "," << (double) counts[i] / this->Nsteps/1 / this->system->getNParticles();
@@ -274,7 +274,7 @@ vector<double> ImportanceSampling::solve(double h){
         }
 
         if(i%10000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
     }
 
@@ -345,7 +345,7 @@ void ImportanceSampling::thermalize(){
         } 
 
         if(i%1000==0){
-            cout << fixed << setprecision(2) << "\rprogress thermalization" << 100 * (double) i / this->NstepsThermal << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress thermalization " << 100 * (double) i / this->NstepsThermal << "%" << flush;
         }
        
     }

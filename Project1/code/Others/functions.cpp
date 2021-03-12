@@ -27,19 +27,20 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
 
         // set alpha
         this->system->getWavefunction()->setParameter(0, kalpha);
-        results[k] = this->system->getSolver()->solve(false);
+        this->system->getSolver()->thermalize();
+        results_prov = this->system->getSolver()->solve(false);
+        results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
         
         // solve
         cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
-        this->printResultsSolver(results[k]);
+        this->printResultsSolver(results_prov);
         cout << endl;
-        if(toFile) this->alphaFile << endl << kalpha << "," << results[k][0]/this->system->getNParticles() << "," << results[k][1] << "," << results[k][2];
+        if(toFile) this->alphaFile << endl << results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
     }
     if(toFile) this->alphaFile.close();
 
     return results;
 }
-
 
 vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max, int Ndt, bool toFile) {
     assert(this->system->getSolver()->getnparameter()==2);
@@ -53,7 +54,7 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
     if(toFile){
         this->dtFile.open("./plotting/data/varying_dt.csv");
-        this->dtFile << "dt,energy,std";
+        this->dtFile << "dt,energy,std,acceptance";
     }
 
     for(k=0; k<=Ndt; k++){
@@ -63,19 +64,20 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
         kexp = expmin + k*expstep;
         kdt = pow(10,kexp);
-        cout << kdt << " " << endl;
+        //cout << kdt << " " << endl;
 
         // set alpha
         this->system->getSolver()->setParameter(0, kdt);
         
         // solve
-        results_prov = this->system->getSolver()->solve((bool) 0);
+        this->system->getSolver()->thermalize();
+        results_prov = this->system->getSolver()->solve(false);
         
         results[k] = {kdt, results_prov[0], results_prov[1], results_prov[2]};
         cout << fixed << setprecision(5) << "dt: " << kdt << "\t";
         this->printResultsSolver(results_prov);
         cout << endl;
-        if(toFile) this->dtFile << endl << results[k][0]/this->system->getNParticles() << "," << results[k][1] << "," << results[k][2];
+        if(toFile) this->dtFile << endl <<  results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
     }
 
     if(toFile) this->dtFile.close();
@@ -83,6 +85,38 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
     return results;
 }
 
+
+vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool toFile){
+    assert(this->system->getNParticles() < N.at(0) );
+    vector<vector<double>> results(N.size());
+    vector<double> results_prov(3, 0.0);
+    vector<double> zeros(this->system->getDimension(), 0.0);
+    int i=0;
+
+    if(toFile){
+        this->Nfile.open("./plotting/data/varying_N.csv");
+        this->Nfile << "N,energy,std,acceptance";
+    }
+
+    for(int n=0; n<N.size(); n++){
+        i = this->system->getNParticles();
+        while(i<N[n]){
+            this->system->addParticle(1.0, zeros);
+            i++;
+        }
+        
+
+        this->system->getSolver()->thermalize();
+        results_prov = this->system->getSolver()->solve(false); 
+        results[n] = { (double) N[n], results_prov[0], results_prov[1], results_prov[2]};
+        cout << "N: " << N[n] << "\t "; 
+        this->printResultsSolver(results_prov);
+        cout << endl;     
+        if(toFile) this->Nfile << endl << results[n][0] << "," << results[n][1] << "," << results[n][2] << "," << results[n][3];
+    }
+    if(toFile) this->Nfile.close();
+    return results;
+}
 
 double Functions::gradientDescent(double initialAlpha, double gamma, double tolerance, int NiterMax, int Nsteps){
     
@@ -108,27 +142,6 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
 
 
 
-vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool toFile){
-    vector<vector<double>> results(N.size());
-
-    if(toFile){
-        this->Nfile.open("./plotting/data/varying_N.csv");
-        this->Nfile << "N,energy,std";
-    }
-
-    for(int n=0; n<N.size(); n++){
-        for(int i=0; i<(N[n] - this->system->getNParticles()); i++){
-            this->system->addParticle(1.0, {0.0, 0.0, 0.0});
-        }           
-        results[n] = this->system->getSolver()->solve(false); 
-        cout << "N: " << N[n] << "\t "; 
-        this->printResultsSolver(results[n]);
-        cout << endl;     
-        if(toFile) this->Nfile << endl << results[n][0]/this->system->getNParticles() << "," << results[n][1] << "," << results[n][2];
-    }
-    if(toFile) this->Nfile.close();
-    return results;
-}
 
 void Functions::printPresentation(){
     cout << endl;

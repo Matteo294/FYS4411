@@ -65,7 +65,7 @@ vector<double> Metropolis::solve(bool allAverages){
         }
 
         if(i%10000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
        
     
@@ -89,7 +89,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
     // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
-    
+
     int i=0, j=0, k=0, idx=0;
     double energy=0.0, energy2=0.0, tmp1=0.0;
     double psi_old = 0.0, psi_new=0.0;
@@ -151,7 +151,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         }
 
         if(i%10000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
        
     
@@ -165,11 +165,12 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
 
     
     ofstream onebodyFile;
-    onebodyFile.open("../plotting/data/onebody_density.csv");
+    onebodyFile.open("./plotting/data/onebody_density.csv");
     onebodyFile << "r,counts";
     for(i=0; i<N_bins; i++){
         onebodyFile << endl << r[i] + 0.5 * r_max / N_bins << "," << (double) counts[i] / this->Nsteps / this->system->getNParticles();
     }
+    
     onebodyFile.close();
 
     return {energy, energy2 - energy * energy, ratio_accepted};
@@ -228,7 +229,7 @@ vector<double> Metropolis::solve(double h){
         }
 
         if(i%10000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
        
     

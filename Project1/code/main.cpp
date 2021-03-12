@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 10;
+    const int Nparticles = 3;
 
     // Information for the solvers
     const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
@@ -49,13 +49,11 @@ int main(int argc, char *argv[]){
     
     // Others
     const double h = 1e-5; // Steplength for numerical derivatives and evaluations
-    bool dt_analysis = false; // Plotting flags: turn True to save data to make the plots
     bool tofile = false; // Print on external file for resampling analysis (numerical methods)
 
 
 
     // Parameters for the various type of simulations
-
     // Mode 1 - varying alpha
     const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
     const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
@@ -69,16 +67,20 @@ int main(int argc, char *argv[]){
     const bool dt_to_file = false; // set true to save data to file
 
     // Mode 3 - varying N
-    vector<int> Ns {2, 5, 10}; // in mode 3 (varying N) different values of N
+    vector<int> Ns {5, 10, 15}; // in mode 3 (varying N) different values of N
     const bool N_to_file = false; // set true to save data to file
 
     // Mode 5 - Gradient Descent
     double best_alpha = 0.0;
-    double initial_alpha = 0.4;
-    const double gamma = 1e-3; // Learning rate
+    double initial_alpha = 0.49;
+    const double gamma = 2e-3; // Learning rate
     const unsigned int Nmax_gradient = 100; // Max steps alowed
-    const unsigned int Nsteps_gradient = (int) 1e4; // MC steps during the gradient descent
+    const unsigned int Nsteps_gradient = (int) 1e5; // MC steps during the gradient descent
     const double tolerance = 1e-8; // Conditoin to stop the gradient descent
+
+    // Mode 6 - One Body density
+    const double r_max = 3.0;
+    int Nbins = 100;
 
     System system(dimension, Nparticles);
 
@@ -99,8 +101,8 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
+    system.setHamiltonian(&elliptical);
+    system.setWavefunction(&asymmgaussian);
     system.setSolver(&metropolis);
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();
@@ -119,7 +121,8 @@ int main(int argc, char *argv[]){
         case 4: functions.solve_varying_N(Ns, N_to_file); break;
         case 5: best_alpha = functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); 
                 cout << scientific << setprecision(5) << "best alpha= " << best_alpha << endl; break;
-        case 6: functions.printResultsSolver(system.getSolver()->solve((double) 3.0, (int) 100)); break;
+        case 6: system.getSolver()->thermalize();
+                functions.printResultsSolver(system.getSolver()->solve(r_max, Nbins)); break;
         case 7: system.getSolver()->thermalize();
                 functions.solveParallel(&system, Nsteps_final); break;
     }
