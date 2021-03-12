@@ -75,6 +75,10 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             psi_bar_psi += tmp2;
             psi_bar_psi_EL += tmp2 * tmp1;
         }
+
+        if (this->tofile){
+            energytofile << (double) energy / (i+1) << endl;
+        }
         
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
@@ -84,6 +88,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     }
 
     cout << "\33[2K\r";
+    if(this->tofile){ energytofile.close(); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     psi_bar_psi = psi_bar_psi/this->Nsteps;
@@ -171,6 +176,10 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
             }
         }
 
+        if (this->tofile){
+            energytofile << (double) energy / (i+1) << endl;
+        }
+
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
@@ -178,6 +187,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
     }
 
     cout << "\33[2K\r";
+    if(this->tofile){ energytofile.close(); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -259,6 +269,10 @@ vector<double> ImportanceSampling::solve(double h){
             energytofile << tmp1 << endl; 
         }
 
+        if (this->tofile){
+            energytofile << (double) energy / (i+1) << endl;
+        }
+
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
@@ -331,7 +345,7 @@ void ImportanceSampling::thermalize(){
         } 
 
         if(i%1000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress thermalization" << 100 * (double) i / this->NstepsThermal << "%" << flush;
         }
        
     }

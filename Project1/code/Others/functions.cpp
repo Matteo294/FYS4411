@@ -84,7 +84,7 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 }
 
 
-double Functions::gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps){
+double Functions::gradientDescent(double initialAlpha, double gamma, double tolerance, int NiterMax, int Nsteps){
     
     cout << "Start searching for best alpha..." << endl;
     this->system->getSolver()->setNsteps(Nsteps);
@@ -92,16 +92,17 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     double alpha=initialAlpha, deltaAlpha=1.0;
     vector<double> results(4, 0.0);
 
-    while((i<Nmax) && (abs(deltaAlpha)>tolerance)){
+    while((i<NiterMax) && (abs(deltaAlpha)>tolerance)){
         this->system->getWavefunction()->setParameter(0, alpha);
+        this->system->getSolver()->thermalize();
         results = this->system->getSolver()->solve(true);
-        cout << fixed << setprecision(8) << "iteration=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\tstd=" << results[1] << "\taccepted=" << results[2] << "\tderivative=" << results[3] << endl;
+        cout << scientific << setprecision(4) << "iter=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\tstd=" << results[1] << "\tacc=" << results[2] << "\tder_alpha=" << results[3] << endl;
         deltaAlpha = - gamma * results[3];
         alpha = alpha + deltaAlpha;
         i++;
-    } 
+    }
+    alpha -= deltaAlpha;
     return alpha;
-
 }
 
 

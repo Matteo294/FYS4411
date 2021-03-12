@@ -22,6 +22,7 @@ vector<double> Metropolis::solve(bool allAverages){
     vector<double> pos_old(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
 
+
     // particles arrive here already thermalized
     for(i=0; i<this->Nsteps; i++){
         
@@ -59,6 +60,10 @@ vector<double> Metropolis::solve(bool allAverages){
             psi_bar_psi_EL += tmp2 * tmp1;
         }
 
+        if (this->tofile){
+            energytofile << (double) energy / (i+1) << endl;
+        }
+
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
@@ -67,6 +72,7 @@ vector<double> Metropolis::solve(bool allAverages){
     }
 
     cout << "\33[2K\r";
+    if(this->tofile){ energytofile.close(); }
     energy = energy/(this->Nsteps);
     energy2 = energy2/(this->Nsteps); 
     psi_bar_psi = psi_bar_psi/this->Nsteps;
@@ -140,6 +146,10 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         energy += tmp1;
         energy2 += tmp1*tmp1;
 
+        if (this->tofile){
+            energytofile << (double) energy / (i+1) << endl;
+        }
+
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
         }
@@ -148,6 +158,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
     }
 
     cout << "\33[2K\r";
+    if(this->tofile){ energytofile.close(); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps; 
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -213,7 +224,7 @@ vector<double> Metropolis::solve(double h){
         energy2 += tmp1*tmp1;
 
         if (this->tofile){
-            energytofile << tmp1 << endl;
+            energytofile << (double) energy / (i+1) << endl;
         }
 
         if(i%10000==0){
@@ -224,10 +235,11 @@ vector<double> Metropolis::solve(double h){
     }
 
     cout << "\33[2K\r";
+    if(this->tofile){ energytofile.close(); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps; 
     ratio_accepted = (double) accepted/this->Nsteps;
-    energytofile.close();
+    
     return {energy, energy2 - pow(energy, 2), ratio_accepted};
 }
 
@@ -274,7 +286,7 @@ void Metropolis::thermalize(){
         } 
 
         if(i%1000==0){
-            cout << fixed << setprecision(2) << "\rprogress" << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress thermalization " << 100 * (double) i / this->NstepsThermal << "%" << flush;
         }
 
     }

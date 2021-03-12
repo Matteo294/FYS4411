@@ -7,7 +7,7 @@ DATA_ID = "./"
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
 
-#infile = open(data_path("energyateverystep.dat"),'r')
+infile = open(data_path("energyateverystep.dat"),'r')
 
 from numpy import log2, zeros, mean, var, sum, loadtxt, arange, array, cumsum, dot, transpose, diagonal, sqrt
 from numpy.linalg import inv
@@ -24,17 +24,15 @@ def block(x):
     for i in arange(0,d):
         n = len(x)
         # estimate autocovariance of x
-        #gamma[i] = (n)**(-1)*sum( (x[0:(n-1)]-mu)*(x[1:n]-mu) )
+        gamma[i] = (n)**(-1)*sum( (x[0:(n-1)]-mu)*(x[1:n]-mu) )
         # estimate variance of x
-        s[i] = var(x)/n
+        s[i] = var(x)
         # perform blocking transformation
         x = 0.5*(x[0::2] + x[1::2])
-    
-    '''
+   
     # generate the test observator M_k from the theorem
     M = (cumsum( ((gamma/s)**2*2**arange(1,d+1)[::-1])[::-1] )  )[::-1]
 
-    
     # we need a list of magic numbers
     q =array([6.634897,9.210340, 11.344867, 13.276704, 15.086272, 16.811894, 18.475307, 20.090235, 21.665994, 23.209251, 24.724970, 26.216967, 27.688250, 29.141238, 30.577914, 31.999927, 33.408664, 34.805306, 36.190869, 37.566235, 38.932173, 40.289360, 41.638398, 42.979820, 44.314105, 45.641683, 46.962942, 48.278236, 49.587884, 50.892181])
 
@@ -44,21 +42,22 @@ def block(x):
             break
     if (k >= d-1):
         print("Warning: Use more data")
-    return mu, s[k]/2**(d-k)
-    '''
-    return mu, s
+    
+    for i in arange(0,k):
+        s[i] = s[i]/2**(d-i)
+    
+    return mu, s[0:k]
 
 
-x = loadtxt("energyateverystep.dat")
+x = loadtxt(infile)
 (mean, var) = block(x) 
 std = sqrt(var)
-
 import pandas as pd
 from pandas import DataFrame
-import matplotlib.pyplot as plt
-import numpy as np
 data ={'Mean':[mean], 'STDev':[std[-1]]}
 frame = pd.DataFrame(data,index=['Values'])
 print(frame)
-plt.plot(np.arange(0, len(std), 1), std)
+
+import matplotlib.pyplot as plt
+plt.plot(arange(0, len(std), 1), std)
 plt.show()
