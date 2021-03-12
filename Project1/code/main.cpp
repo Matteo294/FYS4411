@@ -5,6 +5,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <omp.h>
 
 #include "System/system.h"
 #include "Wavefunctions/gaussian.h"
@@ -29,14 +30,14 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 3;
+    const int Nparticles = 50;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
+    const int Nsteps_final = (int) 1e6; // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
-    const double dt = 0.01; // only for importance sampling
+    const double dt = 0.1; // only for importance sampling
     
     // Information for the hamiltonian
     const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
@@ -103,7 +104,7 @@ int main(int argc, char *argv[]){
     // Choose options
     system.setHamiltonian(&elliptical);
     system.setWavefunction(&asymmgaussian);
-    system.setSolver(&metropolis);
+    system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();
     
@@ -123,8 +124,26 @@ int main(int argc, char *argv[]){
                 cout << scientific << setprecision(5) << "best alpha= " << best_alpha << endl; break;
         case 6: system.getSolver()->thermalize();
                 functions.printResultsSolver(system.getSolver()->solve(r_max, Nbins)); break;
-        case 7: system.getSolver()->thermalize();
-                functions.solveParallel(&system, Nsteps_final); break;
+        case 7: 
+                int Nthreads = (int) omp_get_max_threads();
+                int Ni = (int) Nsteps_final/Nthreads;
+                #pragma omp parallel for schedule(static) num_threads(Nthreads) \
+                shared(omegaXY, omegaZ, alpha, beta, a, Nsteps_final, NstepsThermal, dt, D, tofile, Nparticles, dimension, Ni, Nthreads)
+                for(int i=0; i<Nthreads; i++){
+                        System sys(dimension, Nparticles);
+                        Elliptical ellipt(&sys, omegaXY, omegaZ);
+                        AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
+                        ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
+                        RandomGenerator randomgen;
+                        Functions func(&sys);
+
+                        sys.setHamiltonian(&ellipt);
+                        sys.setWavefunction(&asymmgauss);
+                        sys.setSolver(&imp);
+                        sys.setRandomGenerator(&randomgen);
+                        sys.getSolver()->thermalize();
+                        cout << sys.getSolver()->solve(false)[0] << endl;                }
+                break;
     }
     
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time

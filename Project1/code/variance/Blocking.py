@@ -46,7 +46,7 @@ def block(x):
     for i in arange(0,d):
         s[i] = s[i]/2**(d-i)
     
-    return mu, s
+    return mu, s[0:k]
 
 
 x = loadtxt(infile)

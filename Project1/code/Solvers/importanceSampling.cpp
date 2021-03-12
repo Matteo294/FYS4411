@@ -77,7 +77,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         }
 
         if (this->tofile){
-            energytofile << (double) energy / (i+1) << endl;
+            energytofile << (double) tmp1 << endl;
         }
         
         if(i%10000==0){
@@ -177,7 +177,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
         }
 
         if (this->tofile){
-            energytofile << (double) energy / (i+1) << endl;
+            energytofile << (double) tmp1 << endl;
         }
 
         if(i%10000==0){
