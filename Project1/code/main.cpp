@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
                 int Nthreads = (int) omp_get_max_threads();
                 int Ni = (int) Nsteps_final/Nthreads;
                 #pragma omp parallel for schedule(static) num_threads(Nthreads) \
-                shared(omegaXY, omegaZ, alpha, beta, a, Nsteps_final, NstepsThermal, dt, D, tofile, Nparticles, dimension, Ni, Nthreads)
+                shared(Ni, Nthreads)
                 for(int i=0; i<Nthreads; i++){
                         System sys(dimension, Nparticles);
                         Elliptical ellipt(&sys, omegaXY, omegaZ);
