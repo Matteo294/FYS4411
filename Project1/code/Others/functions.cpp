@@ -1,5 +1,7 @@
 #include "functions.h"
 #include <omp.h>
+#include<string>
+#include <copyfile.h>
 
 Functions::Functions(System* system) { this->system = system;}
 Functions::~Functions(){};
@@ -28,14 +30,16 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
         // set alpha
         this->system->getWavefunction()->setParameter(0, kalpha);
         this->system->getSolver()->thermalize();
+        this->system->getSolver()->setPrintFile("/var_alpha/energyateverystep"+to_string(k));
         results_prov = this->system->getSolver()->solve(false);
         results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
-        
         // solve
         cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
         this->printResultsSolver(results_prov);
         cout << endl;
-        if(toFile) this->alphaFile << endl << results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
+        if(toFile) {
+            this->alphaFile << endl << results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
+        }
     }
     if(toFile) this->alphaFile.close();
 
@@ -72,7 +76,6 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
         // solve
         this->system->getSolver()->thermalize();
         results_prov = this->system->getSolver()->solve(false);
-        
         results[k] = {kdt, results_prov[0], results_prov[1], results_prov[2]};
         cout << fixed << setprecision(5) << "dt: " << kdt << "\t";
         this->printResultsSolver(results_prov);
@@ -104,15 +107,17 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool toFile){
             this->system->addParticle(1.0, zeros);
             i++;
         }
-        
-
         this->system->getSolver()->thermalize();
+        if(toFile) this->system->getSolver()->setPrintFile("var_N/energyateverystep"+to_string(N[n]));
         results_prov = this->system->getSolver()->solve(false); 
         results[n] = { (double) N[n], results_prov[0], results_prov[1], results_prov[2]};
         cout << "N: " << N[n] << "\t "; 
         this->printResultsSolver(results_prov);
         cout << endl;     
-        if(toFile) this->Nfile << endl << results[n][0] << "," << results[n][1] << "," << results[n][2] << "," << results[n][3];
+        if(toFile){
+            this->Nfile << endl << results[n][0] << "," << results[n][1] << "," << results[n][2] << "," << results[n][3];
+            
+        }
     }
     if(toFile) this->Nfile.close();
     return results;
