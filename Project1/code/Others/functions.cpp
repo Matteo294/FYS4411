@@ -1,7 +1,6 @@
 #include "functions.h"
 #include <omp.h>
 #include<string>
-#include <copyfile.h>
 
 Functions::Functions(System* system) { this->system = system;}
 Functions::~Functions(){};
@@ -160,33 +159,4 @@ void Functions::printPresentation(){
 
 void Functions::printResultsSolver(vector<double> res){
     cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
-}
-
-void Functions::solveParallel(System* s, int N){
-    int Nthreads = omp_get_max_threads();
-    int Ni = (int) N/Nthreads;
-    omp_set_num_threads(Nthreads);
-    cout << "Nthreads: " << Nthreads << endl;
-    /*omp_set_num_threads(2);
-    #pragma omp parallel
-    {
-        #pragma omp sections
-        {
-            #pragma omp section
-            {
-                s1->getSolver()->setNsteps(Ni);
-                cout << s1->getSolver()->solve(false)[0] << endl;
-            }
-            #pragma omp section
-            {
-                s2->getSolver()->setNsteps(Ni);
-                cout << s2->getSolver()->solve(false)[0] << endl;
-            }
-        }
-    }*/
-    #pragma omp parallel for
-    for(int i=0; i<Nthreads; i++){
-        s->getSolver()->setNsteps(Ni);
-        cout << omp_get_thread_num() << "\t" << s->getSolver()->solve(false)[0] << endl;
-    } 
 }

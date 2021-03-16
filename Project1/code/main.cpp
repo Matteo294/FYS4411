@@ -1,12 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <ctime>
-#include <cstdlib>
-#include <fstream>
-#include <chrono>
-#include <iomanip>
-#include <omp.h>
-
+#include "Others/functions.h"
 #include "System/system.h"
 #include "Wavefunctions/gaussian.h"
 #include "Wavefunctions/asymmetricGaussian.h"
@@ -15,7 +7,15 @@
 #include "Solvers/metropolis.h"
 #include "Solvers/importanceSampling.h"
 #include "Others/random_generator.h"
-#include "Others/functions.h"
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
+#include <fstream>
+#include <chrono>
+#include <iomanip>
+#include <omp.h>
+#include <cmath>
 using namespace std;
 
 int main(int argc, char *argv[]){
@@ -30,10 +30,10 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 3;
+    const int Nparticles = 500;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,19); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
@@ -125,20 +125,25 @@ int main(int argc, char *argv[]){
         case 7: 
                 int Nthreads = (int) omp_get_max_threads();
                 int Ni = (int) Nsteps_final/Nthreads;
-                #pragma omp parallel for schedule(static) num_threads(Nthreads) \
-                shared(Ni, Nthreads)
+                #pragma omp parallel for num_threads(Nthreads) schedule(static, 1) shared(Ni, Nthreads)
                 for(int i=0; i<Nthreads; i++){
 
                         System sys(dimension, Nparticles);
 
-                        Elliptical ellipt(&sys, omegaXY, omegaZ);
-                        AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
+                        Spherical spher(&sys, omegaXY);
+                        //Elliptical ellipt(&sys, omegaXY, omegaZ);
+                        
+                        Gaussian gauss(&sys, alpha);
+                        //AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
+                        
+                        //Metropolis metropolis(&sys, Nsteps_final, NstepsThermal, step, tofile);
                         ImportanceSampling imp(&sys, Nsteps_final, NstepsThermal, dt, D, tofile);
+                        
                         RandomGenerator randomgen;
                         Functions funcs(&sys);
 
-                        sys.setHamiltonian(&ellipt);
-                        sys.setWavefunction(&asymmgauss);
+                        sys.setHamiltonian(&spher);
+                        sys.setWavefunction(&gauss);
                         sys.setSolver(&imp);
                         sys.setRandomGenerator(&randomgen);
                         sys.getSolver()->thermalize();
