@@ -38,7 +38,7 @@ class Functions{
 
         void printPresentation();
         void printResultsSolver(vector<double> res);
-        void solveParallel(System* s1, int N);
+        
     private:
         ofstream alphaFile, dtFile, Nfile, onebodyFile;
 

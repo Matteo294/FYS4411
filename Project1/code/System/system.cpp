@@ -151,7 +151,6 @@ void System::EvaluateRelativeDistance(int idx){
     }
 }
 
-
 // Getters
         class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
         class Wavefunction* System::getWavefunction() {return this->wavefunction;}

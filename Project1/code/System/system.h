@@ -54,6 +54,9 @@ class System{
         double r2(vector<double> vect, double parameter);
         /// Scalar product between vector 1 and vector 2
         double cdot(vector<double> v1, vector<double> v2);
+        /** Copy the parameters of system to another  instance of the class passed as a parameter
+         * \note That the two instances (copied and copying) must have the same number of particles and dimensions.
+        **/
 
         // Matrices
         /// NxN matrix of 3d vectors. The ij-th element is a 3D vector containing posi - posj

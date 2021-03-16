@@ -30,29 +30,27 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 50;
+    const int Nparticles = 3;
 
     // Information for the solvers
-    const int Nsteps_final = (int) 1e6; // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2, 16); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.1; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
-    double omegaZ = sqrt(8); 
+    double omegaZ = 1.0; 
 
     // Information for the wavefunction
     double alpha = 0.5; // variational parameter
-    const double beta = sqrt(8); // Only for asymmetrical wavefunction
+    const double beta = 1.0; // Only for asymmetrical wavefunction
     
     // Others
     const double h = 1e-5; // Steplength for numerical derivatives and evaluations
-    bool tofile = false; // Print on external file for resampling analysis (numerical methods)
-
-
+    bool tofile = false; // Print on external file for resampling analysis (numerical methods
 
     // Parameters for the various type of simulations
     // Mode 1 - varying alpha
@@ -63,8 +61,8 @@ int main(int argc, char *argv[]){
 
     // Mode 2 - varying dt
     const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
-    const double dt_max = 1e3; // in mode 2 (varying dt) maximum dt
-    const int N_dt = 10; // in mode 2 (varying dt) number of different dts between dt_min dt_max
+    const double dt_max = 15; // in mode 2 (varying dt) maximum dt
+    const int N_dt = 20; // in mode 2 (varying dt) number of different dts between dt_min dt_max
     const bool dt_to_file = false; // set true to save data to file
 
     // Mode 3 - varying N
@@ -102,8 +100,8 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&elliptical);
-    system.setWavefunction(&asymmgaussian);
+    system.setHamiltonian(&spherical);
+    system.setWavefunction(&gaussian);
     system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();
@@ -130,19 +128,23 @@ int main(int argc, char *argv[]){
                 #pragma omp parallel for schedule(static) num_threads(Nthreads) \
                 shared(Ni, Nthreads)
                 for(int i=0; i<Nthreads; i++){
+
                         System sys(dimension, Nparticles);
+
                         Elliptical ellipt(&sys, omegaXY, omegaZ);
                         AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
-                        ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
+                        ImportanceSampling imp(&sys, Nsteps_final, NstepsThermal, dt, D, tofile);
                         RandomGenerator randomgen;
-                        Functions func(&sys);
+                        Functions funcs(&sys);
 
                         sys.setHamiltonian(&ellipt);
                         sys.setWavefunction(&asymmgauss);
                         sys.setSolver(&imp);
                         sys.setRandomGenerator(&randomgen);
                         sys.getSolver()->thermalize();
-                        cout << sys.getSolver()->solve(false)[0] << endl;                }
+
+                        cout << sys.getSolver()->solve(false)[0] << endl;  
+                }
                 break;
     }
     
