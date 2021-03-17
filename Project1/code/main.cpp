@@ -30,10 +30,10 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 50;
+    const int Nparticles = 10;
 
     // Information for the solvers
-    const int Nsteps_final = (int) 1e6; // MC steps for the final simulation
+    const int Nsteps_final = (int) 1e5; // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
     double omegaZ = sqrt(8); 
 
     // Information for the wavefunction
-    double alpha = 0.5; // variational parameter
+    double alpha = 0.4; // variational parameter
     const double beta = sqrt(8); // Only for asymmetrical wavefunction
     
     // Others
@@ -80,8 +80,8 @@ int main(int argc, char *argv[]){
     const double tolerance = 1e-8; // Conditoin to stop the gradient descent
 
     // Mode 6 - One Body density
-    const double r_max = 3.0;
-    int Nbins = 100;
+    const double r_max = 5.0;
+    int Nbins = 200;
 
     System system(dimension, Nparticles);
 
@@ -102,8 +102,8 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&elliptical);
-    system.setWavefunction(&asymmgaussian);
+    system.setHamiltonian(&spherical);
+    system.setWavefunction(&gaussian);
     system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();

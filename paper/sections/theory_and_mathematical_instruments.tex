@@ -1,12 +1,12 @@
-When considering a system of particles at a high temperature and in the limit of low particle density, the Maxwell-Boltzmann distribution provides a very good description of the statistical features of the system. However, when the temperature decreases, approaching the absolute zero, a classical description is no more sufficient, giving way to a Quantum mechanical treatment. In this context, the bosonic or fermionic nature of the particles comes into play in determining the statistical behaviour of the apparatus. Fermions are driven the Pauli exclusion principle, so each level must be at most single-populated and the population will obey the Fermi-Dirac statistics. In case of a non-interacting system, the wavefunction describing the ground state would be provided by a Slated determinant, accounting for the anti-symmetry required by the Pauli exclusion principle. On the contrary, for bosons there is no limit on the occupational number for each single energy level, thus in principle at T=0 all the particles lie in the ground state. Thus, in the non-interacting case, at $T=0$ the system is described by the product of the single-particle wavefunctions.
+When considering a system of particles at a high temperature and in the limit of low particle density, the Maxwell-Boltzmann distribution provides a very good description of the statistical features of the system. However, when the temperature decreases, approaching the absolute zero, a classical description is no more sufficient, giving way to a Quantum mechanical treatment. In this context, the bosonic or fermionic nature of the particles comes into play in determining the statistical behaviour of the apparatus. Fermions are driven the Pauli exclusion principle, so each level must be at most single-populated and the population will obey the Fermi-Dirac statistics. In case of a non-interacting system, the wavefunction describing the ground state would be provided by a Slater determinant, accounting for the anti-symmetry required by the Pauli exclusion principle. On the contrary, for bosons there is no limit on the occupational number for each single energy level, thus in principle at T=0 all particles lie in the ground state. Thus, in the non-interacting case, at $T=0$ the system is described by the product of the single-particle wavefunctions. \cite{dalfovo1999}.
 
-Focusing our attention to a system constituted by bosons, it is know that when the temperature gets below a certain critical temperature $T_c$ for the BEC, the ground state starts being populated and a transition to this new phase occurs. Bose-Einstein statistics takes the lead in the description of the system, accounting for purely quantum effects that are not predictable with a classical approach.
+Focusing our attention to a system constituted by bosons, it is know that when the temperature gets below a certain critical temperature $T_c$ for the BEC, the ground state starts being populated and a transition to this new phase occurs. Bose-Einstein statistics takes the lead in the description of the system, accounting for purely quantum effects that are not predictable with a classical approach. \cite{dalfovo1999}
 
-Alkali atoms are particularly suitable to produce BECs: in fact, due to their ground state electronic structure and scattering properties, they can easily be laser-cooled and trapped (\textit{cite something here}).( \textit{I'll try to read something about this in the next days, then I'll integrate})\\
+Alkali atoms are particularly suitable to produce BECs: in fact, due to their ground state electronic structure and scattering properties, they can are relatively easy to be laser-cooled and trapped \cite{dalfovo1999}. The so-formed condensates are characterized by a high-diluteness condition, that is the size of the trap in which the atoms are inserted and the interatomic spacing are both bigger compared to the typical atomic dimension. In this project we treated a gas composed by $^{87}$Rb atoms, whose s-wave scattering length (representing the interaction between the atoms) is usually chosen to be $a_{Rb} = 100a_0$, where $a_0$ is the Bohr radius. Supposing to describe the trap as a harmonic potential, a typical choice for its size is $a_{Rb}/a_{ho} = 0.0043$ with $a_{ho}= \left( \hbar /m \omega_{ho}\right)^{1/2}$. Combining these data with an atomic density of $n \simeq 10^{12} - 10^{14}$ atoms/cm$^3$, one gets an interatomic spacing of $l\simeq 10^4$\AA, and thus the conditions cited above for the diluteness of the system are satisfied \cite{duBois}. A useful quantity to introduce related to the local density of the system $n(\bm{r})$ is the gas parameter $x(\bm{r}) = n(\bm{r}) a^3$, which allows to access the diluteness of the system. A BEC characterized by an average gas parameter $x_{av}(\bm{r}) \leq 10^{-3}$ can be properly described by the Gross-Pitaevskii equation, however other methods as VMC simulations become a valuable choice for describing the apparatus when the density increases \cite{Nilsen2005}.  
 
 
 \subsection{HAMILTONIAN AND TRIAL WAVEFUNCTION}
-In this project we will study a population of $N$ $^{87}$Rb atoms. The hamiltonian describing such apparatus is given by
+The hamiltonian describing a population of $N$ $^{87}$Rb atoms is given by
 \begin{equation}
     \hat{H} = \sum_i^N \left(-\frac{\hbar^2}{2m}{\nabla}_{i}^2 +V_{ext}({\mathbf{r}}_i)\right)  + \sum_{i<j}^{N} V_{int}({\mathbf{r}}_i,{\mathbf{r}}_j)
     \label{hamiltonian}
@@ -16,12 +16,13 @@ where we have used the shorthand notation for
     \sum_{i<j}^N V_{int}({\mathbf{r}}_i,{\mathbf{r}}_j)  = \sum_{i=1}^N \sum_{j=i+1}^N V_{int}({\mathbf{r}}_i,{\mathbf{r}}_j)
 \end{equation*}
 The external potential describing the trap for the atoms will be modelled in two different ways, namely as a spherical (S) or elliptical (E) harmonic trap. 
-\begin{equation*}
+\begin{equation}
     V_{ext}(\mathbf{r}) = \Bigg\{ 
     \begin{array}{ll} \frac{1}{2}m\omega_{ho}^2(x^2 + y^2 + z^2) & (S)\\ \frac{1}{2}m[\omega_{ho}^2(x^2+y^2) + \omega_z^2z^2] & (E) 
 \end{array}
-\end{equation*}
-For the sake of generality here we have shown the three-dimensional version of the spherical potential, but notice that this form will be adopted also to describe systems with less dimensionality. On the contrary, the elliptical potential is aimed to describe only 3D systems. The typical dimension associated to a trap for $^{87}$Rb atoms is given by $a_{ho}= \left( \hbar /m \omega_{ho}\right)^{1/2} = 1-2 \times 10^{4}$\AA. We introduce also the parameter $\gamma=\omega_z^2/\omega_{ho}^2$, which will be discussed in a moment.\\
+\label{potential}
+\end{equation}
+For the sake of generality here we have shown the three-dimensional version of the spherical potential, but notice that this form will be adopted also to describe systems with less dimensionality. On the contrary, the elliptical potential is aimed to describe only 3D systems. We introduce also the parameter $\gamma= \omega_z / \omega_{ho}$, whose value will be defined in a moment.\\
 
 Since we are considering a dilute system, the interaction between particles is mainly described through 2-body collisions, which in this context are well represented by the s-wave scattering length $a$ for $^{87}$Rb. This repulsive interaction is modelled by a hard-core repulsion term
 \begin{equation*}
@@ -31,13 +32,13 @@ Since we are considering a dilute system, the interaction between particles is m
         0 & \vert \bm{r}_i - \bm{r}_j \vert > a 
     \end{array}
 \end{equation*}
-For our treatment the value of $a$ is fixed by $a/a_{ho} = 0.0043$. \\
+For our treatment the value of $a$ is fixed by $a/a_{ho} = 0.0043$, which, as stated above, is a typical choice for relating the size of the trap to the dimension of the atoms. \\
 
 The trial wavefunction used in the VMC approach is given by
 \begin{align}
 \begin{split}
-    &\Psi_T(\bm{r}) = \Psi_T(\bm{r}_1, \dots, \bm{r}_N) = \\
-    &= \left[ \prod_{i=1}^N g(\alpha, \beta, \bm{r}_i) \right] \left[ \prod_{j<k} f(a, \vert \bm{r}_j - \bm{r}_k \vert ) \right] \\
+    &\Psi_T(\bm{R},\alpha, \beta) = \Psi_T(\bm{r}_1, \dots, \bm{r}_N, \alpha, \beta) = \\
+    &= \left[ \prod_{i=1}^N g(\alpha, \beta, \bm{r}_i) \right]  \left[ \prod_{j<k} f(a, \vert \bm{r}_j - \bm{r}_k \vert ) \right] \\
     &g(\alpha, \beta, \bm{r}_i) = \exp \left[ -\alpha \left( x_i^2 + y_i^2 + \beta z_i^2 \right) \right] \\
     &f(a, \vert \bm{r}_j - \bm{r}_k \vert ) = \Bigg\{ \begin{array}{ll}
         0 & \vert \bm{r}_j - \bm{r}_k \vert \leq a \\
@@ -46,6 +47,35 @@ The trial wavefunction used in the VMC approach is given by
 \end{split}
 \label{wavefunctions}
 \end{align}
-where $\bm{r}$ is a collective variable standing for the coordinates of all the particles in the system. In principle both $\alpha$ and $\beta$ could be treated as variational parameters, however in this project only the former will be used with this connotation, while the latter will be set to a constant. Notice that $\Psi_T(\bm{r})$ written above is the trial wavefunction corresponding to the most general case treated in the project, namely interacting atoms trapped in an elliptical potential. In this case we will set $\beta = \gamma = 2.82843$. The analogue version for the non-interacting particles trapped in a spherical potential can be simply obtained from $\Psi_T$ by setting $a=0$ and $\beta=1$. In this last case, the number of terms in the quadrature sum appearing in $g(\alpha, \beta=1, \bm{r}_i)$ will be determined by the dimensionality of the system. \\
+where $\bm{R}$ is a collective variable standing for the coordinates of all the particles in the system. In principle both $\alpha$ and $\beta$ could be treated as variational parameters, however in this project only the former will be used with this connotation, while the latter will be set to a constant. Notice that $\Psi_T(\bm{R},\alpha,\beta)$ written above is the trial wavefunction corresponding to the most general case treated in the project, namely interacting atoms trapped in an elliptical potential. In this case we will set $\beta = \gamma = 2.82843$. The analogue version for the non-interacting particles trapped in a spherical potential can be simply obtained from Eq.\,\ref{wavefunctions} by setting $a=0$ and $\beta=1$. In this last case, the number of terms in the quadrature sum appearing in $g(\alpha, \beta=1, \bm{r}_i)$ will be determined by the dimensionality of the system. \\
 
-From now on, all the results will be reported as re-scaled quantities, considering $\hbar = m = \omega_{ho} = 1$.
+
+\subsection{ONE-BODY DENSITY}
+Another interesting quantity to explore related to our system is the one-body density $\rho_i(r)$, which is defined as
+\begin{equation*}
+    \rho_i(r) = \frac{1}{\int d\bm{R} \vert \Psi_T(\bm{R}) \vert^2} \int d\bm{r}_1 \dots d\bm{r}_{i-1} d\bm{r}_{i+1} \dots d\bm{r}_N \vert \Psi_T(\bm{R}) \vert^2
+\end{equation*}
+It acts as a PDF describing the spatial distribution of a particle inserted in a many-body system. For the apparatus considered in this project, the above integral can be easily analytically solved in the simple non-interacting case, while its evaluation becomes much more demanding when the interaction between particles is taken into account. We will limit the one-body density analysis to this second case, evaluating the integral through a VMC simulation involving the system in its ground state (namely using the $\alpha$ value obtained after the minimization). 
+
+
+
+
+\subsection{ERROR ANALYSIS} \label{sec:error analysis}
+In Monte Carlo experiments and also more in general, we are looking for expectation values and an estimate of how accurate they are. This kind of simulation has to deal with two possible sources for errors: systematical ones and statistical ones. The former are given by some factors that drive the observation away from its true value in a predictable way, e.g. repeated measurements could be shifted by a constant value away from the correct result and the accuracy is obviously compromised. This sort of error is difficult to detect and every system needs a different treatment to investigate possible sources, but once that they are eventually found, we can reasonably get rid of them. On the other hand, statistical errors can not be avoided and they affect the precision of the measurement by inserting some random fluctuations in the observation process. This kind of error reveals itself when repeated observations of the same quantity return different values reciprocally shifted by a non-predictable amount. Random errors can be estimated using standard tools from statistics.
+
+When the final result of an experiment consists in a mean value over several observations of the same quantity (that is our case, as we will discuss in the next section), the estimation of the error is provided by the Central Limit Theorem (CTL). We consider a set of discrete measurements $\{x_1,\,x_2,\,\dots, \, x_N\}$ with sample mean $\mu_s$ and sample variance $\sigma_s^2$ defined as
+\begin{align*}
+    \mu_s &= \frac{1}{N} \sum_{i=1}^N x_i \\
+    \sigma_s^2 &= \frac{1}{N} \sum_{i=1}^N (x_i - \mu_s)^2
+\end{align*}
+We assume them to be independent and identically distributed (iid), that is these observations are sampled from the same PDF with ideal mean $\mu$ and variance $\sigma^2$. The CLT states that the limiting form obtained for $N\rightarrow \infty$ of the distribution which describes the sampled mean value is a gaussian centered at $\mu$ with variance $\sigma_\mu^2 = \sigma_s^2/N$. This occurs independently of the distribution type from which the samples were driven. For a finite but sufficiently high value of $N$, it is thus possible to estimate variance of the distribution of $\mu_s$ as $\sigma_\mu^2 \approx \sigma_s^2/N$.
+
+While performing a VMC simulation, the usage of pseudo-random number generators combined with Markov Chains causes the hypothesis of iid data to decay, since sequentially generated observations will be  statistically correlated. In this more general case, the estimation of $\sigma_\mu^2$ from the discrete sampled values $\{ x_i \}$ must include a correlation term. It is possible to demonstrate that the following holds
+\begin{equation}
+    \sigma_\mu \approx \frac{\sigma_s^2}{N} + \frac{2}{N^2} \sum_{k<l} (x_k - \mu_s) (x_l - \mu_s)  
+    \label{err_covariance}
+\end{equation}
+where the sum accounts for the correlation between sampled data. By introducing the iid hypothesis, for sufficiently large $N$ the sum decays to zero and the CLT is restored. However, for the VMC simulations analyzed in this project, since correlation between data is present, we must include this sum (or an estimate of it) while providing the error on a specific measurement.
+
+
+

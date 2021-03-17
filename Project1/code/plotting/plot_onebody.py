@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib 
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 data = pd.read_csv(r'./data/onebody_density.csv', usecols = ["r", "counts"])
