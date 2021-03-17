@@ -8,9 +8,20 @@ matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
 data = pd.read_csv('./data/varying_alpha.csv')
 
-plt.plot(data['alpha'], data['energy'], linewidth=1.8, color='black')
-plt.xlabel(r'$\alpha$', fontsize=14)
-plt.ylabel('E / N', fontsize=14)
-#plt.fill_between(data['alpha'], data['energy']-np.sqrt(data['std']), data['energy']+np.sqrt(data['std']), color='green', alpha=0.3)
+# Non interacting, Metropolis
+alphas = np.arange(0.3, 0.71, 0.02)
+val = [17.0216, 16.5288, 16.1293, 15.8140, 15.5648, 15.3676, 15.2408, 15.1185, 15.0511, 15.0119, 15.0, 15.0118, 15.0433, 15.0949, 15.1686, 15.2436, 15.3537, 15.4424, 15.6039, 15.7269, 15.8442]
+std = [0.0165,   0.0139,  0.0118,  0.0098,  0.0080,  0.0064,  0.0053,  0.0037,  0.0023,  0.0011,  0.0,  0.0011,  0.0021,  0.0033,  0.0041,  0.0052,  0.0061,  0.0070,  0.0071,  0.0078,  0.0095]
+xline = np.linspace(0.3, 0.7, 1000)
+exactval = [30*(x/2 + 1/8/x) for x in xline]
+
+plt.plot(xline, exactval, linewidth=1.8, color='mediumspringgreen', alpha=0.8, label='Model')
+plt.errorbar(alphas, val, ls='none', yerr=std, color='green')
+plt.scatter(alphas, val, color='red', s=12, label='Metropolis')
+plt.xlabel(r'$\alpha$', fontsize=18, labelpad=15)
+plt.ylabel('Energy', fontsize=18, labelpad=15)
+ax = plt.gca()
+plt.legend(fontsize=16)
+ax.tick_params(axis='both', which='major', pad=5, labelsize=14)
 plt.grid()
 plt.show()

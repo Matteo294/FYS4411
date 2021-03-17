@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 500;
+    const int Nparticles = 10;
 
     // Information for the solvers
     const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
@@ -49,23 +49,28 @@ int main(int argc, char *argv[]){
     const double beta = 1.0; // Only for asymmetrical wavefunction
     
     // Others
-    const double h = 1e-5; // Steplength for numerical derivatives and evaluations
-    bool tofile = false; // Print on external file for resampling analysis (numerical methods
+    bool tofile = true; // Print on external file for resampling analysis (numerical methods
 
     // Parameters for the various type of simulations
-    // Mode 1 - varying alpha
-    const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
-    const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
-    const int N_alpha = 10; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
+
+    // Mode 0 - normal
+
+    // Mode 1 - numerical
+    const double h = 1e-5; // Steplength for numerical derivatives and evaluations
+
+    // Mode 2 - varying alpha
+    const double alpha_min = 0.3; // in mode 1 (varying alpha) minimum alpha
+    const double alpha_max = 0.7; // in mode 2 (varying alpha) maximum alpha
+    const int N_alpha = 20; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
     const bool alpha_to_file = true; // set true to save data to file
 
-    // Mode 2 - varying dt
+    // Mode 3 - varying dt
     const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
-    const double dt_max = 15; // in mode 2 (varying dt) maximum dt
-    const int N_dt = 20; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = false; // set true to save data to file
+    const double dt_max = 10; // in mode 2 (varying dt) maximum dt
+    const int N_dt = 50; // in mode 2 (varying dt) number of different dts between dt_min dt_max
+    const bool dt_to_file = true; // set true to save data to file
 
-    // Mode 3 - varying N
+    // Mode 4 - varying N
     vector<int> Ns {5, 10, 15}; // in mode 3 (varying N) different values of N
     const bool N_to_file = true; // set true to save data to file
 
@@ -137,7 +142,7 @@ int main(int argc, char *argv[]){
                         //AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
                         
                         //Metropolis metropolis(&sys, Nsteps_final, NstepsThermal, step, tofile);
-                        ImportanceSampling imp(&sys, Nsteps_final, NstepsThermal, dt, D, tofile);
+                        ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
                         
                         RandomGenerator randomgen;
                         Functions funcs(&sys);
