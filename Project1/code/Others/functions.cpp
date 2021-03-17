@@ -25,9 +25,9 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
         results[k].resize(3);
 
         kalpha = alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas;
-
+        cout << kalpha << " ";
         // set alpha
-        this->system->getWavefunction()->setParameter(0, kalpha);
+        /*this->system->getWavefunction()->setParameter(0, kalpha);
         this->system->getSolver()->thermalize();
         this->system->getSolver()->setPrintFile("/var_alpha/energyateverystep"+to_string(k));
         results_prov = this->system->getSolver()->solve(false);
@@ -38,7 +38,7 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
         cout << endl;
         if(toFile) {
             this->alphaFile << endl << results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
-        }
+        }*/
     }
     if(toFile) this->alphaFile.close();
 
