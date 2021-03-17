@@ -76,7 +76,9 @@ def block(x):
     for i in arange(0,d):
         s[i] = s[i]/2**(d-i)
     
-    return mu, s[0:k]
+    return mu, s[0:d], k
+
+
 #sort alphanurecaly the files
 def sorted_alphanumeric(data):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
@@ -103,11 +105,14 @@ if selector==0 : #Simple (default) case 1 file "energyateverystep"
     infile = data_path(dname+"/energyateverystep.dat")
     #os.chdir("var_alpha")
     x = np.genfromtxt(infile)
-    (mean, var) = block(x) 
+    (mean, var, k) = block(x) 
     std = sqrt(var)
-    data ={'Mean':[mean], 'STDev':[std[-1]]}
+    data ={'Mean':[mean], 'STDev':[std[k]]}
     frame = pd.DataFrame(data,index=['Values'])
     print(frame)
+    plt.plot(arange(0, len(std), 1), std)
+    plt.grid()
+    plt.show()
     if fig == True:
         savefigure(dname,std,"0")
 #Case Varyng alpha
@@ -120,10 +125,10 @@ if selector==1 :
         infile = data_path(dname+"/var_alpha/"+f)
         #os.chdir("var_alpha")
         x = np.genfromtxt(infile)
-        (mean, var) = block(x) 
+        (mean, var ,k) = block(x) 
         std = sqrt(var)
 
-        data ={'Mean':[mean], 'STDev':[std[-1]]}
+        data ={'Mean':[mean], 'STDev':[std[k]]}
         frame = pd.DataFrame(data,index=['Values'])
         print(frame)
         if fig == True:
@@ -144,9 +149,9 @@ if selector==2:
         print("File:", f)
         infile = data_path(dname+"/var_N/"+f)
         x = np.genfromtxt(infile)    
-        (mean, var) = block(x) 
+        (mean, var, k) = block(x) 
         std = sqrt(var)
-        data ={'Mean':[mean], 'STDev':[std[-1]]}
+        data ={'Mean':[mean], 'STDev':[std[k]]}
         frame = pd.DataFrame(data,index=['Values'])
         print(frame)
         if fig == True:
