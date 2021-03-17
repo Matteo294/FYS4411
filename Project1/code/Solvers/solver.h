@@ -20,6 +20,7 @@ class Solver{
         void setNsteps(int Nsteps);
         void setNstepsThermal(int NstepsThermal);
         void setParameter(int idx, double value);
+        void setPrintFile(string new_file);
 
     // Other functions & attributes
         /** Performs a MC simulation to evaluate the energy of the ground state of the system
@@ -32,7 +33,6 @@ class Solver{
          * the results are printed to file
         **/
         virtual vector<double> solve(double r_max, int N_bins) = 0;
-
 
         /** Performs a MC simulation to evaluate the energy of the ground state of the system
          *  This function overrides solve(bool allAverages) fro numerical evaluations. 

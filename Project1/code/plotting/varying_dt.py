@@ -8,9 +8,11 @@ matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
 data = pd.read_csv('./data/varying_dt.csv')
 
-plt.plot(data['dt'], data['energy'], linewidth=1.8, color='mediumspringgreen')
-plt.xlabel(r'$dt$', fontsize=14)
-plt.ylabel('E / N', fontsize=14)
-plt.fill_between(data['dt'], data['energy']-np.sqrt(data['std']), data['energy']+np.sqrt(data['std']), color='green', alpha=0.3)
-plt.grid()
+plt.plot(data['dt'], data['acceptance'], linewidth=1.8, color='cornflowerblue')
+plt.xscale('log')
+xlab = plt.xlabel(r'$\delta t$', fontsize=16, labelpad=15)
+ylab = plt.ylabel('Acceptance', fontsize=16, labelpad=15)
+ax = plt.gca()
+ax.tick_params(axis='both', which='major', pad=5)
+#plt.grid()
 plt.show()

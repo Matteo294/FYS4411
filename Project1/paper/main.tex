@@ -1,0 +1,64 @@
+\documentclass[a4paper]{article}
+\usepackage{packages}
+\usepackage{graphicx, float}
+\usepackage{multicol}
+
+
+\title{\LARGE BOSE-EINSTEIN CONDENSATE SYSTEM STUDY TROUGH VARIATIONAL MONTE CARLO METHOD \\ \vspace{5mm}  \large FYS4411 COURSE - COMPUTATIONAL PHYSICS II: QUANTUM MECHANICAL SYSTEMS \\ \large PROJECT 1 }
+\author{\textsc{Emiliano Staffoli, Matteo Zortea, Alexander Ferraro }}
+\date{\today}
+
+\begin{document}
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\maketitle
+
+\begin{abstract}
+    Put abstract here
+\end{abstract}
+
+\begin{multicols*}{2}
+ \noindent
+
+\section{INTRODUCTION}
+   \input{sections/Introduction}
+   
+\section{THEORY AND MATHEMATICAL INSTRUMENTS}
+    \input{sections/theory_and_mathematical_instruments}
+   
+\section{METHODS}
+    \input{sections/Methods}
+    
+\section{CODE STRUCTURE}
+\input{sections/code}
+
+
+
+\newpage 
+
+\section{RESULTS}
+\input{sections/results.tex}
+
+\newpage
+\section*{APPENDIX}
+\appendix
+\section{LOCAL ENERGY: ANALYTICAL FORM}
+\label{appendix:local_energy}
+\input{sections/appendix/appendixA}
+
+\section{GENERAL EXPRESSION FOR THE DRIFT FORCE}
+\label{appendix:drift_force_general}
+\input{sections/appendix/appendixB}
+\section{GENERAL EXPRESSION FOR THE LOCAL ENERGY AS A FUNCTION OF ALPHA}
+\label{appendix:local energy as function of alpha }
+\input{sections/appendix/appendixC}
+\end{multicols*}
+
+\newpage
+\begin{multicols}{2}
+\printbibliography
+\end{multicols}
+
+\end{document}

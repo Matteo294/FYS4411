@@ -1,4 +1,5 @@
 #include "solver.h"
+#include <string>
 
 Solver::~Solver(){};
 
@@ -29,4 +30,9 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
     void Solver::setParameter(int idx, double value){
         assert(idx < this->nparams);
         this->params[idx] = value;
+    }
+    void Solver::setPrintFile(string new_file) {
+        this->energytofile.close();
+        this->energytofile.open("./variance/"+new_file+".dat");
+        
     }

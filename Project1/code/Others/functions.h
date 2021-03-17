@@ -1,9 +1,22 @@
 #pragma once
 #include "../System/system.h"
+/*#include "../System/system.h"
+#include "../Wavefunctions/gaussian.h"
+#include "../Wavefunctions/asymmetricGaussian.h"
+#include "../Hamiltonians/spherical.h"
+#include "../Hamiltonians/elliptical.h"
+#include "../Solvers/metropolis.h"
+#include "../Solvers/importanceSampling.h"
+#include "../Others/random_generator.h"*/
+#include <iostream>
 #include <vector>
-#include <iomanip>
-#include <cmath>
+#include <ctime>
+#include <cstdlib>
 #include <fstream>
+#include <chrono>
+#include <iomanip>
+#include <omp.h>
+#include <cmath>
 
 class Functions{
 
@@ -38,7 +51,7 @@ class Functions{
 
         void printPresentation();
         void printResultsSolver(vector<double> res);
-        void solveParallel(System* s1, int N);
+        
     private:
         ofstream alphaFile, dtFile, Nfile, onebodyFile;
 

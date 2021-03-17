@@ -1,0 +1,164 @@
+
+This section is devoted to show the detailed analytical derivation of the local energy formula in the general case. All the specific cases can be gotten by setting properly the parameters of the system.
+For the sake of notation, we introduce $m=\hbar=\omega_{ho}=1$.  
+In the most general case the trial wavefunction is reported in the theoretical section \ref{sec: 2.1 Ham and wave}, however to face the analytical derivation we rewrite \ref{wavefunctions} as:
+
+\begin{equation*}
+    \Psi_T(\mathbf{r})=\left[ \prod_i^N g(\alpha,\beta,\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)}
+\end{equation*} 
+with 
+\begin{equation}
+    u(r_{ik})=ln(f_{ik})=ln(1-\frac{a}{r_{ik}})
+    \label{eq: u_interaction}
+\end{equation}
+and
+\begin{equation}
+    g(\alpha,\beta,\mathbf{r}_i) = \exp{\left[-\alpha(x_i^2+y_i^2+\beta
+    z_i^2)\right]}= \phi(\mathbf{r}_i).
+    \label{eq:gauss}
+\end{equation} 
+The Hamiltonian of the system assume the following form: 
+\begin{equation*}
+    \begin{split}
+    \hat{H} = \sum_i^N \Bigg( -\frac{1}{2m} \nabla_{i}^2 + \frac{1}{2} m \omega_{ho}^2 (x_i^2 + y_i^2) + \\ 
+    +\frac{1}{2} m \omega_{z}^2 z_i^2\Bigg) 
+    + \cancelto{0}{\sum_{i<j}^{N} V_{int}({\mathbf{r}}_i,{\mathbf{r}}_j)} 
+    \end{split}
+\end{equation*}
+Since, we consider the %non trivial 
+case of $r_{ij}>a,\, \forall i,j$, then  $V_{int}(\mathbf{r}_i,\mathbf{r}_j) = 0$.
+
+
+\begin{align}
+    E_L(\mathbf{r}) &= \frac{1}{\Psi_T(\mathbf{r})} \hat{H} \Psi_T(\mathbf{r}) \nonumber\\
+    &= \frac{1}{\Psi_T(\mathbf{r})}
+     \left[ \sum_k^N  -\frac{1}{2} \nabla_{k}^2 + \frac{1}{2} \left(x_k^2 + y_k^2 + \omega_{z}^2 z_k^2 \right) \right]
+    \Psi_T(\mathbf{r}) \nonumber\\
+    &= \sum_k^N -\frac{\nabla_{k}^2\Psi_T(\mathbf{r})}{{2\Psi_T(\mathbf{r})}} +\sum_k^N \frac{1}{2} \left(x_k^2 + y_k^2 + \omega_{z}^2 z_k^2 \right) 
+    \label{eq: localenergy_appendix}
+\end{align}
+One of the most nasty part of the derivation of the local energy is the evaluation of the kinetic term : 
+\begin{align*}
+    \sum_k^N -\frac{\nabla_{k}^2\Psi_T(\mathbf{r})}{{2\Psi_T(\mathbf{r})}}
+\end{align*}
+This steps involve the evaluation of the first derivative for an arbitrary particle k: 
+
+\begin{align*}
+    \nabla_k\Psi_T(\mathbf{r}) &= \nabla_k \bigg\{ \left[ \prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} \bigg\} \\
+    &= \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} \\ &+ \left[\prod_i \phi(\mathbf{r}_i)  \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \nabla_k \left[ \sum_{j<m} u(r_{jm}) \right] \\
+\end{align*}
+\begin{align}
+    &= \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} \nonumber\\
+    &+ \left[\prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right]\nonumber\\*
+    \label{eq:firstder}
+\end{align}
+In our specific case this yields to: 
+\begin{align}
+    \nabla_k\Psi_T(\mathbf{r}) &=\left[ \nabla_k  e^{  -\alpha(x_k^2 + y_k^2 + \beta z_k^2)} \right] \left[ \prod_{i \neq k}  e^{\left[ -\alpha(x_i^2 + y_i^2 + \beta z_i^2) \right]} \right] \times \nonumber\\
+    & \times\left[ \prod_{j<m} \left( 1 - \frac{a}{r_{jm}} \right) \right] +  \left[\prod_i e^{ -\alpha (x_i^2 + y_i^2 + \beta z_i^2)} \right] \times \nonumber\\
+    &\times \left[\prod_{j<m} \left( 1 - \frac{a}{r_{jm}} \right) \right] \left[ \sum_{j\neq k} \nabla_k \ln \left( 1 - \frac{a}{r_{jk}} \right) \right] \nonumber \\
+    &= -2\alpha (x_k, y_k, \beta z_k) \Psi_T(\mathbf{r}) +  \sum_{j\neq k} \frac{1}{\left( 1 - \frac{a}{r_{jk}} \right)} \frac{a \mathbf{r}_{kj}}{r_{jk}^{3}} \Psi_T(\mathbf{r}) \nonumber\\
+    &= \Psi_T(\mathbf{r}) \left[ -2\alpha (x_k, y_k, \beta z_k) + \sum_{j\neq k} \frac{a}{\left( r_{jk} - a \right) r_{jk}^2} \mathbf{r}_{kj} \right] \nonumber\\*
+\end{align}
+This is the gradient of the trial wavefunction for a particle $k$.
+To evaluate the second derivative we restart from equation (\ref{eq:firstder}).
+Proceeding we get:
+\begin{align}
+    \nabla_k^2 \Psi_T(\mathbf{r}) &= \left[ \nabla_k^2 \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)} \nonumber\\ 
+    &+ \left[ \nabla_k \phi(\mathbf{r}_k) \right]  \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m}u(r_{jm})\right)}\times \nonumber\\
+    & \quad \times \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] + \left[ \nabla_k \phi(\mathbf{r}_k) \right] \left[ \prod_{i \neq k} \phi(\mathbf{r}_i) \right] \times \nonumber\\ 
+    & \quad \times \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] + \nonumber\\ 
+    &+\quad\left[\prod_i \phi(\mathbf{r}_i) \right] \exp{\left(\sum_{j<m} u(r_{jm}) \right)} \left[ \sum_{j\neq k} \nabla_k^2 u(r_{jk}) \right]\nonumber\\*
+\end{align}
+Dividing by $\Psi_T(\mathbf{r})$ we get: 
+\begin{align*}
+    \frac{ \nabla_k^2 \Psi_T(\mathbf{r})}{\Psi_T(\mathbf{r})} &= \frac{\nabla_k^2 \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} + 2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] + \\
+    & \quad +\left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right]^2 + \left[ \sum_{j\neq k} \nabla_k^2 u(r_{jk}) \right] \\
+\end{align*}
+\begin{align}
+    &= \frac{\nabla_k^2 \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} + 2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k} \nabla_k u(r_{jk}) \right] \nonumber\\
+    &+ \left[ \sum_{j\neq k} \sum_{m \neq k} \nabla_k u(r_{jk}) \nabla_k u(r_{mk}) \right] + \left[ \sum_{j\neq k} \nabla_k^2 u(r_{jk}) \right] \nonumber\\*
+\end{align}
+At this point we rewrite the gradient in spherical coordinates
+\begin{equation*}
+    \nabla f = \frac{\partial f}{\partial r} \frac{\mathbf{r}}{r} + \frac{1}{r} \frac{\partial f}{\partial \theta} \hat{\theta} + \frac{1}{\sin \theta} \frac{\partial f}{\partial \phi} \hat{\phi}
+\end{equation*}
+
+Applying the gradient to $u(r_{jk})$
+\begin{equation*}
+    \nabla_k u(r_{jk}) = \frac{ d (\mathbf{r}_k - \mathbf{r}_j)}{d \mathbf{r}_k} \nabla_{kj} u(r_{kj}) = \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}}
+\end{equation*}
+
+With the same reasoning one can get also the expression for the Laplacian of $u(r_{jk})$
+\begin{equation*}
+    \nabla^2 f = \frac{1}{r^2} \frac{\partial}{\partial r} \left( r^2 \frac{\partial f}{\partial r} \right) + \frac{1}{r^2 \sin\theta } \frac{\partial }{\partial\theta} \left( \sin \theta \frac{\partial f}{\partial \theta} \right) + \frac{1}{r^2 \sin^2 \theta} \frac{\partial^2 f}{\partial \phi^2}
+\end{equation*}
+which in our case reduces to
+\begin{align*}
+    \nabla_k^2 u(r_{jk}) &= \frac{1}{r_{jk}^2} \frac{\partial}{\partial r_{jk}} \left( r_{jk}^2 \frac{\partial u}{\partial r_{jk}} \right) \\ &= \frac{1}{r_{jk}^2}  \left( 2 r_{jk} \frac{\partial u}{\partial r_{jk}} + r_{jk}^2 \frac{\partial^2 u}{\partial r_{jk}^2} \right) = \frac{2}{r_{jk}} \frac{\partial u}{\partial r_{jk}} + \frac{\partial^2 u}{\partial r_{jk}^2}
+\end{align*}
+
+Returning to the complete equation for the Laplacian of $\Psi_T(\mathbf{r})$ we get:
+\begin{align}
+     \frac{ \nabla_k^2 \Psi_T(\mathbf{r})}{\Psi_T(\mathbf{r})} &=  \underbrace{\frac{\nabla_k^2 \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)}}_{\text{Term 1}} 
+     + \underbrace{2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k}  \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \right]}_{\text{Term 2}} \nonumber\\
+     &+ \underbrace{\left[ \sum_{j\neq k} \sum_{m \neq k} \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \frac{\mathbf{r}_{km}}{r_{km}} \frac{du(r_{km})}{dr_{km}} \right]}_{\text{Term 3}} + \nonumber\\
+     &\quad + \underbrace{\left[ \sum_{j\neq k} \frac{2}{r_{jk}} \frac{\partial u(r_{jk})}{\partial r_{jk}} + \frac{\partial^2 u(r_{jk})}{\partial r_{jk}^2} \right]}_{\text{Term 4}} \nonumber\\*
+     \label{eq: d^2psi general}
+\end{align}
+Substituting (\ref{eq: u_interaction}) and (\ref{eq:gauss}) in (\ref{eq: d^2psi general}) we evaluate each term for the general case. 
+
+\textbf{Term 1}
+\begin{align*}
+    \frac{ \nabla_k^2 \Psi_T(\mathbf{r})}{\Psi_T(\mathbf{r})} = 2 \alpha \left[  2 \alpha (x_k^2 + y_k^2 + \beta^2 z_k^2 ) -2 -\beta \right]
+\end{align*}
+
+\textbf{Term 2}
+\begin{align*}
+    &2 \frac{\nabla_k \phi(\mathbf{r}_k)}{\phi(\mathbf{r}_k)} \left[ \sum_{j\neq k}  \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \right] = \\
+    &=2 \left( -2 \alpha \left( x_k, y_k, \beta z_k \right) \right) \sum_{j\neq k}  \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{a}{r_{kj} \left( r_{kj} - a \right)} \\
+    &= -4 \alpha \left( x_k, y_k, \beta z_k \right) \cdot \sum_{j\neq k}  \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{a}{r_{kj} \left( r_{kj} - a \right)} 
+\end{align*}
+
+
+\textbf{Term 3}
+\begin{align*}
+    &\sum_{j\neq k} \sum_{m \neq k} \frac{\mathbf{r}_{kj}}{r_{kj}} \frac{du(r_{kj})}{dr_{kj}} \frac{\mathbf{r}_{km}}{r_{km}} \frac{du(r_{km})}{dr_{km}} = \\&
+    \sum_{j\neq k} \sum_{m \neq k} \frac{\mathbf{r}_{kj}}{r_{kj}} \cdot  \frac{\mathbf{r}_{km}}{r_{km}} \frac{a}{r_{kj} \left( r_{kj} - a \right)} \frac{a}{r_{km} \left( r_{km} - a \right)} 
+\end{align*}
+
+
+\textbf{Term 4}
+\begin{align*}
+    &\sum_{j\neq k} \left[ \frac{2}{r_{jk}} \frac{\partial u(r_{jk})}{\partial r_{jk}} + \frac{\partial^2 u(r_{jk})}{\partial r_{jk}^2} \right] = \\&\sum_{j\neq k} \left[ \frac{2}{r_{jk}} \frac{a}{r_{kj} \left( r_{kj} - a \right)} + \frac{a \left(a - 2 r_{kj} \right) }{r_{kj}^2 \left( r_{kj} - a \right)^2 } \right]
+\end{align*}
+Now we have all the tools to evaluate analytically the local energy (\ref{eq: localenergy_appendix}):
+
+
+\begin{align*}
+    E_L(\mathbf{r})
+    &=-\frac{1}{2} \sum_i^N  \bigg\{ 2 \alpha \left[  2 \alpha (x_i^2 + y_i^2 + \beta^2 z_i^2 ) -2 -\beta \right] \\
+    &\quad+ \sum_{j\neq i} \frac{a}{r_{ij}^2 (r_{ij} - a)} \bigg\{ -4 \alpha \left( x_i, y_i, \beta z_i \right) \cdot \mathbf{r}_{ij} + 2 + \\ 
+    & \quad \quad \quad \frac{a - 2r_{ij}}{ r_{ij} - a } + \mathbf{r}_{ij} \cdot \sum_{m \neq i}   \frac{\mathbf{r}_{im}}{r_{im}} \frac{a}{r_{im} \left( r_{km} - a \right)} \bigg\} \bigg\} \\
+    & \quad\quad\quad\quad+ \frac{1}{2} 
+    \sum_i^N (x_i^2 + y_i^2 + \omega_{z}^2 z_i^2) \\
+    &= -\frac{1}{2} \sum_i^N  \bigg\{ 4 \alpha^2 (x_i^2 + y_i^2 + \beta^2 z_i^2 ) -4 \alpha - 2\alpha\beta  \\
+    &+ \sum_{j\neq i} \frac{a}{r_{ij}^2 (r_{ij} - a)} \bigg\{ -4 \alpha \left( x_i, y_i, \beta z_i \right) \cdot \mathbf{r}_{ij} + 2 + \frac{a - 2r_{ij}}{ r_{ij} - a } + \\
+    &\quad + \mathbf{r}_{ij} \cdot \sum_{m \neq i}   \frac{\mathbf{r}_{im}}{r_{im}^2} \frac{a}{ \left( r_{km} - a \right)} \bigg\} \bigg\} + 
+    \frac{1}{2} \sum_i^N (x_i^2 + y_i^2 + \omega_{z}^2 z_i^2) \\
+    &= \alpha (2 + \beta) N -  \frac{1}{2} \sum_i^N  \bigg\{ 4 \alpha^2 (x_i^2 + y_i^2 + \beta^2 z_i^2 ) + \\ 
+    &\quad \quad+\sum_{j\neq i} \frac{a}{r_{ij}^2 (r_{ij} - a)} \bigg\{ -4 \alpha \left( x_i, y_i, \beta z_i \right) \cdot \mathbf{r}_{ij} + 2 \\
+    &\quad \quad \quad \quad +\frac{a - 2r_{ij}}{ r_{ij} - a } + \mathbf{r}_{ij} \cdot \sum_{m \neq i}   \frac{\mathbf{r}_{im}}{r_{im}} \frac{a}{r_{im} \left( r_{km} - a \right)} \bigg\} \bigg\} + \\
+    &\quad \quad \quad \quad \quad+\frac{1}{2} \sum_i^N (x_i^2 + y_i^2 + \omega_{z}^2 z_i^2) \\
+    &= \alpha (2 + \beta) N -  2 \alpha^2 \sum_i^N (x_i^2 + y_i^2 + \beta^2 z_i^2 ) - \\
+    &\quad \quad -\frac{1}{2} \sum_i^N \sum_{j\neq i} \frac{a}{r_{ij}^2 (r_{ij} - a)} \bigg\{ -4 \alpha \left( x_i, y_i, \beta z_i \right) \cdot \mathbf{r}_{ij} + 2 \\
+    &\quad \quad \quad +\frac{a - 2r_{ij}}{ r_{ij} - a } + \mathbf{r}_{ij} \cdot \sum_{m \neq i}   \frac{\mathbf{r}_{im}}{r_{im}^2} \frac{a}{ \left( r_{km} - a \right)} \bigg\} \bigg\} \\
+    &\quad \quad \quad \quad
+    +\frac{1}{2} \sum_i^N (x_i^2 + y_i^2 + \omega_{z}^2 z_i^2)\\
+\end{align*}
+\begin{align}
+    &= \alpha (2 + \beta) N + \sum_i^N \left[ (x_i^2 + y_i^2)\left(\frac{1}{2}- 2\alpha^2 \right) +  z_i^2\left( \frac{1}{2} \omega_z^2 - 2\alpha^2\beta^2 \right) \right] \nonumber\\
+    &-  \frac{1}{2} \sum_i^N \sum_{j\neq i} \frac{a}{r_{ij}^2 (r_{ij} - a)} \bigg\{ -4 \alpha \left( x_i, y_i, \beta z_i \right) \cdot \mathbf{r}_{ij} + 2 + \frac{a - 2r_{ij}}{r_{ij} - a } \nonumber\\
+    &\quad \quad+ \mathbf{r}_{ij} \cdot \sum_{m \neq i}   \frac{\mathbf{r}_{im}}{r_{im}^2} \frac{a}{\left( r_{km} - a \right)} \bigg\} \bigg\}\nonumber\\*
+\end{align}
+according to the formula reported in section \ref{sec: 3.2.1 Analytical form}
