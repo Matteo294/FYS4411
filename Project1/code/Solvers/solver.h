@@ -49,5 +49,5 @@ class Solver{
         int nparams;
         bool tofile;
         vector<double> params;
-        ofstream energytofile;
+        FILE* energytofile;
 };

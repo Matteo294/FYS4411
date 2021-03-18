@@ -1,5 +1,9 @@
 #include "solver.h"
 #include <string>
+#include <string.h>
+#include <stdlib.h>
+#include <cstring>
+#include <iostream>
 
 Solver::~Solver(){};
 
@@ -11,7 +15,7 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
     this->tofile = tofile;
     this->params.resize(nparams, 0.0);
     if (tofile){
-        this->energytofile.open("./variance/energyateverystep.dat");
+        energytofile=fopen("./variance/energyateverystep.dat","w");
     }
 }
 
@@ -31,8 +35,10 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
         assert(idx < this->nparams);
         this->params[idx] = value;
     }
-    void Solver::setPrintFile(string new_file) {
-        this->energytofile.close();
-        this->energytofile.open("./variance/"+new_file+".dat");
-        
-    }
+     void Solver::setPrintFile(string new_file){
+         fclose(energytofile);
+         char* char_arr;
+        string str_obj("./variance"+ new_file+".dat");
+        char_arr = &str_obj[0];
+        fopen(char_arr,"w");
+       }

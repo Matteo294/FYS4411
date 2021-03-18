@@ -61,7 +61,7 @@ vector<double> Metropolis::solve(bool allAverages){
         }
 
         if (this->tofile){
-            energytofile << (double) tmp1 << endl;
+            fprintf(energytofile, "%f\n",(double) energy/(i+1));
         }
 
         if(i%10000==0){
@@ -72,7 +72,7 @@ vector<double> Metropolis::solve(bool allAverages){
     }
 
     cout << "\33[2K\r";
-    if(this->tofile){ energytofile.close(); }
+    if(this->tofile){ fclose(energytofile); }
     energy = energy/(this->Nsteps);
     energy2 = energy2/(this->Nsteps); 
     psi_bar_psi = psi_bar_psi/this->Nsteps;
@@ -147,7 +147,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         energy2 += tmp1*tmp1;
 
         if (this->tofile){
-            energytofile << (double) tmp1 << endl;
+            fprintf(energytofile, "%f\n",(double) energy/(i+1));
         }
 
         if(i%10000==0){
@@ -158,7 +158,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
     }
 
     cout << "\33[2K\r";
-    if(this->tofile){ energytofile.close(); }
+    if(this->tofile){ fclose(energytofile); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps; 
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -225,7 +225,7 @@ vector<double> Metropolis::solve(double h){
         energy2 += tmp1*tmp1;
 
         if (this->tofile){
-            energytofile << (double) tmp1 << endl;
+            fprintf(energytofile, "%f\n",(double) energy/(i+1));
         }
 
         if(i%10000==0){
@@ -236,7 +236,7 @@ vector<double> Metropolis::solve(double h){
     }
 
     cout << "\33[2K\r";
-    if(this->tofile){ energytofile.close(); }
+    if(this->tofile){ fclose(energytofile); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps; 
     ratio_accepted = (double) accepted/this->Nsteps;
