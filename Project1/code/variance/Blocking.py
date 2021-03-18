@@ -11,6 +11,7 @@ import time #to implement the running time
 from numpy import log2, zeros, mean, var, sum, loadtxt, arange, array, cumsum, dot, transpose, diagonal, sqrt
 from numpy.linalg import inv
 
+
 #instruction how to run the program 
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--Program_selector", required=False, help="Chose Program:  \
@@ -93,7 +94,8 @@ def savefigure(dirname,std,f):
     plt.xlabel('Number of Blocking Transformations ', **font)
     plt.title('Standard error estimation by blocking method '+ f, **font)
     #plt.savefig(dirname + "/blocking"+f[-1]+".eps")
-    plt.savefig(dirname + "/blocking"+f[-1]+".png")
+    print(f)
+    plt.savefig(dirname + "/blocking"+str(*re.findall(r'\d+',f))+".png")
     plt.clf()
 
 #################################################################
@@ -132,12 +134,12 @@ if selector==1 :
         frame = pd.DataFrame(data,index=['Values'])
         print(frame)
         if fig == True:
-            savefigure(dname +"/images_var_alpha/",std,"alpha of data set" + str(st))
+            savefigure(dname +"/images_var_alpha/",std,"alpha of data set " + str(st))
             st+=1 
         #Decomment these row below to have a fast view of the charts     
         plt.plot(arange(0, len(std), 1), std)
         plt.show(block=False)
-        plt.pause(3)
+        plt.pause(2)
         plt.close()
 
 #Varyng N

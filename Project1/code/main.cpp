@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 5;
+    const int Nparticles = 3;
 
     // Information for the solvers
     const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
