@@ -15,19 +15,36 @@
 #include <chrono>
 #include <iomanip>
 #include <omp.h>
+#include <string>
 #include <cmath>
 
 using namespace std;
 
 int main(int argc, char *argv[]){
 
+    bool activate_asymmetric = 1;
+    bool activate_elliptical = 1;
+    bool activate_importance = 1;
+
     // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
     int selector = 0;
     if(argc>1){
-        int a = stoi(argv[1]);
-        assert(a>=0 && a<=7);
+        int mode = stoi(argv[1]);
+        assert(mode>=0 && mode<=7);
         selector = stoi(argv[1]);
+        if(argc>2){
+            activate_asymmetric = (bool) stoi(argv[2]);
+            if(argc>3){
+                activate_elliptical = (bool) stoi(argv[3]);
+                if(argc>4){
+                        activate_importance = (bool) stoi(argv[4]);
+                }
+            }
+        }
     }
+    
+
+    cout << activate_asymmetric << " " << activate_elliptical << " " << activate_importance << endl;
 
     // Information for the system
     const int dimension = 3;
@@ -50,7 +67,7 @@ int main(int argc, char *argv[]){
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
     // Others
-    bool tofile = false; // Print on external file for resampling analysis (numerical methods)
+    bool tofile = true; // Print on external file for resampling analysis (numerical methods)
 
     // Parameters for the various type of simulations
 
@@ -106,9 +123,15 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
-    system.setSolver(&importance);
+    if (activate_elliptical) system.setHamiltonian(&elliptical);
+    else system.setHamiltonian(&spherical);
+
+    if (activate_asymmetric) system.setWavefunction(&asymmgaussian);
+    else system.setWavefunction(&gaussian);
+
+    if (activate_importance) system.setSolver(&importance);
+    else system.setSolver(&metropolis);
+
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();
     
@@ -128,32 +151,42 @@ int main(int argc, char *argv[]){
                 cout << scientific << setprecision(5) << "best alpha= " << best_alpha << endl; break;
         case 6: system.getSolver()->thermalize();
                 functions.printResultsSolver(system.getSolver()->solve(r_max, Nbins)); break;
+
         case 7: 
-                int Nthreads = (int) omp_get_max_threads();
+                int Nthreads = omp_get_max_threads();
                 int Ni = (int) Nsteps_final/Nthreads;
+                cout << Nsteps_final << " " << Ni << endl;
                 #pragma omp parallel for num_threads(Nthreads) schedule(static, 1) shared(Ni, Nthreads)
                 for(int i=0; i<Nthreads; i++){
 
                         System sys(dimension, Nparticles);
 
                         Spherical spher(&sys, omegaXY);
-                        //Elliptical ellipt(&sys, omegaXY, omegaZ);
-                        
+                        Elliptical ellipt(&sys, omegaXY, omegaZ);
+
                         Gaussian gauss(&sys, alpha);
-                        //AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
-                        
-                        //Metropolis metropolis(&sys, Nsteps_final, NstepsThermal, step, tofile);
+                        AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
+
+                        Metropolis metrop(&sys, Nsteps_final, NstepsThermal, step, tofile);
                         ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
                         
                         RandomGenerator randomgen;
                         Functions funcs(&sys);
 
-                        sys.setHamiltonian(&spher);
-                        sys.setWavefunction(&gauss);
-                        sys.setSolver(&imp);
+                        if (activate_elliptical) sys.setHamiltonian(&ellipt);
+                        else sys.setHamiltonian(&spher);
+
+                        if (activate_asymmetric) sys.setWavefunction(&asymmgauss);
+                        else sys.setWavefunction(&gauss);
+
+                        if (activate_importance) sys.setSolver(&imp);
+                        else sys.setSolver(&metrop);
+
+                        string thread_num = to_string(omp_get_thread_num());
+
                         sys.setRandomGenerator(&randomgen);
                         sys.getSolver()->thermalize();
-
+                        sys.getSolver()->setPrintFile("/parallel/data"+thread_num);
                         cout << sys.getSolver()->solve(false)[0] << endl;  
                 }
                 break;
