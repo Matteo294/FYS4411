@@ -2,12 +2,12 @@
 using namespace std;
 
 // Parallel or serial version of the code (check compatibility with the chosen working mode)
-bool parallelize;
+bool parallelize = true;
 
 // Select pieces of the system: wavefunction (symmetric-asymetric), hamiltonian (spherical-elliptical), solver(bruteforce-metropolis)
-bool activate_asymmetric;
-bool activate_elliptical;
-bool activate_importance;
+bool activate_asymmetric = false;
+bool activate_elliptical = false;
+bool activate_importance = false;
 
 // Information for the system
 const int dimension = 3;

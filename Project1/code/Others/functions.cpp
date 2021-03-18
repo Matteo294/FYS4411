@@ -28,18 +28,18 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
         this->system->getWavefunction()->setParameter(0, kalpha);
         this->system->getSolver()->thermalize();
         this->system->getSolver()->setPrintFile("/var_alpha/energyateverystep"+to_string(k));
-        results_prov = this->system->getSolver()->solve(false);
-        results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
-        // solve
         if(parallelize) this->runParallel(this->system, to_string(alpha));
-        else{
+        //results_prov = this->system->getSolver()->solve(false);
+        //results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
+        // solve
+        /*else{
             cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
             this->printResultsSolver(results_prov);
             cout << endl;
             if(toFile) {
                 this->alphaFile << endl << results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
             }
-        }
+        }*/
     }
     if(toFile) this->alphaFile.close();
 
@@ -185,6 +185,7 @@ void Functions::runParallel(string fileID){
 }
 
 void Functions::runParallel(System *s, string fileID){
+
 
     int dimension = this->system->getDimension();
     int Nparticles = this->system->getNParticles();
