@@ -76,8 +76,8 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             psi_bar_psi_EL += tmp2 * tmp1;
         }
 
-        if (this->tofile && (i%1==0)){
-            energytofile << (double) energy/(i+1) << endl;
+        if (this->tofile){
+            this->energytofile << (double) energy/(i+1) << endl;
         }
         
         if(i%10000==0){

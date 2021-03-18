@@ -7,7 +7,6 @@ AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, dou
     this->setParameter(0, alpha);
     this->setParameter(1, beta);
     this->setParameter(2, a);
-    this->s->setUseMatrix(true);
 }
 
 double AsymmetricGaussian::evaluateAll(){

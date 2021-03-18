@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <omp.h>
 #include <cmath>
+
 using namespace std;
 
 int main(int argc, char *argv[]){
@@ -30,10 +31,10 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 10;
+    const int Nparticles = 5;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,16); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
@@ -45,11 +46,11 @@ int main(int argc, char *argv[]){
     double omegaZ = 2.82843; 
 
     // Information for the wavefunction
-    double alpha = 0.4; // variational parameter
+    double alpha = 0.5; // variational parameter
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
     // Others
-    bool tofile = false; // Print on external file for resampling analysis (numerical methods
+    bool tofile = false; // Print on external file for resampling analysis (numerical methods)
 
     // Parameters for the various type of simulations
 
@@ -105,8 +106,8 @@ int main(int argc, char *argv[]){
     Functions functions(&system);
 
     // Choose options
-    system.setHamiltonian(&elliptical);
-    system.setWavefunction(&asymmgaussian);
+    system.setHamiltonian(&spherical);
+    system.setWavefunction(&gaussian);
     system.setSolver(&importance);
     system.setRandomGenerator(&randomgenerator);
     functions.printPresentation();
@@ -156,7 +157,7 @@ int main(int argc, char *argv[]){
                         cout << sys.getSolver()->solve(false)[0] << endl;  
                 }
                 break;
-    }
+    } 
     
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference

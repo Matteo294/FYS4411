@@ -34,6 +34,7 @@ class Wavefunction{
         // Get and set variational parameters
         void setParameter(int idx, double value);
         double getParameter(int idx);
+        int getNparams();
         
     protected:
         int nparams;

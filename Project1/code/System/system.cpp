@@ -166,6 +166,13 @@ void System::EvaluateRelativeDistance(int idx){
 // Setters
         void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
         void System::setSolver(class Solver* solver) {this->solver = solver;}
-        void System::setWavefunction(class Wavefunction* wavefunction) {this->wavefunction = wavefunction;}
+        void System::setWavefunction(class Wavefunction* wavefunction){
+            this->wavefunction = wavefunction;
+            if(wavefunction->getNparams()>1){ 
+                this->setUseMatrix(true); 
+            } else {
+                this->setUseMatrix(false);
+            }
+        }
         void System::setRandomGenerator(class RandomGenerator* randomgenerator) { this->randomgenerator = randomgenerator; }
         void System::setUseMatrix(bool usematrix){ this->usematrix = usematrix; }

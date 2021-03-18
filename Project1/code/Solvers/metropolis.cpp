@@ -153,8 +153,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
-       
-    
+
     }
 
     cout << "\33[2K\r";

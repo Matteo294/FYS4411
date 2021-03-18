@@ -4,7 +4,6 @@ Gaussian::~Gaussian(){};
 
 Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s, 1){
     this->setParameter(0, alpha);
-    this->s->setUseMatrix(false);
 }
 
 double Gaussian::evaluateAll(){ 

@@ -18,3 +18,5 @@ void Wavefunction::setParameter(int idx, double val){
     assert(idx < this->nparams);
     this->params[idx] = val;
 }
+
+int Wavefunction::getNparams(){ return this->nparams; }

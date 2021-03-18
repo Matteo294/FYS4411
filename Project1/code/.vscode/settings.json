@@ -7,5 +7,6 @@
         "iosfwd": "cpp",
         "ostream": "cpp",
         "fstream": "cpp"
-    }
+    },
+    "python.pythonPath": "C:\\Users\\Utente\\anaconda3\\python.exe"
 }
