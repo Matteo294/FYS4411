@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 3;
+    const int Nparticles = 5;
 
     // Information for the solvers
     const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]){
     double omegaZ = 2.82843; 
 
     // Information for the wavefunction
-    double alpha = 0.5; // variational parameter
+    double alpha = 0.4; // variational parameter
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
     // Others

@@ -35,10 +35,11 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
         assert(idx < this->nparams);
         this->params[idx] = value;
     }
-     void Solver::setPrintFile(string new_file){
-         fclose(energytofile);
-         char* char_arr;
+    
+    void Solver::setPrintFile(string new_file){
+        fclose(energytofile);
+        char* char_arr;
         string str_obj("./variance"+ new_file+".dat");
         char_arr = &str_obj[0];
         fopen(char_arr,"w");
-       }
+    }
