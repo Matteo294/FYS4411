@@ -1,10 +1,22 @@
 #pragma once
-#include "../config.h"
+#include "../System/system.h"
+/*#include "../System/system.h"
+#include "../Wavefunctions/gaussian.h"
+#include "../Wavefunctions/asymmetricGaussian.h"
+#include "../Hamiltonians/spherical.h"
+#include "../Hamiltonians/elliptical.h"
+#include "../Solvers/metropolis.h"
+#include "../Solvers/importanceSampling.h"
+#include "../Others/random_generator.h"*/
+#include <iostream>
 #include <vector>
+#include <ctime>
+#include <cstdlib>
 #include <fstream>
-#include <string>
-
-using namespace std;
+#include <chrono>
+#include <iomanip>
+#include <omp.h>
+#include <cmath>
 
 class Functions{
 
@@ -36,10 +48,6 @@ class Functions{
 
         /// Finds the best alpha parameter using gradient descent 
         double gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);
-
-        /// Run parallelized version of the code
-        void runParallel(string fileID="");
-        void runParallel(System *s, string fileID="");
 
         void printPresentation();
         void printResultsSolver(vector<double> res);

@@ -164,30 +164,3 @@ if selector==2:
         #plt.pause(3)
         #plt.close()
 print ("\n=========================================\n")
-
-#Run parallelyzed
-if selector==3: 
-    filelist = sorted_alphanumeric(os.listdir("./parallel"))
-    filelist.sort()
-    x = np.array([])
-    for f in filelist:
-        print ("\n=========================================\n")
-        print("File:", f)
-        infile = data_path(dname+"/parallel/"+f)
-        data = np.genfromtxt(infile)
-        print(data.shape)
-        x = np.concatenate((x, data))  
-        print(x.shape)
-    (mean, var, k) = block(x) 
-    std = sqrt(var)
-    data ={'Mean':[mean], 'STDev':[std[k]]}
-    frame = pd.DataFrame(data,index=['Values'])
-    print(frame)
-    #if fig == True:
-    #    savefigure(dname+"/images_var_N/",std,f)
-    #Decomment these row below to have a fast view of the charts 
-    #plt.plot(arange(0, len(std), 1), std)
-    #plt.show(block=False)
-    #plt.pause(3)
-    #plt.close()
-print ("\n=========================================\n")

@@ -1,4 +1,6 @@
 #include "functions.h"
+#include <omp.h>
+#include<string>
 
 Functions::Functions(System* system) { this->system = system;}
 Functions::~Functions(){};
@@ -28,18 +30,15 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
         this->system->getWavefunction()->setParameter(0, kalpha);
         this->system->getSolver()->thermalize();
         this->system->getSolver()->setPrintFile("/var_alpha/energyateverystep"+to_string(k));
-        if(parallelize) this->runParallel(this->system, to_string(alpha));
-        //results_prov = this->system->getSolver()->solve(false);
-        //results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
+        results_prov = this->system->getSolver()->solve(false);
+        results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
         // solve
-        /*else{
-            cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
-            this->printResultsSolver(results_prov);
-            cout << endl;
-            if(toFile) {
-                this->alphaFile << endl << results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
-            }
-        }*/
+        cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
+        this->printResultsSolver(results_prov);
+        cout << endl;
+        if(toFile) {
+            this->alphaFile << endl << results[k][0] << "," << results[k][1] << "," << results[k][2] << "," << results[k][3];
+        }
     }
     if(toFile) this->alphaFile.close();
 
@@ -145,99 +144,7 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
 }
 
 
-void Functions::runParallel(string fileID){
-    int Nthreads = omp_get_max_threads();
-    int Ni = (int) Nsteps_final/Nthreads;
-    cout << Nsteps_final << " " << Ni << endl;
-    #pragma omp parallel for num_threads(Nthreads) schedule(static, 1) shared(Ni, Nthreads)
-    for(int i=0; i<Nthreads; i++){
 
-            System sys(dimension, Nparticles);
-
-            Spherical spher(&sys, omegaXY);
-            Elliptical ellipt(&sys, omegaXY, omegaZ);
-
-            Gaussian gauss(&sys, alpha);
-            AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
-
-            Metropolis metrop(&sys, Ni, NstepsThermal, step, tofile);
-            ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
-            
-            RandomGenerator randomgen;
-            Functions funcs(&sys);
-
-            if (activate_elliptical) sys.setHamiltonian(&ellipt);
-            else sys.setHamiltonian(&spher);
-
-            if (activate_asymmetric) sys.setWavefunction(&asymmgauss);
-            else sys.setWavefunction(&gauss);
-
-            if (activate_importance) sys.setSolver(&imp);
-            else sys.setSolver(&metrop);
-
-            string thread_num = to_string(omp_get_thread_num());
-
-            sys.setRandomGenerator(&randomgen);
-            sys.getSolver()->thermalize();
-            sys.getSolver()->setPrintFile(fileID+"_"+thread_num);
-            cout << sys.getSolver()->solve(false)[0] << endl;  
-    }
-}
-
-void Functions::runParallel(System *s, string fileID){
-
-
-    int dimension = this->system->getDimension();
-    int Nparticles = this->system->getNParticles();
-    double omegaXY = this->system->getHamiltonian()->getParameter(0);
-    if (activate_asymmetric) double omegaZ = this->system->getHamiltonian()->getParameter(1);
-    double alpha = this->system->getWavefunction()->getParameter(0);
-    if (activate_asymmetric){double beta = this->system->getWavefunction()->getParameter(1); double a = this->system->getHamiltonian()->getParameter(2);}
-    if (activate_importance){
-        double dt = this->system->getSolver()->getParameter(0);
-        double D = this->system->getSolver()->getParameter(1);
-        bool tofile = this->system->getSolver()->tofile;
-    }
-    int NstepsTherma = this->system->getSolver()->getNstepsThermal();
-
-
-    int Nthreads = omp_get_max_threads();
-    int Ni = (int) Nsteps_final/Nthreads;
-    cout << Nsteps_final << " " << Ni << endl;
-    #pragma omp parallel for num_threads(Nthreads) schedule(static, 1) shared(Ni, Nthreads)
-    for(int i=0; i<Nthreads; i++){
-
-            System sys(dimension, Nparticles);
-
-            Spherical spher(&sys, omegaXY);
-            Elliptical ellipt(&sys, omegaXY, omegaZ);
-
-            Gaussian gauss(&sys, alpha);
-            AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
-
-            Metropolis metrop(&sys, Nsteps_final, NstepsThermal, step, tofile);
-            ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
-            
-            RandomGenerator randomgen;
-            Functions funcs(&sys);
-
-            if (activate_elliptical) sys.setHamiltonian(&ellipt);
-            else sys.setHamiltonian(&spher);
-
-            if (activate_asymmetric) sys.setWavefunction(&asymmgauss);
-            else sys.setWavefunction(&gauss);
-
-            if (activate_importance) sys.setSolver(&imp);
-            else sys.setSolver(&metrop);
-
-            string thread_num = to_string(omp_get_thread_num());
-
-            sys.setRandomGenerator(&randomgen);
-            sys.getSolver()->thermalize();
-            sys.getSolver()->setPrintFile(fileID+"_"+thread_num);
-            cout << sys.getSolver()->solve(false)[0] << endl;  
-    }
-}
 
 
 void Functions::printPresentation(){

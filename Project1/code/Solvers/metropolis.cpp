@@ -61,7 +61,7 @@ vector<double> Metropolis::solve(bool allAverages){
         }
 
         if (this->tofile){
-            fprintf(energytofile, "%f\n",(double) energy/(i+1));
+            fprintf(energytofile, "%f\n", tmp1);
         }
 
         if(i%10000==0){
@@ -147,7 +147,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         energy2 += tmp1*tmp1;
 
         if (this->tofile){
-            fprintf(energytofile, "%f\n",(double) energy/(i+1));
+            fprintf(energytofile, "%f\n", tmp1);
         }
 
         if(i%10000==0){
@@ -224,7 +224,7 @@ vector<double> Metropolis::solve(double h){
         energy2 += tmp1*tmp1;
 
         if (this->tofile){
-            fprintf(energytofile, "%f\n",(double) energy/(i+1));
+            fprintf(energytofile, "%f\n", tmp1);
         }
 
         if(i%10000==0){
