@@ -14,9 +14,10 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
     this->nparams=nparams;
     this->tofile = tofile;
     this->params.resize(nparams, 0.0);
-    if (tofile){
-        energytofile=fopen("./variance/energyateverystep.dat","w");
+    /*if (tofile){
+        energytofile=fopen(".//energyateverystep.dat","w");
     }
+    */
 }
 
 // Getters
@@ -27,6 +28,7 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
         assert(idx < this->nparams);
         return this->params[idx];
     }
+    bool Solver::getToFile(){ return this->tofile; }
 
 // Setters
     void Solver::setNsteps(int Nsteps) { this->Nsteps = Nsteps; }
@@ -36,10 +38,9 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
         this->params[idx] = value;
     }
     
-    void Solver::setPrintFile(string new_file){
-        fclose(energytofile);
+    void Solver::setPrintFile(string new_file){ 
         char* char_arr;
-        string str_obj("./variance"+ new_file+".dat");
+        string str_obj("./"+ new_file+".dat");
         char_arr = &str_obj[0];
-        fopen(char_arr,"w");
+        this->energytofile = fopen(char_arr,"w");
     }

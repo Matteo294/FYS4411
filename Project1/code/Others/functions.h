@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <omp.h>
 #include <cmath>
+#include <experimental/filesystem>
 
 class Functions{
 
@@ -26,11 +27,16 @@ class Functions{
 
         class System* system;
 
+        vector<double> solve_singleRun();
+        vector<double> solve_singleRun(double h);
+        vector<double> solve_singleRun(double r_max, int Nbins);
+
+
         // functions
         /** This function calls recursively the solver (set it in the system class via the proper setter) for Nalphas different alpha values
          * betwee alpha_min and alpha_max. Remember that the parameter alpha is the variational parameter of the gaussian wavefunction
         **/
-        vector<vector<double>> solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas, bool toFile); 
+        vector<vector<double>> solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas, bool alphatoFile); 
         
         /** This function calls recursively the solver (ImportanceSampling only!!!) for Ndt different values of dt between dt_min and dt_max.
          * Remember that the parameter dt is the one used to integrate the Langevin's equation numerically
@@ -42,9 +48,9 @@ class Functions{
          * given via the vector N.
          * \note The parameters (for example those of the solver and wavefunction) should be set in advance
         **/
-        vector<vector<double>> solve_varying_N(vector<int> N, bool toFile);
+        vector<vector<double>> solve_varying_N(vector<int> N, bool NtoFile);
         // solves for a bunch of dt values, uses solve((bool) 0), mandatory to use ImportanceSampling solver
-        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt, bool toFile);
+        vector<vector<double>> solve_varying_dt(double dt_min, double dt_max, int Ndt, bool dttoFile);
 
         /// Finds the best alpha parameter using gradient descent 
         double gradientDescent(double initialAlpha, double gamma, double tolerance, int Nmax, int Nsteps);
@@ -53,6 +59,6 @@ class Functions{
         void printResultsSolver(vector<double> res);
         
     private:
-        ofstream alphaFile, dtFile, Nfile, onebodyFile;
+        ofstream alphaFile, dtFile, NFile;
 
 };

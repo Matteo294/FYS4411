@@ -15,6 +15,8 @@ class Solver{
         double getNstepsThermal();
         double getParameter(int idx);
         int getnparameter();
+        bool getToFile();
+
 
     // Setters
         void setNsteps(int Nsteps);
@@ -42,6 +44,7 @@ class Solver{
 
         virtual void thermalize() = 0;
         class System* system;
+        FILE* energytofile;
 
     protected:
         int Nsteps;
@@ -49,5 +52,4 @@ class Solver{
         int nparams;
         bool tofile;
         vector<double> params;
-        FILE* energytofile;
 };
