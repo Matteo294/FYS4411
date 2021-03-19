@@ -11,10 +11,10 @@ bool activate_importance = false;
 
 // Information for the system
 const int dimension = 3;
-const int Nparticles = 5;
+const int Nparticles = 10;
 
 // Information for the solvers
-const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
+const int Nsteps_final = (int) pow(2,22); // MC steps for the final simulation
 const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
 const double step = 1.0; // only for metropolis
 const double D = 0.5; // only for importance sampling

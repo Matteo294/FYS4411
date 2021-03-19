@@ -160,7 +160,7 @@ void Functions::runParallel(string fileID){
             Gaussian gauss(&sys, alpha);
             AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
 
-            Metropolis metrop(&sys, Nsteps_final, NstepsThermal, step, tofile);
+            Metropolis metrop(&sys, Ni, NstepsThermal, step, tofile);
             ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
             
             RandomGenerator randomgen;
