@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
     if(argc>1){
         parallel = (bool) stoi(argv[1]);
         int a = stoi(argv[2]);
-        assert(a>=0 && a<=7);
+        assert(a>=0 && a<=6);
         selector = stoi(argv[2]);
     }
 
@@ -89,7 +89,13 @@ int main(int argc, char *argv[]){
     const double r_max = 4.0;
     const int Nbins = 200;
 
-    
+
+
+
+    // BOOL PER SELEZIONI VARIE
+    bool use_elliptic = false;
+    bool use_asymmetric = false;
+    bool use_importance = false;    
         
     // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
     
@@ -120,9 +126,15 @@ int main(int argc, char *argv[]){
             Functions functions(&system, true);
 
             // Choose options
-            system.setHamiltonian(&spherical);
-            system.setWavefunction(&gaussian);
-            system.setSolver(&metropolis);
+            if(use_elliptic) system.setHamiltonian(&elliptical);
+            else system.setHamiltonian(&spherical);
+
+            if(use_asymmetric) system.setWavefunction(&asymmgaussian);
+            else system.setWavefunction(&gaussian);
+
+            if(use_importance) system.setSolver(&importance);
+            else system.setSolver(&metropolis);
+            
             system.setRandomGenerator(&randomgenerator);
             if(omp_get_thread_num()==0) {functions.printPresentation();}
 
@@ -159,9 +171,15 @@ int main(int argc, char *argv[]){
         Functions functions(&system, false);
 
         // Choose options
-        system.setHamiltonian(&spherical);
-        system.setWavefunction(&gaussian);
-        system.setSolver(&metropolis);
+        if(use_elliptic) system.setHamiltonian(&elliptical);
+        else system.setHamiltonian(&spherical);
+
+        if(use_asymmetric) system.setWavefunction(&asymmgaussian);
+        else system.setWavefunction(&gaussian);
+
+        if(use_importance) system.setSolver(&importance);
+        else system.setSolver(&metropolis);
+            
         system.setRandomGenerator(&randomgenerator);
         functions.printPresentation();
 
