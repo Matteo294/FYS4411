@@ -14,10 +14,6 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
     this->nparams=nparams;
     this->tofile = tofile;
     this->params.resize(nparams, 0.0);
-    /*if (tofile){
-        energytofile=fopen(".//energyateverystep.dat","w");
-    }
-    */
 }
 
 // Getters
@@ -43,4 +39,11 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
         string str_obj("./"+ new_file+".dat");
         char_arr = &str_obj[0];
         this->energytofile = fopen(char_arr,"w");
+    }
+
+    void Solver::setOneBodyFile(string new_file){ 
+        char* char_arr;
+        string str_obj("./"+ new_file+".csv");
+        char_arr = &str_obj[0];
+        this->onebodyFile = fopen(char_arr,"w");
     }

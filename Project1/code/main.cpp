@@ -23,10 +23,12 @@ int main(int argc, char *argv[]){
 
     // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
     int selector = 0;
+    bool parallel = false;
     if(argc>1){
-        int a = stoi(argv[1]);
+        parallel = (bool) stoi(argv[1]);
+        int a = stoi(argv[2]);
         assert(a>=0 && a<=7);
-        selector = stoi(argv[1]);
+        selector = stoi(argv[2]);
     }
 
     // Information for the system
@@ -50,7 +52,7 @@ int main(int argc, char *argv[]){
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
     // Others
-    bool tofile = true; // Print on external file for resampling analysis (numerical methods)
+    bool tofile = false; // Print on external file for resampling analysis (numerical methods)
 
     // Parameters for the various type of simulations
 
@@ -63,17 +65,17 @@ int main(int argc, char *argv[]){
     const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
     const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
     const int N_alpha = 10; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
-    const bool alpha_to_file = true; // set true to save data to file
+    const bool alpha_to_file = false; // set true to save data to file
 
     // Mode 3 - varying dt
     const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
     const double dt_max = 10; // in mode 2 (varying dt) maximum dt
     const int N_dt = 10; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = true; // set true to save data to file
+    const bool dt_to_file = false; // set true to save data to file
 
     // Mode 4 - varying N
     vector<int> Ns {5, 10, 15}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = true; // set true to save data to file
+    const bool N_to_file = false; // set true to save data to file
 
     // Mode 5 - Gradient Descent
     double best_alpha = 0.0;
@@ -85,39 +87,85 @@ int main(int argc, char *argv[]){
 
     // Mode 6 - One Body density
     const double r_max = 4.0;
-    int Nbins = 200;
+    const int Nbins = 200;
 
-    System system(dimension, Nparticles);
-
-    // Hamiltonians
-    Spherical spherical(&system, omegaXY);
-    Elliptical elliptical(&system, omegaXY, omegaZ);
-
-    // Wavefunctions
-    Gaussian gaussian(&system, alpha);
-    AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
-
-    // Solvers
-    Metropolis metropolis(&system, Nsteps_final, NstepsThermal, step, tofile);
-    ImportanceSampling importance(&system, Nsteps_final, NstepsThermal, dt, D, tofile);
     
-    // Others
-    RandomGenerator randomgenerator;
-    Functions functions(&system);
-
-    // Choose options
-    system.setHamiltonian(&spherical);
-    system.setWavefunction(&gaussian);
-    system.setSolver(&importance);
-    system.setRandomGenerator(&randomgenerator);
-    functions.printPresentation();
         
     // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
     
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
+
+    if(parallel){
+        int Nthreads = omp_get_max_threads();
+        int Ni = (int) Nsteps_final/Nthreads;
+        //!!!!!!! omp_get_thread_num();
+        #pragma omp parallel for num_threads(Nthreads) schedule(static, 1) shared(Ni, Nthreads)
+        for(int i=0; i<Nthreads; i++){
+            System system(dimension, Nparticles);
+
+            // Hamiltonians
+            Spherical spherical(&system, omegaXY);
+            Elliptical elliptical(&system, omegaXY, omegaZ);
+
+            // Wavefunctions
+            Gaussian gaussian(&system, alpha);
+            AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
+
+            // Solvers
+            Metropolis metropolis(&system, Ni, NstepsThermal, step, tofile);
+            ImportanceSampling importance(&system, Ni, NstepsThermal, dt, D, tofile);
+        
+            // Others
+            RandomGenerator randomgenerator;
+            Functions functions(&system, true);
+
+            // Choose options
+            system.setHamiltonian(&spherical);
+            system.setWavefunction(&gaussian);
+            system.setSolver(&metropolis);
+            system.setRandomGenerator(&randomgenerator);
+            if(omp_get_thread_num()==0) {functions.printPresentation();}
+
+            switch(selector){
+                case 0: functions.solve_singleRun();  break; // Simple simulation
+                case 1: functions.solve_singleRun(h); break; // Simple simulation with numerical derivative
+                case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
+                case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
+                case 4: functions.solve_varying_N(Ns, N_to_file); break;
+                case 5: functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); break;
+                case 6: functions.solve_singleRun(r_max, Nbins); break;
+            }
+
+        }
     
-    
-    switch(selector){
+    }   else    {
+        
+        System system(dimension, Nparticles);
+
+        // Hamiltonians
+        Spherical spherical(&system, omegaXY);
+        Elliptical elliptical(&system, omegaXY, omegaZ);
+
+        // Wavefunctions
+        Gaussian gaussian(&system, alpha);
+        AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
+
+        // Solvers
+        Metropolis metropolis(&system, Nsteps_final, NstepsThermal, step, tofile);
+        ImportanceSampling importance(&system, Nsteps_final, NstepsThermal, dt, D, tofile);
+
+        // Others
+        RandomGenerator randomgenerator;
+        Functions functions(&system, false);
+
+        // Choose options
+        system.setHamiltonian(&spherical);
+        system.setWavefunction(&gaussian);
+        system.setSolver(&metropolis);
+        system.setRandomGenerator(&randomgenerator);
+        functions.printPresentation();
+
+        switch(selector){
         case 0: functions.solve_singleRun();  break; // Simple simulation
         case 1: functions.solve_singleRun(h); break; // Simple simulation with numerical derivative
         case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
@@ -125,40 +173,14 @@ int main(int argc, char *argv[]){
         case 4: functions.solve_varying_N(Ns, N_to_file); break;
         case 5: functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); break;
         case 6: functions.solve_singleRun(r_max, Nbins); break;
-        case 7: 
-                int Nthreads = (int) omp_get_max_threads();
-                int Ni = (int) Nsteps_final/Nthreads;
-                #pragma omp parallel for num_threads(Nthreads) schedule(static, 1) shared(Ni, Nthreads)
-                for(int i=0; i<Nthreads; i++){
-
-                        System sys(dimension, Nparticles);
-
-                        Spherical spher(&sys, omegaXY);
-                        //Elliptical ellipt(&sys, omegaXY, omegaZ);
-                        
-                        Gaussian gauss(&sys, alpha);
-                        //AsymmetricGaussian asymmgauss(&sys, alpha, beta, a);
-                        
-                        //Metropolis metropolis(&sys, Nsteps_final, NstepsThermal, step, tofile);
-                        ImportanceSampling imp(&sys, Ni, NstepsThermal, dt, D, tofile);
-                        
-                        RandomGenerator randomgen;
-                        Functions funcs(&sys);
-
-                        sys.setHamiltonian(&spher);
-                        sys.setWavefunction(&gauss);
-                        sys.setSolver(&imp);
-                        sys.setRandomGenerator(&randomgen);
-                        sys.getSolver()->thermalize();
-
-                        cout << sys.getSolver()->solve(false)[0] << endl;  
-                }
-                break;
         }
-        
-       
 
-        auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
-        auto diff = stop - start; // Time difference
-        cout << endl << fixed << "Simulation termined. Total running time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/
+
+    }
+
+    auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
+    auto diff = stop - start; // Time difference
+    cout << endl << fixed << "Simulation termined. Total running time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/
+    
 }
+

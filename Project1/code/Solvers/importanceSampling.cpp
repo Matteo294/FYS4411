@@ -80,15 +80,17 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             fprintf(energytofile, "%f\n",tmp1);
         }
         
+        /*
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
+        */
         
     
     }
     
     if(tofile) fclose(this->energytofile);
-    cout << "\33[2K\r";
+    //cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     psi_bar_psi = psi_bar_psi/this->Nsteps;
@@ -165,13 +167,15 @@ vector<double> ImportanceSampling::solve(double h){
             fprintf(energytofile, "%f\n", tmp1);
         }
 
+        /*
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
+        */
     }
 
     if(tofile) fclose(this->energytofile);
-    cout << "\33[2K\r";
+    //cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -260,27 +264,26 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
             fprintf(energytofile, "%f\n", tmp1);
         }
 
+        /*
         if(i%10000==0){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
+        */
     
     }
 
-    cout << "\33[2K\r";
+    //cout << "\33[2K\r";
     if(this->tofile){ fclose(energytofile); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
-    
 
-    ofstream onebodyFile;
-    onebodyFile.open("./Analysis/Data/standard/onebody_density/onebody_density.csv");
-    onebodyFile << "r,counts";
+    fprintf(this->onebodyFile,"r,counts\n");
     for(i=0; i<N_bins; i++){
-        onebodyFile << endl << r[i] + 0.5 * r_max / N_bins << "," << (double) counts[i] / this->Nsteps/1 / this->system->getNParticles();
+        fprintf(this->onebodyFile, "%f,%f\n", r[i] + 0.5 * r_max / N_bins, (double) counts[i] / this->Nsteps/1 / this->system->getNParticles());
     }
-    onebodyFile.close();
     
+    fclose(this->onebodyFile);
     return {energy, energy2 - pow(energy,2), ratio_accepted};
 }
 
@@ -344,11 +347,12 @@ void ImportanceSampling::thermalize(){
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } 
 
-        if(i%1000==0){
+        /*if(i%1000==0){
             cout << fixed << setprecision(2) << "\rprogress thermalization " << 100 * (double) i / this->NstepsThermal << "%" << flush;
         }
+        */
        
     }
 
-    cout << "\33[2K\r";
+    //cout << "\33[2K\r";
 }

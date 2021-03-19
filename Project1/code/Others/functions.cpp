@@ -2,25 +2,40 @@
 #include <omp.h>
 #include<string>
 
-Functions::Functions(System* system) { this->system = system;}
+Functions::Functions(System* system, bool parallel) { 
+    this->system = system;
+    this->parallel = parallel;
+}
 Functions::~Functions(){};
 
 vector<double> Functions::solve_singleRun(){
 
     if(this->system->getSolver()->getToFile()){
-        this->system->getSolver()->energytofile = fopen("./Analysis/Data/standard/singlerun/energyateverystep.dat","w");
+
+        if(this->parallel){
+            this->system->getSolver()->setPrintFile("./Analysis/Data/parallel/singlerun/energyateverystep" + to_string(omp_get_thread_num()));
+        } else {
+            this->system->getSolver()->energytofile = fopen("./Analysis/Data/standard/singlerun/energyateverystep.dat","w");
+        }
+        
     }
 
+    //cout << "qui" << endl;
     this->system->getSolver()->thermalize();
     vector<double> results= this->system->getSolver()->solve(false);
     this->printResultsSolver(results);
+    
 
     return results;
 }
 
 vector<double> Functions::solve_singleRun(double h){
     if(this->system->getSolver()->getToFile()){
-        this->system->getSolver()->energytofile = fopen("./Analysis/Data/standard/singlerun/energyateverystep.dat","w");
+        if(this->parallel){
+            this->system->getSolver()->setPrintFile("./Analysis/Data/parallel/singlerun/energyateverystep" + to_string(omp_get_thread_num()));
+        } else {
+            this->system->getSolver()->energytofile = fopen("./Analysis/Data/standard/singlerun/energyateverystep.dat","w");
+        }
     }
 
     this->system->getSolver()->thermalize();
@@ -31,28 +46,9 @@ vector<double> Functions::solve_singleRun(double h){
 }
 
 
-vector<double> Functions::solve_singleRun(double rmax, int Nbins){
-
-    if(this->system->getSolver()->getToFile()){
-        this->system->getSolver()->energytofile = fopen("./Analysis/Data/standard/onebody_density/energyateverystep.dat","w");
-    }
-
-    this->system->getSolver()->thermalize();
-    vector<double> results= this->system->getSolver()->solve(rmax, Nbins);
-    this->printResultsSolver(results);
-
-    return results;
-}
-
 
 
 vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double alpha_max, int Nalphas, bool alphatoFile) {
-    
-    if(this->system->getSolver()->getToFile()){
-        experimental::filesystem::remove_all("./Analysis/Data/standard/varying_alpha");
-        experimental::filesystem::create_directory("./Analysis/Data/standard/varying_alpha");
-    }
-
     
     vector<vector<double>> results(Nalphas + 1);
     vector<double> results_prov(3, 0.0);
@@ -61,7 +57,12 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
 
     // print alpha values to csv
     if(alphatoFile){
-        this->alphaFile.open("./Analysis/Data/standard/varying_alpha/varying_alpha.csv");
+        if( (this->parallel && (omp_get_thread_num()==0)) ){
+            this->alphaFile.open("./Analysis/Data/parallel/varying_alpha/varying_alpha.csv");
+        } else if (!this->parallel ){
+            this->alphaFile.open("./Analysis/Data/standard/varying_alpha/varying_alpha.csv");
+        }
+
         this->alphaFile << "alpha";
         for(k=0; k<=Nalphas; k++){
             this->alphaFile << endl << alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas;
@@ -76,12 +77,15 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
         results[k].resize(3);
 
         kalpha = alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas;
-        cout << kalpha << " ";
         //set alpha
         this->system->getWavefunction()->setParameter(0, kalpha);
 
         if(this->system->getSolver()->getToFile()){
-            this->system->getSolver()->setPrintFile("./Analysis/Data/standard/varying_alpha/energyateverystep"+to_string(k));
+            if(this->parallel){
+                this->system->getSolver()->setPrintFile("./Analysis/Data/parallel/varying_alpha/energyateverystepcore" + to_string(omp_get_thread_num()) + "alpha" + to_string(k));
+            } else {
+                this->system->getSolver()->setPrintFile("./Analysis/Data/standard/varying_alpha/energyateverystepalpha" + to_string(k));    
+            }
         }
         
         // solve
@@ -89,9 +93,11 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
         results_prov = this->system->getSolver()->solve(false);
         results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
         
-        cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
+        if( (this->parallel && (omp_get_thread_num()==0)) || (!this->parallel)){
+            cout << fixed << setprecision(5) << "alpha: " << kalpha << "\t ";
+        }
+        
         this->printResultsSolver(results_prov);
-        cout << endl;
 
     }
     
@@ -112,17 +118,19 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
     int i=0, j=0, k=0, idx=0;
     double kexp, kdt;
 
-    if(this->system->getSolver()->getToFile()){
-        experimental::filesystem::remove_all("./Analysis/Data/standard/varying_dt");
-        experimental::filesystem::create_directory("./Analysis/Data/standard/varying_dt");
-    }
+
 
     // print alpha values to csv
     if(dttoFile){
-        this->dtFile.open("./Analysis/Data/standard/varying_dt/varying_dt.csv");
+        if( (this->parallel && (omp_get_thread_num()==0)) ){
+            this->dtFile.open("./Analysis/Data/parallel/varying_dt/varying_dt.csv");
+        } else if (!this->parallel ){
+            this->dtFile.open("./Analysis/Data/standard/varying_dt/varying_dt.csv");
+        }
+
         this->dtFile << "dt";
         for(k=0; k<=Ndt; k++){
-            this->dtFile << endl << pow(10, expmin + k*expstep);
+            this->dtFile << endl <<  pow(10, expmin + k*expstep);
         }
         this->dtFile.close();
     }
@@ -136,20 +144,27 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
         kdt = pow(10,kexp);
         //cout << kdt << " " << endl;
 
-        // set alpha
+        // set dt
         this->system->getSolver()->setParameter(0, kdt);
 
         if(this->system->getSolver()->getToFile()){
-            this->system->getSolver()->setPrintFile("./Analysis/Data/standard/varying_dt/energyateverystep"+to_string(k));
+            if(this->parallel){
+                this->system->getSolver()->setPrintFile("./Analysis/Data/parallel/varying_dt/energyateverystepcore" + to_string(omp_get_thread_num()) + "dt" + to_string(k));
+            } else {
+                this->system->getSolver()->setPrintFile("./Analysis/Data/standard/varying_dt/energyateverystepdt" + to_string(k));    
+            }
         }
         
         // solve
         this->system->getSolver()->thermalize();
         results_prov = this->system->getSolver()->solve(false);
         results[k] = {kdt, results_prov[0], results_prov[1], results_prov[2]};
-        cout << fixed << setprecision(5) << "dt: " << kdt << "\t";
+
+        if( (this->parallel && (omp_get_thread_num()==0)) || (!this->parallel)){
+            cout << fixed << setprecision(5) << "dt: " << kdt << "\t ";
+        }
+        
         this->printResultsSolver(results_prov);
-        cout << endl;
     }
 
 
@@ -164,20 +179,18 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool NtoFile){
     vector<double> zeros(this->system->getDimension(), 0.0);
     int n=0, i=0;
 
-    if(this->system->getSolver()->getToFile()){
-        experimental::filesystem::remove_all("./Analysis/Data/standard/varying_N");
-        experimental::filesystem::create_directory("./Analysis/Data/standard/varying_N");
-    }
-
     if(NtoFile){
-        this->NFile.open("./Analysis/Data/standard/varying_N/varying_N.csv");
-        this->NFile << "N";
+        if( (this->parallel && (omp_get_thread_num()==0)) ){
+            this->NFile.open("./Analysis/Data/parallel/varying_N/varying_N.csv");
+        } else if (!this->parallel ){
+            this->NFile.open("./Analysis/Data/standard/varying_N/varying_N.csv");
+        }
 
-        for(n=0; n<N.size(); n++){
-            this->NFile << endl << N[n];
+        this->NFile << "N";
+        for(n=0; n<=N.size(); n++){
+            this->NFile << endl <<  N[n];
         }
         this->NFile.close();
-
     }
 
     for(n=0; n<N.size(); n++){
@@ -188,15 +201,24 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool NtoFile){
         }
 
         if(this->system->getSolver()->getToFile()){
-            this->system->getSolver()->setPrintFile("./Analysis/Data/standard/varying_N/energyateverystep"+to_string(n));
+            if(this->parallel){
+                this->system->getSolver()->setPrintFile("./Analysis/Data/parallel/varying_N/energyateverystepcore" + to_string(omp_get_thread_num()) + "N" + to_string(n));
+            } else {
+                this->system->getSolver()->setPrintFile("./Analysis/Data/standard/varying_N/energyateverystepN" + to_string(n));    
+            }
         }
+
 
         this->system->getSolver()->thermalize();
         results_prov = this->system->getSolver()->solve(false); 
         results[n] = { (double) N[n], results_prov[0], results_prov[1], results_prov[2]};
-        cout << "N: " << N[n] << "\t "; 
-        this->printResultsSolver(results_prov);
-        cout << endl;     
+
+        
+        if( (this->parallel && (omp_get_thread_num()==0)) || (!this->parallel)){
+            cout << fixed << setprecision(5) << "N: " << N[n] << "\t ";
+        }
+        
+        this->printResultsSolver(results_prov);  
     }
 
     return results;
@@ -231,6 +253,33 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
 
 
 
+vector<double> Functions::solve_singleRun(double rmax, int Nbins){
+
+    if(this->system->getSolver()->getToFile()){
+
+        if(this->parallel){
+            this->system->getSolver()->setPrintFile("./Analysis/Data/parallel/onebody_density/energyateverystep" + to_string(omp_get_thread_num()));
+        } else {
+            this->system->getSolver()->setPrintFile("./Analysis/Data/standard/onebody_density/energyateverystep");
+        }
+        
+    }
+
+    if(this->parallel){
+         this->system->getSolver()->setOneBodyFile("./Analysis/Data/parallel/onebody_density/counts" + to_string(omp_get_thread_num()));
+    } else {
+        this->system->getSolver()->setOneBodyFile("./Analysis/Data/standard/onebody_density/counts");
+    }
+    
+
+    this->system->getSolver()->thermalize();
+    vector<double> results = this->system->getSolver()->solve(rmax, Nbins);
+    this->printResultsSolver(results);
+    
+
+    return results;
+}
+
 
 
 void Functions::printPresentation(){
@@ -244,5 +293,9 @@ void Functions::printPresentation(){
 }
 
 void Functions::printResultsSolver(vector<double> res){
-    cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2];
+    if(this->parallel && (omp_get_thread_num()==0)){
+        cout << scientific << setprecision(5) << "core#0--> E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;
+    } else if(!this->parallel) {
+        cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;
+    }
 }

@@ -22,7 +22,7 @@
 class Functions{
 
     public:
-        Functions(class System* system);
+        Functions(class System* system, bool parallel);
         ~Functions();
 
         class System* system;
@@ -60,5 +60,6 @@ class Functions{
         
     private:
         ofstream alphaFile, dtFile, NFile;
+        bool parallel;
 
 };

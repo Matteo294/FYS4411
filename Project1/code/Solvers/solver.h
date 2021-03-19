@@ -23,6 +23,7 @@ class Solver{
         void setNstepsThermal(int NstepsThermal);
         void setParameter(int idx, double value);
         void setPrintFile(string new_file);
+        void setOneBodyFile(string new_file);
 
     // Other functions & attributes
         /** Performs a MC simulation to evaluate the energy of the ground state of the system
@@ -45,6 +46,7 @@ class Solver{
         virtual void thermalize() = 0;
         class System* system;
         FILE* energytofile;
+        FILE* onebodyFile;
 
     protected:
         int Nsteps;
