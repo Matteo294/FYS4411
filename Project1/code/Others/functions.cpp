@@ -293,7 +293,7 @@ void Functions::printPresentation(){
 }
 
 void Functions::printResultsSolver(vector<double> res){
-    if(this->parallel && (omp_get_thread_num()==0)){
+    if(this->parallel /*&& (omp_get_thread_num()==0)*/){
         cout << scientific << setprecision(5) << "core#0--> E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;
     } else if(!this->parallel) {
         cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;

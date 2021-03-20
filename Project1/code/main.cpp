@@ -33,17 +33,17 @@ int main(int argc, char *argv[]){
 
     // Information for the system
     const int dimension = 3;
-    const int Nparticles = 3;
+    const int Nparticles = 10;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,22); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.043; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
     double omegaZ = 2.82843; 
 
@@ -93,9 +93,9 @@ int main(int argc, char *argv[]){
 
 
     // BOOL PER SELEZIONI VARIE
-    bool use_elliptic = false;
-    bool use_asymmetric = false;
-    bool use_importance = false;    
+    bool use_elliptic = true;
+    bool use_asymmetric = true;
+    bool use_importance = true;    
         
     // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
     

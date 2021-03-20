@@ -351,6 +351,8 @@ void ImportanceSampling::thermalize(){
             cout << fixed << setprecision(2) << "\rprogress thermalization " << 100 * (double) i / this->NstepsThermal << "%" << flush;
         }
         */
+
+       
        
     }
 
