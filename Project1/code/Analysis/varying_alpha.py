@@ -6,15 +6,17 @@ import matplotlib
 matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
-alpha = pd.read_csv('./Data/parallel/varying_alpha/varying_alpha.csv')
-energy, std = pd.read_csv('./Data/parallel/varying_alpha/post_analysis.csv')
-#xline = np.linspace(0.3, 0.7, 1000)
-#exactval = [30*(x/2 + 1/8/x) for x in xline]
+x = pd.read_csv('./Data/parallel/varying_alpha/varying_alpha.csv')
+y = pd.read_csv('./Data/parallel/varying_alpha/post_analysis_alpha.csv')
+data = pd.concat([x,y.reindex(x.index)], axis=1 ) # I concatenate the data in a unique dataframe
+xline = np.linspace(0.3, 0.7, 1000)
+exactval = [30*(x/2 + 1/8/x) for x in xline]
+
 
 plt.figure(figsize=(10,8))
-#plt.plot(xline, exactval, linewidth=1.8, color='mediumspringgreen', alpha=0.8, label='Model')
-plt.errorbar(alpha, energy, ls='none', yerr=std, color='red', zorder=2.5)
-plt.scatter(alpha, energy, color='red', s=12, label='Metropolis', zorder=2.5)
+plt.plot(xline, exactval, linewidth=1.8, color='mediumspringgreen', alpha=0.8, label='Model')
+plt.scatter(data['alpha'], data['energy'], color='red', s=12, label='Metropolis', zorder=2.5)
+plt.errorbar(data['alpha'], data['energy'], yerr=data['std'], ls='none' , color='red', zorder=2.5)
 plt.xlabel(r'$\alpha$', fontsize=22, labelpad=15)
 plt.ylabel('Energy', fontsize=22, labelpad=15)
 ax = plt.gca()

@@ -6,11 +6,10 @@ import matplotlib
 matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
-dt = pd.read_csv('./Data/standard/varying_dt/varying_dt.csv')
-acceptance = pd.read_csv('./Data/standard/varying_dt/acceptance.csv')
+data = pd.read_csv('./Data/standard/varying_dt/varying_dt.csv')
 
 plt.figure(figsize=(10,8))
-plt.plot(dt, acceptance, linewidth=2.2, color='cornflowerblue')
+plt.plot(data['dt'], data['acceptance'], linewidth=2.2, color='cornflowerblue')
 plt.xscale('log')
 xlab = plt.xlabel(r'$\delta t$', fontsize=22, labelpad=15)
 ylab = plt.ylabel('Acceptance', fontsize=22, labelpad=15)

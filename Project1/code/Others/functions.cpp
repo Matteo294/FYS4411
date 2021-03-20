@@ -120,19 +120,22 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
 
 
-    // print alpha values to csv
+    // print dt values to csv
     if(dttoFile){
         if( (this->parallel && (omp_get_thread_num()==0)) ){
             this->dtFile.open("./Analysis/Data/parallel/varying_dt/varying_dt.csv");
+            this->dtFile << "dt";
+            for(k=0; k<=Ndt; k++){
+                this->dtFile << endl <<  pow(10, expmin + k*expstep);
+
+            }
+            this->dtFile.close();
         } else if (!this->parallel ){
             this->dtFile.open("./Analysis/Data/standard/varying_dt/varying_dt.csv");
+            this->dtFile << "dt,acceptance";
         }
 
-        this->dtFile << "dt";
-        for(k=0; k<=Ndt; k++){
-            this->dtFile << endl <<  pow(10, expmin + k*expstep);
-        }
-        this->dtFile.close();
+        
     }
 
     for(k=0; k<=Ndt; k++){
@@ -160,11 +163,20 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
         results_prov = this->system->getSolver()->solve(false);
         results[k] = {kdt, results_prov[0], results_prov[1], results_prov[2]};
 
+        if(dttoFile && !this->parallel){
+            this->dtFile << endl <<  kdt << "," << results_prov[2];
+        }
+
         if( (this->parallel && (omp_get_thread_num()==0)) || (!this->parallel)){
             cout << fixed << setprecision(5) << "dt: " << kdt << "\t ";
         }
         
         this->printResultsSolver(results_prov);
+    }
+    
+    if(dttoFile && !this->parallel)
+    {
+        this->dtFile.close();
     }
 
 
@@ -293,7 +305,7 @@ void Functions::printPresentation(){
 }
 
 void Functions::printResultsSolver(vector<double> res){
-    if(this->parallel ){
+    if(this->parallel && (omp_get_thread_num()==0)){
         cout << scientific << setprecision(5) << "core#0--> E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << " " << endl;
     } else if(!this->parallel) {
         cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;

@@ -19,9 +19,17 @@
 
 
 // Set to 1 to use the parallelization
-#define RUN_PARALLEL 1
+#define RUN_PARALLEL 0
 // Set the correct number depending on your number of cores
 #define NTHREADS 4
+
+#define DIMENSION 1
+#define NPARTICLES 1
+#define USE_ASYMMETRIC 1
+#define USE_ELLIPTICAL 0
+#define USE_IMPORTANCE 0
+#define TO_FILE 1
+
 
 using namespace std;
 
@@ -37,10 +45,6 @@ int main(int argc, char *argv[]){
         selector = a;
     }
 
-    // Information for the system
-    const int dimension = 3;
-    const int Nparticles = 10;
-
     // Information for the solvers
     const int Nsteps_final = (int) pow(2,20); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
@@ -54,14 +58,11 @@ int main(int argc, char *argv[]){
     double omegaZ = 2.82843; 
 
     // Information for the wavefunction
-    double alpha = 0.5; // variational parameter
+    double alpha = 0.4; // variational parameter
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
-    // Others
-    bool tofile = true; // Print on external file for resampling analysis (numerical methods)
-
+    /*#######################################################################################################*/
     // Parameters for the various type of simulations
-
     // Mode 0 - normal
 
     // Mode 1 - numerical
@@ -70,18 +71,18 @@ int main(int argc, char *argv[]){
     // Mode 2 - varying alpha
     const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
     const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
-    const int N_alpha = 10; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
-    const bool alpha_to_file = false; // set true to save data to file
+    const int N_alpha = 5; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
+    const bool alpha_to_file = true; // set true to save data to file
 
     // Mode 3 - varying dt
     const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
     const double dt_max = 10; // in mode 2 (varying dt) maximum dt
-    const int N_dt = 10; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = false; // set true to save data to file
+    const int N_dt = 5; // in mode 2 (varying dt) number of different dts between dt_min dt_max
+    const bool dt_to_file = true; // set true to save data to file
 
     // Mode 4 - varying N
     vector<int> Ns {5, 10, 15}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = false; // set true to save data to file
+    const bool N_to_file = true; // set true to save data to file
 
     // Mode 5 - Gradient Descent
     double best_alpha = 0.0;
@@ -95,12 +96,6 @@ int main(int argc, char *argv[]){
     const double r_max = 4.0;
     const int Nbins = 200;
 
-    // BOOL PER SELEZIONI VARIE
-    bool use_elliptic = true;
-    bool use_asymmetric = true;
-    bool use_importance = true;    
-        
-    // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
 
     #if RUN_PARALLEL == 1
         int Nthreads = NTHREADS;
@@ -111,37 +106,47 @@ int main(int argc, char *argv[]){
     #endif
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-
+    
     omp_set_num_threads(Nthreads);
-    #pragma omp parallel
+    #pragma omp parallel //reduction (+:mean_check)
     {
-        System system(dimension, Nparticles);
+        System system((int) DIMENSION, (int) NPARTICLES);
 
         // Hamiltonians
-        Spherical spherical(&system, omegaXY);
-        Elliptical elliptical(&system, omegaXY, omegaZ);
+        #if USE_ELLIPTICAL == 1
+            Elliptical elliptical(&system, omegaXY, omegaZ);
+            system.setHamiltonian(&elliptical);
+        #else
+            Spherical spherical(&system, omegaXY);
+            system.setHamiltonian(&spherical);
+        #endif
 
         // Wavefunctions
-        Gaussian gaussian(&system, alpha);
-        AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
+        #if DIMENSION == 3 
+            #if USE_ASYMMETRIC
+                AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
+                system.setWavefunction(&asymmgaussian);
+            #else
+                Gaussian gaussian(&system, alpha);
+                system.setWavefunction(&gaussian);          
+            #endif
+        #else
+            Gaussian gaussian(&system, alpha);
+            system.setWavefunction(&gaussian);  
+        #endif
 
         // Solvers
-        Metropolis metropolis(&system, Ni, NstepsThermal, step, tofile);
-        ImportanceSampling importance(&system, Ni, NstepsThermal, dt, D, tofile);
+        #if USE_IMPORTANCE
+            ImportanceSampling importance(&system, Ni, NstepsThermal, dt, D, (bool) TO_FILE);
+            system.setSolver(&importance);
+        #else
+            Metropolis metropolis(&system, Ni, NstepsThermal, step, (bool) TO_FILE);
+            system.setSolver(&metropolis);
+        #endif
 
         // Others
         RandomGenerator randomgenerator;
-        Functions functions(&system, true);
-
-        // Choose options
-        if(use_elliptic) system.setHamiltonian(&elliptical);
-        else system.setHamiltonian(&spherical);
-
-        if(use_asymmetric) system.setWavefunction(&asymmgaussian);
-        else system.setWavefunction(&gaussian);
-
-        if(use_importance) system.setSolver(&importance);
-        else system.setSolver(&metropolis);
+        Functions functions(&system, (bool) RUN_PARALLEL);
         
         system.setRandomGenerator(&randomgenerator);
         if(omp_get_thread_num()==0) {functions.printPresentation();}
