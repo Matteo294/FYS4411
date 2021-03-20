@@ -9,4 +9,4 @@ OBJECTS = $(SOURCES:.cpp=.o)
 TARGET = main
 
 $(TARGET) : $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^ -lstdc++fs
+	$(CXX) $(CXXFLAGS) -o $@ $^
