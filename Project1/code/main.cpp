@@ -36,7 +36,7 @@ int main(int argc, char *argv[]){
     const int Nparticles = 10;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,22); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
     // Others
-    bool tofile = false; // Print on external file for resampling analysis (numerical methods)
+    bool tofile = true; // Print on external file for resampling analysis (numerical methods)
 
     // Parameters for the various type of simulations
 

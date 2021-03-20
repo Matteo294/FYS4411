@@ -85,6 +85,8 @@ def sorted_alphanumeric(data):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
     return sorted(data, key=alphanum_key)
+
+
 #save figure in the right repository
 def savefigure(dirname,std,f): 
     font = {'fontname':'serif'}
@@ -103,7 +105,7 @@ def savefigure(dirname,std,f):
 
 if selector==0 : #Simple (default) case 1 file "energyateverystep"
     print ("\n=========================================\n")
-    filelist =sorted_alphanumeric(os.listdir("./Data/standard/singlerun"))
+    filelist =sorted_alphanumeric(os.listdir("./Data/standard/singlerun")) ####adjust
     st=0
     for f in filelist:
         print("File: ", f )
@@ -126,7 +128,9 @@ if selector==0 : #Simple (default) case 1 file "energyateverystep"
         plt.show()
         if fig == True:
             savefigure(dname,std,"0")
-#Case Varyng alpha
+
+
+#Case Varying alpha
 if selector==1 :  
     filelist =sorted_alphanumeric(os.listdir("./var_alpha"))
     st=0
