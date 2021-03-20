@@ -37,7 +37,7 @@ if args['Program_selector'] == None: #default value (basic analysis from 1 file,
 else :
     selector =int(args['Program_selector'])
     fig = False
-    if args['Save_figure'] is not None or "n":
+    if args['Save_figure'] is not None or args['Save_figure']=="n":
         fig = True #save figure
 #args = vars(ap.parse_args())
 abspath = os.path.abspath(__file__)
@@ -119,32 +119,28 @@ def simplerun(dir):
         #plt.show()
         #if fig == True:
          #   savefigure(dname,std,"0")
+#Varying alpha 
 def var_alpha(dir):
-    rep="/varying_alpha/"
+    rep="/varying_alpha/" 
     filelist =sorted_alphanumeric(fnmatch.filter(os.listdir(dir+rep), "*.dat"))
-    print ("\n=========================================\n")
-    print("Number of processors: ", mp.cpu_count())
-    print("\n",len(filelist)/8)
-    print ("\n=========================================\n")
     with open(os.path.join(dir+rep, "results_alpha"+'.csv'), "w") as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
         writer.writerow(["energy","STD"])
-        for i in range(0,int(len(filelist)/mp.cpu_count())):
+        for i in range(0,int(len(filelist)/mp.cpu_count())): # the variable i cycles on the different alpha
             x=[]
-            for f in filelist:
-                if fnmatch.fnmatch(f, '*alpha'+str(i)+'.dat'):
+            for f in filelist:   
+                if fnmatch.fnmatch(f, '*alpha'+str(i)+'.dat'): # here we collect all the data from file that rapresent the same alpha 
                     infile = data_path(dir+rep+f)
                     x = np.concatenate((x,np.genfromtxt(infile)))
-            (mean, var ,k) = block(x) 
+            (mean, var ,k) = block(x) #blocking analysis
             std = sqrt(var)
             data ={'Mean':[mean], 'STDev':[std[k]]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([mean,std[k]])
             frame = pd.DataFrame(data,index=['Values'])
             print(frame)
-        #if fig == True:
-         #   savefigure(dname +"/images_var_alpha/",std,"alpha of data set " + str(st))
-          #  st+=1 
+        if fig == True:
+            savefigure(dir +"/Figures"+rep,std,"alpha of data set " + str(i))
         #Decomment these row below to have a fast view of the charts     
         #plt.plot(arange(0, len(std), 1), std)
         #plt.show(block=False)
@@ -171,8 +167,8 @@ def var_dt(dir):
             writer.writerow([mean,std[k]])
             frame = pd.DataFrame(data,index=['Values'])
             print(frame)
-        #if fig == True:
-         #   savefigure(dname+"/images_var_N/",std,f)
+            if fig == True:
+                 savefigure(dir+"/Figures"+rep,std,f)
         #Decomment these row below to have a fast view of the charts 
         #plt.plot(arange(0, len(std), 1), std)
         #plt.show(block=False)
@@ -198,8 +194,8 @@ def var_N(dir):
             writer.writerow([mean,std[k]])
             frame = pd.DataFrame(data,index=['Values'])
             print(frame)
-        #if fig == True:
-         #   savefigure(dname+"/images_var_N/",std,f)
+            if fig == True:
+                   savefigure(dir+"/Figures"+rep ,std,f)
         #Decomment these row below to have a fast view of the charts 
         #plt.plot(arange(0, len(std), 1), std)
         #plt.show(block=False)
