@@ -20,6 +20,8 @@
 
 // Set to 1 to use the parallelization
 #define RUN_PARALLEL 1
+// Set the correct number depending on your number of cores
+#define NTHREADS 4
 
 using namespace std;
 
@@ -101,7 +103,7 @@ int main(int argc, char *argv[]){
     // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
 
     #if RUN_PARALLEL == 1
-        int Nthreads = omp_get_max_threads();
+        int Nthreads = NTHREADS;
         int Ni = Nsteps_final/Nthreads;
     #else
         int Nthreads = 1;
@@ -110,8 +112,9 @@ int main(int argc, char *argv[]){
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
 
-    #pragma omp parallel for num_threads(Nthreads) schedule(static, 1) shared(Ni, Nthreads)
-    for(int i=0; i<Nthreads; i++){
+    omp_set_num_threads(Nthreads);
+    #pragma omp parallel
+    {
         System system(dimension, Nparticles);
 
         // Hamiltonians
@@ -125,7 +128,7 @@ int main(int argc, char *argv[]){
         // Solvers
         Metropolis metropolis(&system, Ni, NstepsThermal, step, tofile);
         ImportanceSampling importance(&system, Ni, NstepsThermal, dt, D, tofile);
-    
+
         // Others
         RandomGenerator randomgenerator;
         Functions functions(&system, true);
@@ -152,8 +155,8 @@ int main(int argc, char *argv[]){
             case 5: functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); break;
             case 6: functions.solve_singleRun(r_max, Nbins); break;
         }
-
     }
+
 
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
