@@ -17,6 +17,9 @@ from numpy.linalg import inv
 
 
 #instruction how to run the program 
+##################################
+#SELECTOR FROM COMMAND LINE
+##################################
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--Parallel_simulation", required=False, help=" 0--> standard_file_analysis; 1--> parallel_file_analysis")
 ap.add_argument("-c", "--Program_selector", required=False, help="Chose Program:  \
@@ -48,6 +51,8 @@ os.chdir(dname)
 DATA_ID = "./"
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
+
+
 #########################################
 #definition of functions
 #########################################
@@ -126,7 +131,7 @@ def var_alpha(dir):
     with open(os.path.join(dir+rep, "results_alpha"+'.csv'), "w") as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
         writer.writerow(["energy","STD"])
-        for i in range(0,int(len(filelist)/mp.cpu_count())): # the variable i cycles on the different alpha
+        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))): # the variable i cycles on the different alpha
             x=[]
             for f in filelist:   
                 if fnmatch.fnmatch(f, '*alpha'+str(i)+'.dat'): # here we collect all the data from file that rapresent the same alpha 
@@ -154,7 +159,7 @@ def var_dt(dir):
     with open(os.path.join(dir+rep, "results_dt"+'.csv'), "w") as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
         writer.writerow(["energy","STD"])
-        for i in range(0,int(len(filelist)/mp.cpu_count())):
+        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))):
             x=[]
             for f in filelist:
                 if fnmatch.fnmatch(f, '*dt'+str(i)+'.dat'):  
@@ -181,7 +186,7 @@ def var_N(dir):
     with open(os.path.join(dir+rep, "results_N"+'.csv'), "w") as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
         writer.writerow(["energy","STD"])
-        for i in range(0,int(len(filelist)/mp.cpu_count())):
+        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))):
             x=[]
             for f in filelist:
                 if fnmatch.fnmatch(f, '*N'+str(i)+'.dat'):  
@@ -219,10 +224,8 @@ def savefigure(dirname,std,f):
     print(f)
     plt.savefig(dirname + "/blocking"+str(*re.findall(r'\d+',f))+".png")
     plt.clf()
-######
 
-
-######
+################################################################
 #################################################################
 #MAIN
 #################################################################
