@@ -5,12 +5,13 @@ System::~System(){};
 /* ASSERT: Here I check that the dimension and the # of particles and if they satisfy the requirement
 then I proceed with the initialization.
 I initialize all the particles in the origin (with proper dimensions), each mass is set to 1 */
-System::System(int dim, int Npart) : relative_position(Npart), relative_distance(Npart){
+System::System(int dim, int Npart, bool parallel) : relative_position(Npart), relative_distance(Npart){
     assert(dim>0 && Npart>=0);
     int i=0;
     this->dimension=dim;
     this->Nparticles=Npart;
     this->usematrix = true; // this will be adjusted within the wavefunction class
+    this->parallel=parallel;
 
     this->particles.resize(Nparticles);
 
@@ -160,6 +161,7 @@ void System::EvaluateRelativeDistance(int idx){
         int System::getNParticles() {return this->Nparticles;}
         vector<class Particle*> System::getParticles(){return this->particles;}
         bool System::getUseMatrix(){ return this->usematrix;}
+        bool System::getParallel(){ return this->parallel; }
         
         
 

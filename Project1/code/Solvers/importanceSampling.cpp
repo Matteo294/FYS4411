@@ -80,17 +80,15 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             fprintf(energytofile, "%f\n",tmp1);
         }
         
-        /*
-        if(i%10000==0){
+        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
-        */
         
     
     }
     
     if(tofile) fclose(this->energytofile);
-    //cout << "\33[2K\r";
+    cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     psi_bar_psi = psi_bar_psi/this->Nsteps;
@@ -167,15 +165,13 @@ vector<double> ImportanceSampling::solve(double h){
             fprintf(energytofile, "%f\n", tmp1);
         }
 
-        /*
-        if(i%10000==0){
+        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
-        */
     }
 
     if(tofile) fclose(this->energytofile);
-    //cout << "\33[2K\r";
+    cout << "\33[2K\r";
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
     ratio_accepted = (double) accepted/this->Nsteps;
@@ -264,15 +260,13 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
             fprintf(energytofile, "%f\n", tmp1);
         }
 
-        /*
-        if(i%10000==0){
+        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
-        */
     
     }
 
-    //cout << "\33[2K\r";
+    cout << "\33[2K\r";
     if(this->tofile){ fclose(energytofile); }
     energy = energy/this->Nsteps;
     energy2 = energy2/this->Nsteps;
@@ -347,14 +341,11 @@ void ImportanceSampling::thermalize(){
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } 
 
-        /*if(i%1000==0){
-            cout << fixed << setprecision(2) << "\rprogress thermalization " << 100 * (double) i / this->NstepsThermal << "%" << flush;
-        }
-        */
-
-       
+        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
+        }       
        
     }
 
-    //cout << "\33[2K\r";
+    cout << "\33[2K\r";
 }

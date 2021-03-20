@@ -185,7 +185,7 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
 
 vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool NtoFile){
-    assert(this->system->getNParticles() < N.at(0) );
+    assert(this->system->getNParticles() <= N.at(0) );
     vector<vector<double>> results(N.size());
     vector<double> results_prov(3, 0.0);
     vector<double> zeros(this->system->getDimension(), 0.0);
@@ -306,8 +306,8 @@ void Functions::printPresentation(){
 
 void Functions::printResultsSolver(vector<double> res){
     if(this->parallel && (omp_get_thread_num()==0)){
-        cout << scientific << setprecision(5) << "core#0--> E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << " " << endl;
+        cout << scientific << setprecision(5) << "core#0--> E: " << res[0] << "\t var: " << res[1] << fixed << "\t acceptance: " << res[2] << " " << endl;
     } else if(!this->parallel) {
-        cout << scientific << setprecision(5) << "E: " << res[0] << "\t std: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;
+        cout << scientific << setprecision(5) << "E: " << res[0] << "\t var: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;
     }
 }

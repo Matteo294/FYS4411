@@ -66,6 +66,8 @@ def block(x):
     s, gamma = zeros(d), zeros(d)
     #print(x)
     mu = np.mean(x)
+    #print("std_x = ", np.std(x))
+
 
     # estimate the auto-covariance and variances 
     # for each blocking transformation
@@ -110,14 +112,14 @@ def simplerun(dir):
 
     (mean, var, k) = block(x) 
     std = sqrt(var)
-    print("std[0]= ", std[0] )
     data ={'Mean':[mean], 'STDev':[std[k]]}
     #frame = pd.DataFrame(data,index=['Values'])
     print(data)
+    #print("mean %.8f" %(mean))
     print ("\n=========================================\n")
-    plt.plot(arange(0, len(std), 1), std)
-    plt.grid()
-    plt.show()
+    #plt.plot(arange(0, len(std), 1), std)
+    #plt.grid()
+    #plt.show()
         #if fig == True:
          #   savefigure(dname,std,"0")
         #plt.show()

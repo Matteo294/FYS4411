@@ -8,6 +8,7 @@
 #include "../Others/functions.h"
 #include <iostream>
 #include <cassert> 
+#include <omp.h>
 
 
 using namespace std;
@@ -16,7 +17,7 @@ class System{
     public:
 
         // Constructor and destructor
-        System(int dim, int Npart);
+        System(int dim, int Npart, bool parallel);
         ~System();           
 
         // Getters
@@ -29,6 +30,7 @@ class System{
         vector<class Particle*> getParticles();
         /// \see relative_position, relative_distance
         bool getUseMatrix();
+        bool getParallel();
 
         // Setters
         void setHamiltonian(class Hamiltonian* hamiltonian);
@@ -87,5 +89,6 @@ class System{
         int Nparticles;
         /// Flag to activate/deactivate the relative positions and relative distances matrices
         bool usematrix;
+        bool parallel;
         
 };

@@ -19,13 +19,13 @@
 
 
 // Set to 1 to use the parallelization
-#define RUN_PARALLEL 0
+#define RUN_PARALLEL 1
 // Set the correct number depending on your number of cores
 #define NTHREADS 4
 
-#define DIMENSION 1
-#define NPARTICLES 1
-#define USE_ASYMMETRIC 1
+#define DIMENSION 3
+#define NPARTICLES 10
+#define USE_ASYMMETRIC 0
 #define USE_ELLIPTICAL 0
 #define USE_IMPORTANCE 0
 #define TO_FILE 1
@@ -37,17 +37,15 @@ int main(int argc, char *argv[]){
 
     // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
     int selector = 0;
-    bool parallel = false;
     if(argc>1){
-        parallel = (bool) stoi(argv[1]);
         int a = stoi(argv[1]);
         assert(a>=0 && a<=6);
         selector = a;
     }
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,20); // MC steps for the final simulation
-    const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
+    const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
+    const int NstepsThermal = (int) 1; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
@@ -58,7 +56,7 @@ int main(int argc, char *argv[]){
     double omegaZ = 2.82843; 
 
     // Information for the wavefunction
-    double alpha = 0.4; // variational parameter
+    double alpha = 0.45; // variational parameter
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
     /*#######################################################################################################*/
@@ -69,19 +67,19 @@ int main(int argc, char *argv[]){
     const double h = 1e-5; // Steplength for numerical derivatives and evaluations
 
     // Mode 2 - varying alpha
-    const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
-    const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
-    const int N_alpha = 5; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
+    const double alpha_min = 0.1; // in mode 1 (varying alpha) minimum alpha
+    const double alpha_max = 1.1; // in mode 2 (varying alpha) maximum alpha
+    const int N_alpha = 10; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
     const bool alpha_to_file = true; // set true to save data to file
 
     // Mode 3 - varying dt
     const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
     const double dt_max = 10; // in mode 2 (varying dt) maximum dt
     const int N_dt = 5; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = true; // set true to save data to file
+    const bool dt_to_file = false; // set true to save data to file
 
     // Mode 4 - varying N
-    vector<int> Ns {5, 10, 15}; // in mode 3 (varying N) different values of N
+    vector<int> Ns {1, 10, 50, 100, 500}; // in mode 3 (varying N) different values of N
     const bool N_to_file = true; // set true to save data to file
 
     // Mode 5 - Gradient Descent
@@ -106,11 +104,11 @@ int main(int argc, char *argv[]){
     #endif
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-    
+    double x=0.0, y=0.0;
     omp_set_num_threads(Nthreads);
-    #pragma omp parallel //reduction (+:mean_check)
+    #pragma omp parallel reduction (+:x,y)
     {
-        System system((int) DIMENSION, (int) NPARTICLES);
+        System system((int) DIMENSION, (int) NPARTICLES, (bool) RUN_PARALLEL);
 
         // Hamiltonians
         #if USE_ELLIPTICAL == 1
@@ -146,13 +144,14 @@ int main(int argc, char *argv[]){
 
         // Others
         RandomGenerator randomgenerator;
+        system.setRandomGenerator(&randomgenerator);
+
         Functions functions(&system, (bool) RUN_PARALLEL);
         
-        system.setRandomGenerator(&randomgenerator);
         if(omp_get_thread_num()==0) {functions.printPresentation();}
 
         switch(selector){
-            case 0: functions.solve_singleRun();  break; // Simple simulation
+            case 0: x+=functions.solve_singleRun()[2];  break; // Simple simulation
             case 1: functions.solve_singleRun(h); break; // Simple simulation with numerical derivative
             case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
             case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
@@ -162,6 +161,7 @@ int main(int argc, char *argv[]){
         }
     }
 
+    cout << "acc= " <<  x/Nthreads << endl;
 
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
