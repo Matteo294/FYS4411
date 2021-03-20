@@ -1,9 +1,12 @@
 # Common imports
-import os
+import os, fnmatch
+import csv
 import re
+import multiprocessing as mp
 import pandas as pd
 from pandas import DataFrame
 import matplotlib.pyplot as plt
+#from typing_extensions import Required
 import numpy as np
 import sys
 import argparse
@@ -12,16 +15,22 @@ from numpy import log2, zeros, mean, var, sum, loadtxt, arange, array, cumsum, d
 from numpy.linalg import inv
 
 
+
 #instruction how to run the program 
 ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--Parallel_simulation", required=False, help=" 0--> standard_file_analysis; 1--> parallel_file_analysis")
 ap.add_argument("-c", "--Program_selector", required=False, help="Chose Program:  \
     \n 0--> Simple case one file analysis;\
     \n 1--> multiple file varying alpha; \
-    \n 2--> multiple file varying N")
+    \n 2--> varying dt;\
+    \n 3--> multiple file varying N")
 ap.add_argument("-s", "--Save_figure", required=False, help="to save images in a default repository write 'save' or 'y' ")
 args = vars(ap.parse_args())
 
-
+if args['Parallel_simulation']: 
+    dir = './Data/parallel'
+else:
+    dir = "./Data/standard"
 if args['Program_selector'] == None: #default value (basic analysis from 1 file, and it doesn't save the figure)
     selector = 0
     fig = False #don't save
@@ -30,7 +39,6 @@ else :
     fig = False
     if args['Save_figure'] is not None or "n":
         fig = True #save figure
-
 #args = vars(ap.parse_args())
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
@@ -40,7 +48,9 @@ os.chdir(dname)
 DATA_ID = "./"
 def data_path(dat_id):
     return os.path.join(DATA_ID, dat_id)
-
+#########################################
+#definition of functions
+#########################################
 #Blocking alghoritm
 def block(x):
     # preliminaries
@@ -80,6 +90,122 @@ def block(x):
     return mu, s[0:d], k
 
 
+
+#simple run
+def simplerun(dir):
+    print ("\n=========================================\n")
+    rep = "/singlerun/"
+    filelist =sorted_alphanumeric(os.listdir(dir+rep))
+    x=[]
+    for f in filelist:
+        infile = data_path(dir+rep+f)
+        x = np.concatenate((x,np.genfromtxt(infile)))
+        #os.chdir("var_alpha")
+        x = np.genfromtxt(infile)
+    (mean, var, k) = block(x) 
+    std = sqrt(var)
+    data ={'Mean':[mean], 'STDev':[std[k]]}
+    frame = pd.DataFrame(data,index=['Values'])
+    print(frame)
+    print ("\n=========================================\n")
+        #plt.plot(arange(0, len(std), 1), std)
+        #plt.grid()
+        #plt.show()
+        #if fig == True:
+         #   savefigure(dname,std,"0")
+        #plt.show()
+        #if fig == True:
+         #   savefigure(dname,std,"0")
+        #plt.show()
+        #if fig == True:
+         #   savefigure(dname,std,"0")
+def var_alpha(dir):
+    rep="/varying_alpha/"
+    filelist =sorted_alphanumeric(fnmatch.filter(os.listdir(dir+rep), "*.dat"))
+    print ("\n=========================================\n")
+    print("Number of processors: ", mp.cpu_count())
+    print("\n",len(filelist)/8)
+    print ("\n=========================================\n")
+    with open(os.path.join(dir+rep, "results_alpha"+'.csv'), "w") as fcsv:
+        writer = csv.writer(fcsv,delimiter =',')
+        writer.writerow(["energy","STD"])
+        for i in range(0,int(len(filelist)/mp.cpu_count())):
+            x=[]
+            for f in filelist:
+                if fnmatch.fnmatch(f, '*alpha'+str(i)+'.dat'):
+                    infile = data_path(dir+rep+f)
+                    x = np.concatenate((x,np.genfromtxt(infile)))
+            (mean, var ,k) = block(x) 
+            std = sqrt(var)
+            data ={'Mean':[mean], 'STDev':[std[k]]}
+            writer = csv.writer(fcsv,delimiter =',')
+            writer.writerow([mean,std[k]])
+            frame = pd.DataFrame(data,index=['Values'])
+            print(frame)
+        #if fig == True:
+         #   savefigure(dname +"/images_var_alpha/",std,"alpha of data set " + str(st))
+          #  st+=1 
+        #Decomment these row below to have a fast view of the charts     
+        #plt.plot(arange(0, len(std), 1), std)
+        #plt.show(block=False)
+        #plt.pause(2)
+        #plt.close()
+    fcsv.close()
+
+def var_dt(dir):
+    rep= "/varying_dt/"
+    filelist=sorted_alphanumeric(os.listdir(dir+rep))
+    with open(os.path.join(dir+rep, "results_dt"+'.csv'), "w") as fcsv:
+        writer = csv.writer(fcsv,delimiter =',')
+        writer.writerow(["energy","STD"])
+        for i in range(0,int(len(filelist)/mp.cpu_count())):
+            x=[]
+            for f in filelist:
+                if fnmatch.fnmatch(f, '*dt'+str(i)+'.dat'):  
+                    infile = data_path(dir+rep+f)
+                    x = np.concatenate((x,np.genfromtxt(infile)))
+            (mean, var ,k) = block(x) 
+            std = sqrt(var)
+            data ={'Mean':[mean], 'STDev':[std[k]]}
+            writer = csv.writer(fcsv,delimiter =',')
+            writer.writerow([mean,std[k]])
+            frame = pd.DataFrame(data,index=['Values'])
+            print(frame)
+        #if fig == True:
+         #   savefigure(dname+"/images_var_N/",std,f)
+        #Decomment these row below to have a fast view of the charts 
+        #plt.plot(arange(0, len(std), 1), std)
+        #plt.show(block=False)
+        #plt.pause(3)
+        #plt.close()
+
+def var_N(dir):
+    rep= "/varying_N/"
+    filelist =sorted_alphanumeric(os.listdir(dir+rep))
+    with open(os.path.join(dir+rep, "results_N"+'.csv'), "w") as fcsv:
+        writer = csv.writer(fcsv,delimiter =',')
+        writer.writerow(["energy","STD"])
+        for i in range(0,int(len(filelist)/mp.cpu_count())):
+            x=[]
+            for f in filelist:
+                if fnmatch.fnmatch(f, '*N'+str(i)+'.dat'):  
+                    infile = data_path(dir+rep+f)
+                    x = np.concatenate((x,np.genfromtxt(infile)))
+            (mean, var ,k) = block(x) 
+            std = sqrt(var)
+            data ={'Mean':[mean], 'STDev':[std[k]]}
+            writer = csv.writer(fcsv,delimiter =',')
+            writer.writerow([mean,std[k]])
+            frame = pd.DataFrame(data,index=['Values'])
+            print(frame)
+        #if fig == True:
+         #   savefigure(dname+"/images_var_N/",std,f)
+        #Decomment these row below to have a fast view of the charts 
+        #plt.plot(arange(0, len(std), 1), std)
+        #plt.show(block=False)
+        #plt.pause(3)
+        #plt.close()
+
 #sort alphanurecaly the files
 def sorted_alphanumeric(data):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
@@ -97,79 +223,19 @@ def savefigure(dirname,std,f):
     print(f)
     plt.savefig(dirname + "/blocking"+str(*re.findall(r'\d+',f))+".png")
     plt.clf()
+######
 
+
+######
+#################################################################
+#MAIN
 #################################################################
 #Case 
-
-if selector==0 : #Simple (default) case 1 file "energyateverystep"
-    print ("\n=========================================\n")
-    filelist =sorted_alphanumeric(os.listdir("./Data/standard/singlerun"))
-    st=0
-    for f in filelist:
-        print("File: ", f )
-        infile = data_path(dname+f)
-        #os.chdir("var_alpha")
-        x = np.genfromtxt(infile)
-        (mean, var, k) = block(x) 
-        std = sqrt(var)
-        data ={'Mean':[mean], 'STDev':[std[k]]}
-        frame = pd.DataFrame(data,index=['Values'])
-        print(frame)
-        plt.plot(arange(0, len(std), 1), std)
-        plt.grid()
-        plt.show()
-        if fig == True:
-            savefigure(dname,std,"0")
-        plt.show()
-        if fig == True:
-            savefigure(dname,std,"0")
-        plt.show()
-        if fig == True:
-            savefigure(dname,std,"0")
-#Case Varyng alpha
-if selector==1 :  
-    filelist =sorted_alphanumeric(os.listdir("./var_alpha"))
-    st=0
-    for f in filelist:
-        print ("\n=========================================\n")
-        print("File:", f)
-        infile = data_path(dname+"/var_alpha/"+f)
-        #os.chdir("var_alpha")
-        x = np.genfromtxt(infile)
-        (mean, var ,k) = block(x) 
-        std = sqrt(var)
-
-        data ={'Mean':[mean], 'STDev':[std[k]]}
-        frame = pd.DataFrame(data,index=['Values'])
-        print(frame)
-        if fig == True:
-            savefigure(dname +"/images_var_alpha/",std,"alpha of data set " + str(st))
-            st+=1 
-        #Decomment these row below to have a fast view of the charts     
-        plt.plot(arange(0, len(std), 1), std)
-        plt.show(block=False)
-        plt.pause(2)
-        plt.close()
-
-#Varyng N
-if selector==2: 
-    filelist =sorted_alphanumeric(os.listdir("./var_N"))
-    filelist.sort()
-    for f in filelist:
-        print ("\n=========================================\n")
-        print("File:", f)
-        infile = data_path(dname+"/var_N/"+f)
-        x = np.genfromtxt(infile)    
-        (mean, var, k) = block(x) 
-        std = sqrt(var)
-        data ={'Mean':[mean], 'STDev':[std[k]]}
-        frame = pd.DataFrame(data,index=['Values'])
-        print(frame)
-        if fig == True:
-            savefigure(dname+"/images_var_N/",std,f)
-        #Decomment these row below to have a fast view of the charts 
-        #plt.plot(arange(0, len(std), 1), std)
-        #plt.show(block=False)
-        #plt.pause(3)
-        #plt.close()
-print ("\n=========================================\n")
+if selector==0: #Simple run
+    simplerun(dir)
+if selector==1: #Varyng alpha
+    var_alpha(dir)
+if selector==2: #Varyng dt
+    var_dt(dir)
+if selector==3: #Varyng N
+    var_N(dir)

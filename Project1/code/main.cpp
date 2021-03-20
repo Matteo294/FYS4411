@@ -36,14 +36,14 @@ int main(int argc, char *argv[]){
     const int Nparticles = 3;
 
     // Information for the solvers
-    const int Nsteps_final = (int) pow(2,18); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     const double step = 1.0; // only for metropolis
     const double D = 0.5; // only for importance sampling
     const double dt = 0.01; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.043; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
     double omegaZ = 2.82843; 
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
     const double beta = 2.82843; // Only for asymmetrical wavefunction
     
     // Others
-    bool tofile = false; // Print on external file for resampling analysis (numerical methods)
+    bool tofile = true; // Print on external file for resampling analysis (numerical methods)
 
     // Parameters for the various type of simulations
 
@@ -65,17 +65,17 @@ int main(int argc, char *argv[]){
     const double alpha_min = 0.4; // in mode 1 (varying alpha) minimum alpha
     const double alpha_max = 0.6; // in mode 2 (varying alpha) maximum alpha
     const int N_alpha = 10; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
-    const bool alpha_to_file = false; // set true to save data to file
+    const bool alpha_to_file = true; // set true to save data to file
 
     // Mode 3 - varying dt
     const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
     const double dt_max = 10; // in mode 2 (varying dt) maximum dt
     const int N_dt = 10; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = false; // set true to save data to file
+    const bool dt_to_file = true; // set true to save data to file
 
     // Mode 4 - varying N
     vector<int> Ns {5, 10, 15}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = false; // set true to save data to file
+    const bool N_to_file = true; // set true to save data to file
 
     // Mode 5 - Gradient Descent
     double best_alpha = 0.0;
@@ -93,9 +93,9 @@ int main(int argc, char *argv[]){
 
 
     // BOOL PER SELEZIONI VARIE
-    bool use_elliptic = false;
-    bool use_asymmetric = false;
-    bool use_importance = false;    
+    bool use_elliptic = true;
+    bool use_asymmetric = true;
+    bool use_importance = true;    
         
     // !!!!!!!! This should be more precise and should be put inside Function (time should be returned as another value)
     
