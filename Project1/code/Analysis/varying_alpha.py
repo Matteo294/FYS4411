@@ -14,14 +14,14 @@ exactval = [30*(x/2 + 1/8/x) for x in xline]
 
 
 plt.figure(figsize=(10,8))
-plt.plot(xline, exactval, linewidth=1.8, color='mediumspringgreen', alpha=0.8, label='Model')
+plt.plot(xline, exactval, linewidth=0.7, color='blue', alpha=0.8, label='Model')
 plt.scatter(data['alpha'], data['energy'], color='red', s=12, label='Importance', zorder=2.5)
 plt.errorbar(data['alpha'], data['energy'], yerr=data['std'], ls='none' , color='red', zorder=2.5)
 plt.xlabel(r'$\alpha$', fontsize=22, labelpad=15)
-plt.ylabel('Energy', fontsize=22, labelpad=15)
+plt.ylabel(r'Energy [$\hbar \omega_{ho}$]', fontsize=22, labelpad=15)
 ax = plt.gca()
 plt.legend(fontsize=16)
 ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
 plt.grid()
-plt.savefig('./Figures/varying_alpha_noninteract_importance.eps')
+#plt.savefig('./Figures/varying_alpha_noninteract_importance.eps')
 plt.show()

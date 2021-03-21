@@ -60,7 +60,7 @@ vector<double> Metropolis::solve(bool allAverages){
             psi_bar_psi_EL += tmp2 * tmp1;
         }
 
-        if (this->tofile && (i%1==0)){
+        if (this->tofile){
             fprintf(energytofile, "%f\n",tmp1);
         }
         

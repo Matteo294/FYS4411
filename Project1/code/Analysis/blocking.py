@@ -5,6 +5,8 @@ import re
 import multiprocessing as mp
 import pandas as pd
 from pandas import DataFrame
+import matplotlib
+from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 #from typing_extensions import Required
 import numpy as np
@@ -21,28 +23,25 @@ from numpy.linalg import inv
 #SELECTOR FROM COMMAND LINE
 ##################################
 ap = argparse.ArgumentParser()
-ap.add_argument("-p", "--Parallel_simulation", required=False, help=" 0--> standard_file_analysis; 1--> parallel_file_analysis")
-ap.add_argument("-c", "--Program_selector", required=False, help="Chose Program:  \
+ap.add_argument("-p", "--Parallel_simulation", choices=['0', '1'], required=True, help=" 0--> standard_file_analysis; 1--> parallel_file_analysis")
+ap.add_argument("-c", "--Program_selector", choices=['0','1','2','3'], required=True, help="Chose Program:  \
     \n 0--> Simple case one file analysis;\
     \n 1--> multiple file varying alpha; \
     \n 2--> multiple file varying dt;\
     \n 3--> multiple file varying N")
-ap.add_argument("-s", "--Save_figure", required=False, help="to save images in a default repository write 'save' or 'y' ")
+ap.add_argument("-s", "--Save_figure", default='0', required=False, help="to save images in a default repository write 'save' or 'y' ")
 args = vars(ap.parse_args())
 
-if args['Parallel_simulation']: 
+if args['Parallel_simulation']=='1': 
     dir = './Data/parallel'
-else:
+elif args['Parallel_simulation']=='0':
     dir = "./Data/standard"
 
-if args['Program_selector'] == None: #default value (basic analysis from 1 file, and it doesn't save the figure)
-    selector = 0
-    fig = False #don't save
-else :
-    selector =int(args['Program_selector'])
+selector =int(args['Program_selector'])
+if args['Save_figure'] is not None or args['Save_figure']=="n":
+    fig = True #save figure
+else:
     fig = False
-    if args['Save_figure'] is not None or args['Save_figure']=="n":
-        fig = True #save figure
 
 #args = vars(ap.parse_args())
 abspath = os.path.abspath(__file__)
@@ -66,7 +65,8 @@ def block(x):
     s, gamma = zeros(d), zeros(d)
     #print(x)
     mu = np.mean(x)
-    #print("std_x = ", np.std(x))
+    var_to_compare = np.var(x)
+    std_k0 = np.sqrt(var_to_compare/n)
 
 
     # estimate the auto-covariance and variances 
@@ -96,8 +96,7 @@ def block(x):
     for i in arange(0,d):
         s[i] = s[i]/2**(d-i)
     
-    return mu, s[0:d], k
-
+    return mu, s[0:d], k, var_to_compare, std_k0
 
 
 #simple run
@@ -110,16 +109,33 @@ def simplerun(dir):
         infile = data_path(dir+rep+f)
         x = np.concatenate((x,np.genfromtxt(infile)))
 
-    (mean, var, k) = block(x) 
+    (mean, var, k, var_to_compare, std_k0) = block(x) 
+    
     std = sqrt(var)
-    data ={'Mean':[mean], 'STDev':[std[k]]}
+    data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
     #frame = pd.DataFrame(data,index=['Values'])
     print(data)
     #print("mean %.8f" %(mean))
     print ("\n=========================================\n")
-    #plt.plot(arange(0, len(std), 1), std)
-    #plt.grid()
-    #plt.show()
+    '''
+    plt.plot(arange(0, len(std), 1), std)
+    plt.grid()
+    plt.show()
+    '''
+    matplotlib.rcParams['mathtext.fontset'] = 'stix'
+    matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    plt.figure(figsize=(10,8))
+    plt.plot(arange(0, len(std), 1), std, ls='--', linewidth=1.8, color='blue', label=r'$\sigma_k / n_k^{1/2}$')
+    plt.plot(arange(0, len(std), 1), np.ones(len(std))*std[k], ls='--', linewidth=1.8, color='red', label=r'$\sigma_b$')
+    plt.xlabel(r'$k$ - Blocking iteration', fontsize=22, labelpad=15)
+    plt.ylabel('Estimated standard deviation', fontsize=22, labelpad=15)
+    plt.legend(fontsize=16)
+    ax = plt.gca()
+    ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+    plt.xticks(range(0,len(std)))
+    plt.grid()
+    plt.savefig('./Figures/sigma_blocking_behaviour.eps')
+    plt.show()
         #if fig == True:
          #   savefigure(dname,std,"0")
         #plt.show()
@@ -145,16 +161,16 @@ def var_alpha(dir):
                     infile = data_path(dir+rep+f)
                     x = np.concatenate((x,np.genfromtxt(infile)))
             
-            (mean, var ,k) = block(x) #blocking analysis
+            (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
             std = sqrt(var)
-            data ={'Mean':[mean], 'STDev':[std[k]]}
+            data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([mean,std[k]])
             #frame = pd.DataFrame(data,index=['Values'])
             print("alpha nr.", i, " --> ", data)
 
-        if fig == True:
-            savefigure(dir +"/Figures"+rep,std,"alpha of data set " + str(i))
+        #if fig == True:
+        #    savefigure(dir +"/Figures"+rep,std,"alpha of data set " + str(i))
         #Decomment these row below to have a fast view of the charts     
         #plt.plot(arange(0, len(std), 1), std)
         #plt.show(block=False)
@@ -176,15 +192,15 @@ def var_dt(dir):
                     infile = data_path(dir+rep+f)
                     x = np.concatenate((x,np.genfromtxt(infile)))
             
-            (mean, var ,k) = block(x) 
+            (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
             std = sqrt(var)
-            data ={'Mean':[mean], 'STDev':[std[k]]}
+            data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([mean,std[k]])
             #frame = pd.DataFrame(data,index=['Values'])
             print("dt nr.", i, " --> ", data)
-            if fig == True:
-                 savefigure(dir+"/Figures"+rep,std,f)
+            #if fig == True:
+            #     savefigure(dir+"/Figures"+rep,std,f)
         #Decomment these row below to have a fast view of the charts 
         #plt.plot(arange(0, len(std), 1), std)
         #plt.show(block=False)
@@ -204,15 +220,15 @@ def var_N(dir):
                 if fnmatch.fnmatch(f, '*N'+str(i)+'.dat'):  
                     infile = data_path(dir+rep+f)
                     x = np.concatenate((x,np.genfromtxt(infile)))
-            (mean, var ,k) = block(x) 
+            (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
             std = sqrt(var)
-            data ={'Mean':[mean], 'STDev':[std[k]]}
+            data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([mean,std[k]])
             #frame = pd.DataFrame(data,index=['Values'])
             print("N nr.", i, " --> ", data)
-            if fig == True:
-                   savefigure(dir+"/Figures"+rep ,std,f)
+            #if fig == True:
+            #       savefigure(dir+"/Figures"+rep ,std,f)
         #Decomment these row below to have a fast view of the charts 
         #plt.plot(arange(0, len(std), 1), std)
         #plt.show(block=False)
