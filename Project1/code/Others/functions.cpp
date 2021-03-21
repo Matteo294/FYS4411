@@ -240,26 +240,27 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool NtoFile){
 
 double Functions::gradientDescent(double initialAlpha, double gamma, double tolerance, int NiterMax, int Nsteps){
     
-    cout << "Start searching for best alpha..." << endl;
-    bool tofile_set=this->system->getSolver()->getToFile();
-    //this->system->getSolver().sett
+    if(omp_get_thread_num()==0) {cout << "Start searching for best alpha..." << endl;}
+
     this->system->getSolver()->setNsteps(Nsteps);
     int i=0;
     double alpha=initialAlpha, deltaAlpha=1.0;
     vector<double> results(4, 0.0);
 
-    while((i<NiterMax) && (abs(deltaAlpha)>tolerance)){
+    while((i<NiterMax) && (abs(deltaAlpha/gamma)>tolerance)){
         this->system->getWavefunction()->setParameter(0, alpha);
         this->system->getSolver()->thermalize();
         results = this->system->getSolver()->solve(true);
-        cout << scientific << setprecision(4) << "iter=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\tstd=" << results[1] << "\tacc=" << results[2] << "\tder_alpha=" << results[3] << endl;
+        if(omp_get_thread_num()==0){
+            cout << scientific << setprecision(4) << "iter=" << i << "\talpha=" << alpha << "\tenergy=" << results[0] << "\tstd=" << results[1] << "\tacc=" << results[2] << "\tder_alpha=" << results[3] << endl;
+        }
         deltaAlpha = - gamma * results[3];
         alpha = alpha + deltaAlpha;
         i++;
     }
     alpha -= deltaAlpha;
 
-    cout << scientific << setprecision(5) << "best alpha= " << alpha << endl;
+     if(omp_get_thread_num()==0) { cout << scientific << setprecision(5) << "best alpha= " << alpha << endl; }
     return alpha;
 }
 

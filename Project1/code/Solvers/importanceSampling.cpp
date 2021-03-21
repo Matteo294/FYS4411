@@ -342,7 +342,7 @@ void ImportanceSampling::thermalize(){
         } 
 
         if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * i / (double) this->Nsteps << "%" << flush;
         }       
        
     }

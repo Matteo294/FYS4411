@@ -28,7 +28,7 @@
 #define USE_ASYMMETRIC 1
 #define USE_ELLIPTICAL 1
 #define USE_IMPORTANCE 1
-#define TO_FILE 1
+#define TO_FILE 0
 
 using namespace std;
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
     // Mode 2 - varying alpha
     const double alpha_min = 0.3; // in mode 1 (varying alpha) minimum alpha
     const double alpha_max = 0.7; // in mode 2 (varying alpha) maximum alpha
-    const int N_alpha = 4; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
+    const int N_alpha = 5; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
     const bool alpha_to_file = true; // set true to save data to file   
 
     // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
@@ -58,12 +58,12 @@ int main(int argc, char *argv[]){
     const double D = 0.5; // only for importance sampling
     
     // Information for the hamiltonian
-    const double a = 0.0; // Set the radius of the particles. a=0 is the non-interacting case
+    const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
-    double omegaZ = 1.0; 
+    double omegaZ = sqrt(8); 
 
     // Information for the wavefunction
-    const double beta = 1.0; // Only for asymmetrical wavefunction
+    const double beta = sqrt(8); // Only for asymmetrical wavefunction
     
     /*#######################################################################################################*/
     // Parameters for the various type of simulations
@@ -84,12 +84,11 @@ int main(int argc, char *argv[]){
     const bool N_to_file = true; // set true to save data to file
 
     // Mode 5 - Gradient Descent
-    double best_alpha = 0.0;
-    double initial_alpha = 0.49;
-    const double gamma = 2e-3; // Learning rate
-    const unsigned int Nmax_gradient = 100; // Max steps alowed
+    double initial_alpha = 0.60;
+    const double gamma = 1e-3; // Learning rate
+    const unsigned int Nmax_gradient = 1000; // Max steps alowed
     const unsigned int Nsteps_gradient = (int) 1e5; // MC steps during the gradient descent
-    const double tolerance = 1e-8; // Conditoin to stop the gradient descent
+    const double tolerance = 1e-5; // Conditoin to stop the gradient descent
 
     // Mode 6 - One Body density
     const double r_max = 4.0;
@@ -105,9 +104,10 @@ int main(int argc, char *argv[]){
     #endif
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-    double x=0.0, y=0.0;
+    double x=0.0;
+
     omp_set_num_threads(Nthreads);
-    #pragma omp parallel reduction (+:x,y)
+    #pragma omp parallel reduction (+:x)
     {
         System system((int) DIMENSION, (int) NPARTICLES, (bool) RUN_PARALLEL);
 
@@ -151,22 +151,20 @@ int main(int argc, char *argv[]){
         
         if(omp_get_thread_num()==0) {functions.printPresentation();}
         
-        vector<double> res(4,0.0);
+        //vector<double> res(4,0.0);
         switch(selector){
-            case 0: res=functions.solve_singleRun();  break; // Simple simulation
+            case 0: functions.solve_singleRun();  break; // Simple simulation
             case 1: functions.solve_singleRun(h); break; // Simple simulation with numerical derivative
             case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
             case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
             case 4: functions.solve_varying_N(Ns, N_to_file); break;
-            case 5: functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); break;
+            case 5: x+=functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); break;
             case 6: functions.solve_singleRun(r_max, Nbins); break;
         }
 
-        x=res[0];
-        y=res[2];
     }
 
-    cout << "energy= " <<  x/Nthreads << "\tacc= " << y/Nthreads << endl;
+    cout << "alpha_averaged_between_treads= " <<  x/Nthreads << endl;
 
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
