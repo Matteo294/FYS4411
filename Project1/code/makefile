@@ -10,3 +10,4 @@ TARGET = main
 
 $(TARGET) : $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
+

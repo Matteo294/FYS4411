@@ -28,16 +28,16 @@
 #define USE_ASYMMETRIC 1
 #define USE_ELLIPTICAL 1
 #define USE_IMPORTANCE 1
-#define TO_FILE 0
+#define TO_FILE 1
 
 using namespace std;
 
 int main(int argc, char *argv[]){
 
     // adjustable parameters
-    const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,27); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
-    double alpha = 0.40; // variational parameter
+    double alpha = 0.49751; // variational parameter
     const double step = 1.0; // only for metropolis
     const double dt = 0.1; // only for importance sampling
     // Mode 2 - varying alpha

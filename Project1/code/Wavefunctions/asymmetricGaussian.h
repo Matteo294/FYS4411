@@ -7,13 +7,9 @@ class AsymmetricGaussian: public Wavefunction{
         AsymmetricGaussian(class System* s, double alpha, double beta, double a);
         ~AsymmetricGaussian();
         
-        /// \see Wavefunction::evaluateAll()
         double evaluateAll();
-        /// \see Wavefunctino::evaluateSing(int part_idx)
         double evaluateSing(int part_idx);
-        /// \see Wavefunction::numericalSecondDerivative(int part_idx, int direction, double h);
         double numericalSecondDerivative(int part_idx, int direction, double h);
-        /// \see Wavefunction::DriftForce(int part_idx)
-        vector<double> DriftForce(int part_idx);
         double psibar_psi();
+        vector<double> DriftForce(int part_idx);
 };

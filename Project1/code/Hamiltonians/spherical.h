@@ -10,8 +10,6 @@ class Spherical: public Hamiltonian{
         ~Spherical();
 
         // Other functions
-        /// \see LocalEnergyNumeric(double h), Hamiltonian::LocalEnergyAnalytic()
         double LocalEnergyAnalytic();
-        /// \see LocalEnergyAnalytic(), Hamiltonian::LocalEnergyNumeric()
         double LocalEnergyNumeric(double h);
 };

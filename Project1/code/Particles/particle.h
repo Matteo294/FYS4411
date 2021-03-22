@@ -19,7 +19,7 @@ class Particle{
         double getMass() {return this->mass;}
                
         // Other functions
-        /// Varies the position of the particle of the quantity delta_pos.
+        // Varies the position of the particle of the quantity delta_pos.
         void move(vector<double> delta_pos);
 
         // Attributes

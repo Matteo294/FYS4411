@@ -12,13 +12,9 @@ class Hamiltonian{
         double getParameter(int idx);
         int getnparameter();
 
-        /** Evaluates the local energy of the system analytically.
-         * \attention This analytical form is strictly dependent on the chosen hamiltonian and the chosen wavefunction
-         * \see LocalEnergyNumeric(double h)
-        **/
+        // Evaluates the local energy of the system analytically.
         virtual double LocalEnergyAnalytic() = 0;
-        /// Evaluates the local energy numerically. Way more computationally expensive than the analytic version.
-        /// \see LocalEnergyAnalytic()
+        // Evaluates the local energy numerically
         virtual double LocalEnergyNumeric(double h) = 0;
 
     protected:

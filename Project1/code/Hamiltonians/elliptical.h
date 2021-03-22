@@ -10,13 +10,7 @@ class Elliptical: public Hamiltonian{
         ~Elliptical();
 
         //Other functions
-        /** Evaluates the local energy of the system analytically.
-         * \attention This analytical form is strictly dependet on the chosen hamiltonian and the chosen wavefunction
-         * \see LocalEnergyNumeric(double h), Hamiltonian::LocalEnergyAnalytic()
-         **/
         double LocalEnergyAnalytic();
-        
-        /// \see LocalEnergyAnalytic(), Hamiltonian::LocalEnergyNumeric()
         double LocalEnergyNumeric(double h);
 
 };

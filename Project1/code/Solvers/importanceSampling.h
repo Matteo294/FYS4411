@@ -9,15 +9,13 @@ using namespace std;
 
 class ImportanceSampling : public Solver{
     public:
+        // Constructor and destructor
         ImportanceSampling(class System* system, int Nsteps, double initialFraction, double dt, double D, bool tofile);
         ~ImportanceSampling();
         
-        // Other functions and attributes
-        /// \see Solver::solve(bool AllAverages)
+        // Other functions
         vector<double> solve(bool allAverages); // uses LocalEnergyAnalytic()
-        /// \see Solver::solve(double r_max, int N_bins)
         vector<double> solve(double r_max, int N_bins); 
-        /// \see Solver::solve(double h)
         vector<double> solve(double h); // uses LocalEnergyNumeric()
         
         void thermalize();

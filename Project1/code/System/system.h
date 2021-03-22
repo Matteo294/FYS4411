@@ -28,7 +28,6 @@ class System{
         int getDimension();
         int getNParticles();
         vector<class Particle*> getParticles();
-        /// \see relative_position, relative_distance
         bool getUseMatrix();
         bool getParallel();
 
@@ -41,7 +40,7 @@ class System{
         void setUseMatrix(bool usematrix);
 
         // Other functions
-        // Adds a particle to the system
+        /// Adds a particle to the system
         void addParticle(double mass, vector<double> pos); 
         /** Evaluates the squared distance of particles and sums.
          * The parameter can be set to give a different coefficient to the last squared coordinate 
@@ -56,9 +55,6 @@ class System{
         double r2(vector<double> vect, double parameter);
         /// Scalar product between vector 1 and vector 2
         double cdot(vector<double> v1, vector<double> v2);
-        /** Copy the parameters of system to another  instance of the class passed as a parameter
-         * \note That the two instances (copied and copying) must have the same number of particles and dimensions.
-        **/
 
         // Matrices
         /// NxN matrix of 3d vectors. The ij-th element is a 3D vector containing posi - posj
@@ -87,7 +83,7 @@ class System{
         // Access this data only via getters
         int dimension;
         int Nparticles;
-        /// Flag to activate/deactivate the relative positions and relative distances matrices
+        // Flag to activate/deactivate the relative positions and relative distances matrices
         bool usematrix;
         bool parallel;
         
