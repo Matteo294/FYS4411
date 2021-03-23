@@ -38,19 +38,20 @@ data3 = data30/4 + data31/4 + data32/4 + data33/4
 
 
 plt.figure(figsize=(10,8))
+alpha=0.5
 for i in range(len(data0.r)):
     if (i==0):
         ##plt.plot([data0.r[i], data0.r[i]], [0, data0.counts[i]], color='blue', label=r'$metropolis$')
-        plt.plot([data0.r[i], data0.r[i]], [0, data0.counts[i]], color='red', label=r'$importance$')
-        plt.plot([data1.r[i], data1.r[i]], [0, data1.counts[i]], color='yellow', label=r'$importance$')
-        plt.plot([data2.r[i], data2.r[i]], [0, data2.counts[i]], color='blue', label=r'$importance$')
-        plt.plot([data3.r[i], data3.r[i]], [0, data3.counts[i]], color='green', label=r'$importance$')
+        plt.plot([data0.r[i], data0.r[i]], [0, data0.counts[i]], alpha=alpha, color='red', label=r'$a=0.0000$')
+        plt.plot([data1.r[i], data1.r[i]], [0, data1.counts[i]], alpha=0.4, color='yellow', label=r'$a=0.0043$')
+        plt.plot([data2.r[i], data2.r[i]], [0, data2.counts[i]], alpha=0.7, color='deepskyblue', label=r'$a=0.043$')
+        plt.plot([data3.r[i], data3.r[i]], [0, data3.counts[i]], alpha=alpha, color='green', label=r'$a=0.43$')
     else :
         #plt.plot([data0.r[i], data0.r[i]], [0, data0.counts[i]], color='blue')
-        plt.plot([data0.r[i], data0.r[i]], [0, data0.counts[i]], color='red')
-        plt.plot([data1.r[i], data1.r[i]], [0, data1.counts[i]], color='yellow', label=r'$importance$')
-        plt.plot([data2.r[i], data2.r[i]], [0, data2.counts[i]], color='blue', label=r'$importance$')
-        plt.plot([data3.r[i], data3.r[i]], [0, data3.counts[i]], color='green', label=r'$importance$')
+        plt.plot([data0.r[i], data0.r[i]], [0, data0.counts[i]], alpha=alpha, color='red')
+        plt.plot([data1.r[i], data1.r[i]], [0, data1.counts[i]], alpha=0.4, color='yellow')
+        plt.plot([data2.r[i], data2.r[i]], [0, data2.counts[i]], alpha=0.7, color='deepskyblue')
+        plt.plot([data3.r[i], data3.r[i]], [0, data3.counts[i]], alpha=alpha, color='green')
 
 
 

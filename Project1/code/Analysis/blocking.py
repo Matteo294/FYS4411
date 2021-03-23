@@ -121,7 +121,7 @@ def simplerun(dir):
     plt.plot(arange(0, len(std), 1), std)
     plt.grid()
     plt.show()
-    '''
+    
     matplotlib.rcParams['mathtext.fontset'] = 'stix'
     matplotlib.rcParams['font.family'] = 'STIXGeneral'
     plt.figure(figsize=(10,8))
@@ -136,6 +136,7 @@ def simplerun(dir):
     plt.grid()
     plt.savefig('./Figures/sigma_blocking_behaviour.eps')
     plt.show()
+    '''
         #if fig == True:
          #   savefigure(dname,std,"0")
         #plt.show()
@@ -266,3 +267,22 @@ if selector==2: #Varyng dt
     var_dt(dir)
 if selector==3: #Varyng N
     var_N(dir)
+
+
+#PER PLOT DI SIGMA_K IN FUNZIONE DI K
+'''
+matplotlib.rcParams['mathtext.fontset'] = 'stix'
+    matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    plt.figure(figsize=(10,8))
+    plt.plot(arange(0, len(std), 1), std, ls='--', linewidth=1.8, color='blue', label=r'$\sigma_k / n_k^{1/2}$')
+    plt.plot(arange(0, len(std), 1), np.ones(len(std))*std[k], ls='--', linewidth=1.8, color='red', label=r'$\sigma_b$')
+    plt.xlabel(r'$k$ - Blocking iteration', fontsize=22, labelpad=15)
+    plt.ylabel('Estimated standard deviation', fontsize=22, labelpad=15)
+    plt.legend(fontsize=16)
+    ax = plt.gca()
+    ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+    plt.xticks(range(0,len(std)))
+    plt.grid()
+    plt.savefig('./Figures/sigma_blocking_behaviour.eps')
+    plt.show()
+'''

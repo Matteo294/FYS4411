@@ -87,19 +87,19 @@ double AsymmetricGaussian::numericalSecondDerivative(int part_idx, int direction
     pos_var[direction] = h;
     this->s->getParticles()[part_idx]->move(pos_var);
     this->s->EvaluateRelativePosition(part_idx); this->s->EvaluateRelativeDistance(part_idx);
-    double wf_forw = this->evaluateAll();
+    double wf_forw = this->evaluateSing(part_idx);
 
     // evaluate wf(x-h)
     pos_var[direction] = -2*h;
     this->s->getParticles()[part_idx]->move(pos_var);
     this->s->EvaluateRelativePosition(part_idx); this->s->EvaluateRelativeDistance(part_idx);
-    double wf_back = this->evaluateAll();
+    double wf_back = this->evaluateSing(part_idx);
 
     // final result
     pos_var[direction] = h;
     this->s->getParticles()[part_idx]->move(pos_var); // particles returns to its original position
     this->s->EvaluateRelativePosition(part_idx); this->s->EvaluateRelativeDistance(part_idx);
-    res = wf_back + wf_forw - 2 * this->evaluateAll();
+    res = wf_back + wf_forw - 2 * this->evaluateSing(part_idx);
 
     return res/pow(h, 2);
 }

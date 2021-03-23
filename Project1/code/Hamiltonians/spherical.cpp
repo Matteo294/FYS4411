@@ -27,15 +27,18 @@ double Spherical::LocalEnergyAnalytic(){
 double Spherical::LocalEnergyNumeric(double h){
     double mass = this->system->getParticles()[0]->getMass(); 
     int i=0, j=0;
-    double res = 0.0;
+    double res_i = 0.0, res=0.0;
     
     for(i=0; i<this->system->getNParticles(); i++){
+        res_i=0.0;
         for(j=0; j<this->system->getDimension(); j++){
-            res += this->system->getWavefunction()->numericalSecondDerivative(i, j, h);
+            res_i += this->system->getWavefunction()->numericalSecondDerivative(i, j, h);
         }
+        res_i /= this->system->getWavefunction()->evaluateSing(i);
+        res += res_i;
     }
 
-    res *= -0.5 / mass / this->system->getWavefunction()->evaluateAll();
+    res *= -0.5 / mass;
     res += 0.5 * mass * pow(this->params[0], 2) * this->system->r2((double) 1.0);
     return res;
     

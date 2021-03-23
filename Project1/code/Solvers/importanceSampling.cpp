@@ -39,7 +39,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getParameter(0));
+            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
         }
 
         this->system->getParticles()[idx]->move(pos_var);
@@ -80,7 +80,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
             fprintf(energytofile, "%f\n",tmp1);
         }
         
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
         
@@ -130,7 +130,7 @@ vector<double> ImportanceSampling::solve(double h){
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getParameter(0));
+            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
         }
 
         this->system->getParticles()[idx]->move(pos_var);
@@ -165,7 +165,7 @@ vector<double> ImportanceSampling::solve(double h){
             fprintf(energytofile, "%f\n", tmp1);
         }
 
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
     }
@@ -216,7 +216,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getParameter(0));
+            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
         }
 
         this->system->getParticles()[idx]->move(pos_var);
@@ -321,7 +321,7 @@ void ImportanceSampling::thermalize(){
         drift_old = this->system->getWavefunction()->DriftForce(idx);
 
         for(j=0; j<this->system->getDimension(); j++){
-            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->getParameter(0));
+            pos_var[j] = this->params[1] * drift_old[j] * this->params[0] + this->system->getRandomGenerator()->normal(gen) * sqrt(this->params[0]);
         }
 
         this->system->getParticles()[idx]->move(pos_var);
