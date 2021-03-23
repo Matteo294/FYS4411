@@ -281,7 +281,7 @@ vector<double> Functions::solve_singleRun(double rmax, int Nbins){
     }
 
     if(this->parallel){
-        this->system->getSolver()->setOneBodyFile("./Analysis/Data/parallel/onebody_density/countsz50" + to_string(omp_get_thread_num()));
+        this->system->getSolver()->setOneBodyFile("./Analysis/Data/parallel/onebody_density/counts100z" + to_string(omp_get_thread_num()));
     } else {
         this->system->getSolver()->setOneBodyFile("./Analysis/Data/standard/onebody_density/counts");
     }

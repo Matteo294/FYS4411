@@ -6,38 +6,54 @@ matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
 
-data00 = pd.read_csv(r'./Data/parallel/onebody_density/countsz0.csv', usecols = ["r", "counts"])
-data01 = pd.read_csv(r'./Data/parallel/onebody_density/countsz1.csv', usecols = ["r", "counts"])
-data02 = pd.read_csv(r'./Data/parallel/onebody_density/countsz2.csv', usecols = ["r", "counts"])
-data03 = pd.read_csv(r'./Data/parallel/onebody_density/countsz3.csv', usecols = ["r", "counts"])
+
+#PLOT PER LA DISTRIBUZIONE SPAZIALE LUNGO X E Z PER 10, 50, 100 PARTICELLE
+'''
+data00 = pd.read_csv(r'./Data/parallel/onebody_density/counts10x0.csv', usecols = ["r", "counts"])
+data01 = pd.read_csv(r'./Data/parallel/onebody_density/counts10x1.csv', usecols = ["r", "counts"])
+data02 = pd.read_csv(r'./Data/parallel/onebody_density/counts10x2.csv', usecols = ["r", "counts"])
+data03 = pd.read_csv(r'./Data/parallel/onebody_density/counts10x3.csv', usecols = ["r", "counts"])
 data0 = data00/4 + data01/4 + data02/4 + data03/4
 
-data10 = pd.read_csv(r'./Data/parallel/onebody_density/countsx0.csv', usecols = ["r", "counts"])
-data11 = pd.read_csv(r'./Data/parallel/onebody_density/countsx1.csv', usecols = ["r", "counts"])
-data12 = pd.read_csv(r'./Data/parallel/onebody_density/countsx2.csv', usecols = ["r", "counts"])
-data13 = pd.read_csv(r'./Data/parallel/onebody_density/countsx3.csv', usecols = ["r", "counts"])
+data10 = pd.read_csv(r'./Data/parallel/onebody_density/counts10z0.csv', usecols = ["r", "counts"])
+data11 = pd.read_csv(r'./Data/parallel/onebody_density/counts10z1.csv', usecols = ["r", "counts"])
+data12 = pd.read_csv(r'./Data/parallel/onebody_density/counts10z2.csv', usecols = ["r", "counts"])
+data13 = pd.read_csv(r'./Data/parallel/onebody_density/counts10z3.csv', usecols = ["r", "counts"])
 data1 = data10/4 + data11/4 + data12/4 + data13/4
 
-data20 = pd.read_csv(r'./Data/parallel/onebody_density/countsx500.csv', usecols = ["r", "counts"])
-data21 = pd.read_csv(r'./Data/parallel/onebody_density/countsx501.csv', usecols = ["r", "counts"])
-data22 = pd.read_csv(r'./Data/parallel/onebody_density/countsx502.csv', usecols = ["r", "counts"])
-data23 = pd.read_csv(r'./Data/parallel/onebody_density/countsx503.csv', usecols = ["r", "counts"])
+data20 = pd.read_csv(r'./Data/parallel/onebody_density/counts50x0.csv', usecols = ["r", "counts"])
+data21 = pd.read_csv(r'./Data/parallel/onebody_density/counts50x1.csv', usecols = ["r", "counts"])
+data22 = pd.read_csv(r'./Data/parallel/onebody_density/counts50x2.csv', usecols = ["r", "counts"])
+data23 = pd.read_csv(r'./Data/parallel/onebody_density/counts50x3.csv', usecols = ["r", "counts"])
 data2 = data20/4 + data21/4 + data22/4 + data23/4
 
-data30 = pd.read_csv(r'./Data/parallel/onebody_density/countsz500.csv', usecols = ["r", "counts"])
-data31 = pd.read_csv(r'./Data/parallel/onebody_density/countsz501.csv', usecols = ["r", "counts"])
-data32 = pd.read_csv(r'./Data/parallel/onebody_density/countsz502.csv', usecols = ["r", "counts"])
-data33 = pd.read_csv(r'./Data/parallel/onebody_density/countsz503.csv', usecols = ["r", "counts"])
+data30 = pd.read_csv(r'./Data/parallel/onebody_density/counts50z0.csv', usecols = ["r", "counts"])
+data31 = pd.read_csv(r'./Data/parallel/onebody_density/counts50z1.csv', usecols = ["r", "counts"])
+data32 = pd.read_csv(r'./Data/parallel/onebody_density/counts50z2.csv', usecols = ["r", "counts"])
+data33 = pd.read_csv(r'./Data/parallel/onebody_density/counts50z3.csv', usecols = ["r", "counts"])
 data3 = data30/4 + data31/4 + data32/4 + data33/4
+
+data40 = pd.read_csv(r'./Data/parallel/onebody_density/counts100x0.csv', usecols = ["r", "counts"])
+data41 = pd.read_csv(r'./Data/parallel/onebody_density/counts100x1.csv', usecols = ["r", "counts"])
+data42 = pd.read_csv(r'./Data/parallel/onebody_density/counts100x2.csv', usecols = ["r", "counts"])
+data43 = pd.read_csv(r'./Data/parallel/onebody_density/counts100x3.csv', usecols = ["r", "counts"])
+data4 = data40/4 + data41/4 + data42/4 + data43/4
+
+data50 = pd.read_csv(r'./Data/parallel/onebody_density/counts100z0.csv', usecols = ["r", "counts"])
+data51 = pd.read_csv(r'./Data/parallel/onebody_density/counts100z1.csv', usecols = ["r", "counts"])
+data52 = pd.read_csv(r'./Data/parallel/onebody_density/counts100z2.csv', usecols = ["r", "counts"])
+data53 = pd.read_csv(r'./Data/parallel/onebody_density/counts100z3.csv', usecols = ["r", "counts"])
+data5 = data50/4 + data51/4 + data52/4 + data53/4
 
 
 plt.figure(figsize=(10,8))
 alpha=0.5
-plt.plot(data0.r, data0.counts, color='blue', label=r'$z$-axis I')
-plt.plot(data1.r, data1.counts, alpha=0.7, color='orange', label=r'$x$-axis I')
-plt.plot(data2.r, data2.counts, alpha=0.7, color='green', label=r'$x$-axis 50')
-plt.plot(data3.r, data3.counts, alpha=0.7, color='purple', label=r'$z$-axis 50')
-
+plt.plot(data0.r, data0.counts, color='blue', label=r'$N=10$, $x$-axis')
+plt.plot(data1.r, data1.counts, color='deepskyblue', label=r'$N=10$, $z$-axis')
+plt.plot(data2.r, data2.counts, color='red', label=r'$N=50$, $x$-axis')
+plt.plot(data3.r, data3.counts, color='magenta', label=r'$N=50$, $z$-axis')
+plt.plot(data4.r, data4.counts, color='limegreen', label=r'$N=100$, $x$-axis')
+plt.plot(data5.r, data5.counts, color='gold', label=r'$N=100$, $z$-axis')
 
 
 
@@ -47,8 +63,9 @@ plt.legend(fontsize=16)
 ax = plt.gca()
 ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
 plt.grid()
+#plt.savefig('./Figures/spatial_distribution_x_z.eps')
 plt.show()
-
+'''
 
 
 

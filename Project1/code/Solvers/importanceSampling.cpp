@@ -249,7 +249,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
         energy2 += tmp1*tmp1;
 
         for(j=0; j<this->system->getNParticles(); j++){
-            dist = abs(this->system->getParticles()[j]->getPosition()[2]);
+            dist = sqrt(this->system->r2(this->system->getParticles()[j]->getPosition(), (double) 1.0));
             for(k=0; k<(N_bins); k++){
                 if((r[k] < dist) && (dist < r[k+1])){
                     counts[k]++;

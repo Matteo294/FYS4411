@@ -24,7 +24,7 @@
 #define NTHREADS 4
 
 #define DIMENSION 3
-#define NPARTICLES 50
+#define NPARTICLES 100
 #define USE_ASYMMETRIC 1
 #define USE_ELLIPTICAL 1
 #define USE_IMPORTANCE 1
@@ -35,9 +35,9 @@ using namespace std;
 int main(int argc, char *argv[]){
 
     // adjustable parameters
-    const int Nsteps_final = (int) pow(2,21); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,23); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
-    double alpha = 0.49751; // variational parameter
+    double alpha = 0.481; // variational parameter
     const double step = 1.0; // only for metropolis
     const double dt = 0.1; // only for importance sampling
     // Mode 2 - varying alpha
