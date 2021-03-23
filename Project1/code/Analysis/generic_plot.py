@@ -6,6 +6,27 @@ import matplotlib.pyplot as plt
 matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
+y_axis = []
+y_axis2 = []
+for i in range(4):
+    y_axis = np.concatenate((y_axis, np.genfromtxt('./Data/parallel/singlerun/energyateverystep' + str(i) +'_tenere.dat')))
+    y_axis2 = np.concatenate((y_axis2, np.genfromtxt('./Data/parallel/singlerun/energyateverystep1' + str(i) +'_tenere.dat')))
+
+y_axis=y_axis[0:2**13]
+y_axis2=y_axis2[0:2**13]
+x_axis = range(len(y_axis))
+
+plt.figure(figsize=(10,8))
+plt.plot(x_axis, y_axis2, linewidth = 1.0, color='red', label=r'$\delta t = 0.1$')
+plt.plot(x_axis, y_axis, linewidth = 1.0, color='blue', label=r'$\delta t = 0.001$')
+plt.xlabel(r'$N_{steps}$', fontsize=22, labelpad=15)
+plt.ylabel(r'$E_L$ [$\hbar \omega_{ho}$]', fontsize=22, labelpad=15)
+plt.legend(fontsize=16)
+ax = plt.gca()
+ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+plt.grid()
+#plt.savefig('./Figures/correlation_different_deltat.eps')
+plt.show()
 
 
 

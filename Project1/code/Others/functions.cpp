@@ -126,7 +126,7 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
             this->dtFile.open("./Analysis/Data/parallel/varying_dt/varying_dt.csv");
             this->dtFile << "dt";
             for(k=0; k<=Ndt; k++){
-                this->dtFile << endl <<  pow(10, expmin + k*expstep);
+                this->dtFile << endl << dt_min + k*(dt_max-dt_min)/Ndt; //pow(10, expmin + k*expstep);
 
             }
             this->dtFile.close();
@@ -145,6 +145,7 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
         kexp = expmin + k*expstep;
         kdt = pow(10,kexp);
+        kdt = dt_min + k*(dt_max - dt_min)/Ndt;
         //cout << kdt << " " << endl;
 
         // set dt
@@ -169,9 +170,10 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
         if( (this->parallel && (omp_get_thread_num()==0)) || (!this->parallel)){
             cout << fixed << setprecision(5) << "dt: " << kdt << "\t ";
+            this->printResultsSolver(results_prov);
         }
         
-        this->printResultsSolver(results_prov);
+        
     }
     
     if(dttoFile && !this->parallel)
@@ -279,7 +281,7 @@ vector<double> Functions::solve_singleRun(double rmax, int Nbins){
     }
 
     if(this->parallel){
-         this->system->getSolver()->setOneBodyFile("./Analysis/Data/parallel/onebody_density/counts" + to_string(omp_get_thread_num()));
+        this->system->getSolver()->setOneBodyFile("./Analysis/Data/parallel/onebody_density/countsz50" + to_string(omp_get_thread_num()));
     } else {
         this->system->getSolver()->setOneBodyFile("./Analysis/Data/standard/onebody_density/counts");
     }
