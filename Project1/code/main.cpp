@@ -24,27 +24,22 @@
 #define NTHREADS 4
 
 #define DIMENSION 3
-#define NPARTICLES 100
+#define NPARTICLES 10
 #define USE_ASYMMETRIC 1
 #define USE_ELLIPTICAL 1
 #define USE_IMPORTANCE 1
-#define TO_FILE 0
+#define TO_FILE 1 // set true to save local energy at every step to file
 
 using namespace std;
 
 int main(int argc, char *argv[]){
 
     // adjustable parameters
-    const int Nsteps_final = (int) pow(2,23); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,12); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
-    double alpha = 0.481; // variational parameter
+    double alpha = 0.5; // variational parameter
     const double step = 1.0; // only for metropolis
     const double dt = 0.1; // only for importance sampling
-    // Mode 2 - varying alpha
-    const double alpha_min = 0.3; // in mode 1 (varying alpha) minimum alpha
-    const double alpha_max = 0.7; // in mode 2 (varying alpha) maximum alpha
-    const int N_alpha = 5; // in mode 1 (varying alpha) number of different alphas between alpha_min and alpha_max
-    const bool alpha_to_file = true; // set true to save data to file   
 
     // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
     int selector = 0;
@@ -54,45 +49,45 @@ int main(int argc, char *argv[]){
         selector = a;
     }
 
-    // Information for the solvers
+    // Some constants
     const double D = 0.5; // only for importance sampling
-    
-    // Information for the hamiltonian
     const double a = 0.0043; // Set the radius of the particles. a=0 is the non-interacting case
     double omegaXY = 1.0; // Only the elliptical hamiltonian distinguish between omegaXY and omegaZ
-    double omegaZ = sqrt(8); 
-
-    // Information for the wavefunction
+    double omegaZ = sqrt(8);
     const double beta = sqrt(8); // Only for asymmetrical wavefunction
-    
-    /*#######################################################################################################*/
+
     // Parameters for the various type of simulations
     // Mode 0 - normal
 
     // Mode 1 - numerical
     const double h = 1e-5; // Steplength for numerical derivatives and evaluations
-    
+
+    // Mode 2 - varying alpha
+    const double alpha_min = 0.3; // in mode 2 (varying alpha) minimum alpha
+    const double alpha_max = 0.7; // in mode 2 (varying alpha) maximum alpha
+    const int N_alpha = 5; // in mode 2 (varying alpha) number of different alphas between alpha_min and alpha_max
+    const bool alpha_to_file = true; // set true to save alpha values to file    
 
     // Mode 3 - varying dt
-    const double dt_min = 1e-3; // in mode 2 (varying dt) minimum dt
-    const double dt_max = 10; // in mode 2 (varying dt) maximum dt
-    const int N_dt = 20; // in mode 2 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = true; // set true to save data to file
+    const double dt_min = 1e-3; // in mode 3 (varying dt) minimum dt
+    const double dt_max = 10; // in mode 3 (varying dt) maximum dt
+    const int N_dt = 20; // in mode 3 (varying dt) number of different dts between dt_min dt_max
+    const bool dt_to_file = true; // set true to save dt values to file
 
     // Mode 4 - varying N
-    vector<int> Ns {1, 10, 50, 100, 500}; // in mode 3 (varying N) different values of N
-    const bool N_to_file = true; // set true to save data to file
+    vector<int> Ns {1, 10, 50, 100, 500}; // in mode 4 (varying N) different values of N
+    const bool N_to_file = true; // set true to save N values to file
 
     // Mode 5 - Gradient Descent
-    double initial_alpha = 0.60;
-    const double gamma = 1e-3; // Learning rate
-    const unsigned int Nmax_gradient = 1000; // Max steps alowed
-    const unsigned int Nsteps_gradient = (int) 1e5; // MC steps during the gradient descent
-    const double tolerance = 1e-5; // Conditoin to stop the gradient descent
+    double initial_alpha = 0.4; // in mode 5 (gradient descent) initial guess for alpha
+    const double gamma = 1e-2; // in mode 5 (gradient descent) learning rate
+    const unsigned int Nmax_gradient = 1000; // in mode 5 (gradient descent) max iterations allowed
+    const unsigned int Nsteps_gradient = (int) 1e5; // in mode 5 (gradient descent) MC steps during the gradient descent
+    const double tolerance = 1e-8; // in mode 5 (gradient descent) Condition to stop the gradient descent
 
     // Mode 6 - One Body density
-    const double r_max = 4.0;
-    const int Nbins = 200;
+    const double r_max = 4.0; // in mode 6 (one-body density) maximum r appearing in the histogram
+    const int Nbins = 200; // in mode 6 (one-body density) number of bins for the histogram
 
 
     #if RUN_PARALLEL == 1
@@ -153,8 +148,8 @@ int main(int argc, char *argv[]){
         
         vector<double> res(4,0.0);
         switch(selector){
-            case 0: res=functions.solve_singleRun();  break; // Simple simulation
-            case 1: functions.solve_singleRun(h); break; // Simple simulation with numerical derivative
+            case 0: functions.solve_singleRun();  break; // Simple simulation
+            case 1: res=functions.solve_singleRun(h); break; // Simple simulation with numerical derivative
             case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
             case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
             case 4: functions.solve_varying_N(Ns, N_to_file); break;
@@ -163,9 +158,6 @@ int main(int argc, char *argv[]){
         }
         x=res[0];
         y=res[2];
-
-        
-        
 
     }
 

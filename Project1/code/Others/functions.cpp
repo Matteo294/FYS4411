@@ -242,6 +242,12 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool NtoFile){
 
 double Functions::gradientDescent(double initialAlpha, double gamma, double tolerance, int NiterMax, int Nsteps){
     
+    bool initial_tofile = false;
+    if(this->system->getSolver()->getToFile()==true){
+        initial_tofile = true;
+        this->system->getSolver()->setToFile(false);
+    }
+
     if(omp_get_thread_num()==0) {cout << "Start searching for best alpha..." << endl;}
 
     this->system->getSolver()->setNsteps(Nsteps);
@@ -262,7 +268,10 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     }
     alpha -= deltaAlpha;
 
-     if(omp_get_thread_num()==0) { cout << scientific << setprecision(5) << "best alpha= " << alpha << endl; }
+    if(omp_get_thread_num()==0) { cout << scientific << setprecision(5) << "best alpha= " << alpha << endl; }
+
+    if(initial_tofile==true) {this->system->getSolver()->setToFile(initial_tofile);}
+
     return alpha;
 }
 
@@ -281,7 +290,7 @@ vector<double> Functions::solve_singleRun(double rmax, int Nbins){
     }
 
     if(this->parallel){
-        this->system->getSolver()->setOneBodyFile("./Analysis/Data/parallel/onebody_density/counts100z" + to_string(omp_get_thread_num()));
+        this->system->getSolver()->setOneBodyFile("./Analysis/Data/parallel/onebody_density/counts" + to_string(omp_get_thread_num()));
     } else {
         this->system->getSolver()->setOneBodyFile("./Analysis/Data/standard/onebody_density/counts");
     }

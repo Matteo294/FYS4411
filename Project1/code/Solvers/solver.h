@@ -24,6 +24,7 @@ class Solver{
         void setParameter(int idx, double value);
         void setPrintFile(string new_file);
         void setOneBodyFile(string new_file);
+        void setToFile(bool tofile);
 
         // Other functions & attributes
         /* Performs a MC simulation to evaluate the energy of the ground state of the system

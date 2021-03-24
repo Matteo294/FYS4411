@@ -242,14 +242,13 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
         }
 
         if(i==0 || last_accepted){
-            tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
         }
 
         energy += tmp1;
         energy2 += tmp1*tmp1;
 
         for(j=0; j<this->system->getNParticles(); j++){
-            dist = sqrt(this->system->r2(this->system->getParticles()[j]->getPosition(), (double) 1.0));
+            dist = abs(this->system->getParticles()[j]->getPosition()[2]);
             for(k=0; k<(N_bins); k++){
                 if((r[k] < dist) && (dist < r[k+1])){
                     counts[k]++;
@@ -275,7 +274,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
 
     fprintf(this->onebodyFile,"r,counts\n");
     for(i=0; i<N_bins; i++){
-        fprintf(this->onebodyFile, "%f,%f\n", r[i] + 0.5 * r_max / N_bins, (double) counts[i] / this->Nsteps/1 / this->system->getNParticles());
+        fprintf(this->onebodyFile, "%f,%f\n", r[i] + 0.5 * r_max / N_bins, (double) counts[i] / this->Nsteps / this->system->getNParticles());
     }
     
     fclose(this->onebodyFile);
@@ -343,7 +342,7 @@ void ImportanceSampling::thermalize(){
         } 
 
         if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * i / (double) this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rthermalization progress " << (double) 100 * i / this->NstepsThermal << "%" << flush;
         }       
        
     }

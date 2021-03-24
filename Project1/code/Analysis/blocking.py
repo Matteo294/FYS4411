@@ -29,7 +29,6 @@ ap.add_argument("-c", "--Program_selector", choices=['0','1','2','3'], required=
     \n 1--> multiple file varying alpha; \
     \n 2--> multiple file varying dt;\
     \n 3--> multiple file varying N")
-ap.add_argument("-s", "--Save_figure", default='0', required=False, help="to save images in a default repository write 'save' or 'y' ")
 args = vars(ap.parse_args())
 
 if args['Parallel_simulation']=='1': 
@@ -38,10 +37,6 @@ elif args['Parallel_simulation']=='0':
     dir = "./Data/standard"
 
 selector =int(args['Program_selector'])
-if args['Save_figure'] is not None or args['Save_figure']=="n":
-    fig = True #save figure
-else:
-    fig = False
 
 #args = vars(ap.parse_args())
 abspath = os.path.abspath(__file__)
@@ -59,15 +54,12 @@ def data_path(dat_id):
 #########################################
 #Blocking alghoritm
 def block(x):
-    # preliminaries
     n = len(x)
     d = int(log2(n))
     s, gamma = zeros(d), zeros(d)
-    #print(x)
     mu = np.mean(x)
     var_to_compare = np.var(x)
     std_k0 = np.sqrt(var_to_compare/n)
-
 
     # estimate the auto-covariance and variances 
     # for each blocking transformation
@@ -109,42 +101,13 @@ def simplerun(dir):
         infile = data_path(dir+rep+f)
         x = np.concatenate((x,np.genfromtxt(infile)))
 
+    
     (mean, var, k, var_to_compare, std_k0) = block(x) 
     
     std = sqrt(var)
     data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
-    #frame = pd.DataFrame(data,index=['Values'])
     print(data)
-    #print("mean %.8f" %(mean))
     print ("\n=========================================\n")
-    '''
-    plt.plot(arange(0, len(std), 1), std)
-    plt.grid()
-    plt.show()
-    
-    matplotlib.rcParams['mathtext.fontset'] = 'stix'
-    matplotlib.rcParams['font.family'] = 'STIXGeneral'
-    plt.figure(figsize=(10,8))
-    plt.plot(arange(0, len(std), 1), std, ls='--', linewidth=1.8, color='blue', label=r'$\sigma_k / n_k^{1/2}$')
-    plt.plot(arange(0, len(std), 1), np.ones(len(std))*std[k], ls='--', linewidth=1.8, color='red', label=r'$\sigma_b$')
-    plt.xlabel(r'$k$ - Blocking iteration', fontsize=22, labelpad=15)
-    plt.ylabel('Estimated standard deviation', fontsize=22, labelpad=15)
-    plt.legend(fontsize=16)
-    ax = plt.gca()
-    ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
-    plt.xticks(range(0,len(std)))
-    plt.grid()
-    plt.savefig('./Figures/sigma_blocking_behaviour.eps')
-    plt.show()
-    '''
-        #if fig == True:
-         #   savefigure(dname,std,"0")
-        #plt.show()
-        #if fig == True:
-         #   savefigure(dname,std,"0")
-        #plt.show()
-        #if fig == True:
-         #   savefigure(dname,std,"0")
 
 
 #Varying alpha 
@@ -167,16 +130,8 @@ def var_alpha(dir):
             data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([mean,std[k]])
-            #frame = pd.DataFrame(data,index=['Values'])
             print("alpha nr.", i, " --> ", data)
 
-        #if fig == True:
-        #    savefigure(dir +"/Figures"+rep,std,"alpha of data set " + str(i))
-        #Decomment these row below to have a fast view of the charts     
-        #plt.plot(arange(0, len(std), 1), std)
-        #plt.show(block=False)
-        #plt.pause(2)
-        #plt.close()
     fcsv.close()
 
 def var_dt(dir):
@@ -198,15 +153,8 @@ def var_dt(dir):
             data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([mean,std[k]])
-            #frame = pd.DataFrame(data,index=['Values'])
             print("dt nr.", i, " --> ", data)
-            #if fig == True:
-            #     savefigure(dir+"/Figures"+rep,std,f)
-        #Decomment these row below to have a fast view of the charts 
-        #plt.plot(arange(0, len(std), 1), std)
-        #plt.show(block=False)
-        #plt.pause(3)
-        #plt.close()
+
 
 def var_N(dir):
     rep= "/varying_N/"
@@ -226,35 +174,16 @@ def var_N(dir):
             data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([mean,std[k]])
-            #frame = pd.DataFrame(data,index=['Values'])
             print("N nr.", i, " --> ", data)
-            #if fig == True:
-            #       savefigure(dir+"/Figures"+rep ,std,f)
-        #Decomment these row below to have a fast view of the charts 
-        #plt.plot(arange(0, len(std), 1), std)
-        #plt.show(block=False)
-        #plt.pause(3)
-        #plt.close()
+
 
 #sort alphanurecaly the files
 def sorted_alphanumeric(data):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
     return sorted(data, key=alphanum_key)
-#save figure in the right repository
-def savefigure(dirname,std,f): 
-    font = {'fontname':'serif'}
-    plt.plot(arange(0, len(std), 1), std)
-    plt.grid()
-    plt.ylabel('Standard error ', **font)
-    plt.xlabel('Number of Blocking Transformations ', **font)
-    plt.title('Standard error estimation by blocking method '+ f, **font)
-    #plt.savefig(dirname + "/blocking"+f[-1]+".eps")
-    print(f)
-    plt.savefig(dirname + "/blocking"+str(*re.findall(r'\d+',f))+".png")
-    plt.clf()
 
-################################################################
+
 #################################################################
 #MAIN
 #################################################################
@@ -268,21 +197,3 @@ if selector==2: #Varyng dt
 if selector==3: #Varyng N
     var_N(dir)
 
-
-#PER PLOT DI SIGMA_K IN FUNZIONE DI K
-'''
-matplotlib.rcParams['mathtext.fontset'] = 'stix'
-    matplotlib.rcParams['font.family'] = 'STIXGeneral'
-    plt.figure(figsize=(10,8))
-    plt.plot(arange(0, len(std), 1), std, ls='--', linewidth=1.8, color='blue', label=r'$\sigma_k / n_k^{1/2}$')
-    plt.plot(arange(0, len(std), 1), np.ones(len(std))*std[k], ls='--', linewidth=1.8, color='red', label=r'$\sigma_b$')
-    plt.xlabel(r'$k$ - Blocking iteration', fontsize=22, labelpad=15)
-    plt.ylabel('Estimated standard deviation', fontsize=22, labelpad=15)
-    plt.legend(fontsize=16)
-    ax = plt.gca()
-    ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
-    plt.xticks(range(0,len(std)))
-    plt.grid()
-    plt.savefig('./Figures/sigma_blocking_behaviour.eps')
-    plt.show()
-'''

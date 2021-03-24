@@ -33,6 +33,7 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
         assert(idx < this->nparams);
         this->params[idx] = value;
     }
+    void Solver::setToFile(bool tofile) {this->tofile=tofile;}
     
     void Solver::setPrintFile(string new_file){ 
         char* char_arr;
