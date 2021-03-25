@@ -22,7 +22,7 @@ from numpy.linalg import inv
 ##################################
 #SELECTOR FROM COMMAND LINE
 ##################################
-ap = argparse.ArgumentParser()
+ap = argparse.ArgumentParser(description="The program performs the blocking analysis on a given bunch of data. User can select between different operating mode")
 ap.add_argument("-p", "--Parallel_simulation", choices=['0', '1'], required=True, help=" 0--> standard_file_analysis; 1--> parallel_file_analysis")
 ap.add_argument("-c", "--Program_selector", choices=['0','1','2','3'], required=True, help="Chose Program:  \
     \n 0--> Simple case one file analysis;\

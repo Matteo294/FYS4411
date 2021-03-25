@@ -98,6 +98,7 @@ int main(int argc, char *argv[]){
         int Ni = Nsteps_final;
     #endif
 
+    
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
 
     omp_set_num_threads(Nthreads);
@@ -143,7 +144,10 @@ int main(int argc, char *argv[]){
 
         Functions functions(&system, (bool) RUN_PARALLEL);
         
-        if(omp_get_thread_num()==0) {functions.printPresentation();}
+        if(omp_get_thread_num()==0) {
+            functions.printPresentation();
+            if(selector==0) { functions.printConfiguration((bool) USE_ASYMMETRIC, (bool) USE_ELLIPTICAL, (bool) USE_IMPORTANCE); }
+        }
         
         switch(selector){
             case 0: functions.solve_singleRun()[0];  break; 
