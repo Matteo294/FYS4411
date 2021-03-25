@@ -296,7 +296,7 @@ void Functions::printPresentation(){
     cout << "Emiliano Staffoli, Matteo Zortea, Alexander Ferraro" << endl;
     cout << "Variational Monte Carlo for trapped bosons" << endl;
     cout << "March 2021, University of Oslo" << endl;
-    cout << "***********************************************************" << endl;
+    cout << "***********************************************************";
     cout << endl;
 }
 
@@ -308,23 +308,30 @@ void Functions::printResultsSolver(vector<double> res){
     }
 }
 
-void Functions::printConfiguration(bool asymmetric, bool elliptical, bool importance){
+void Functions::printConfiguration(int selector, bool asymmetric, bool elliptical, bool importance){
+    
     string wf = asymmetric ? "Asymmetric gaussian" : "Simple gaussian";
     string ham = elliptical ? "Elliptical potential" : "Spherical potential";
-    string imp = importance ? "Metropolis importance sampling" : "Metropolis brute-force sampling";
-    string solver_param = importance ? "dt: " : "stepsize: ";
-    string tofile = this->system->getSolver()->getToFile() ? "On" : "Off";
+    string sol = importance ? "Metropolis importance sampling" : "Metropolis brute-force sampling";
+    cout    << endl << "Starting a simulation with..."
+            << endl << "Parallelization: "; if(this->parallel) {cout << "ON"; } else {cout << "OFF";}
+    cout    << endl << "Saving energy at every step: "; if(this->system->getSolver()->getToFile()) {cout << "ON"; } else {cout << "OFF";}
     cout    << endl << "Dimensions: " << this->system->getDimension()
             << endl << "Nparticles: " << this->system->getNParticles()
-            << endl << "Nsteps: " << this->system->getSolver()->getNsteps()*omp_get_num_threads() 
+            << endl << "Hamiltonian: " << ham 
             << endl << "Wavefunction: " << wf
-            << endl << "Hamiltonian: " << ham
-            << endl << "Solver: " << imp 
-            << endl << solver_param << this->system->getSolver()->getParameter(0)
-            << endl << "Alpha: " << this->system->getWavefunction()->getParameter(0) << endl;
-             
-    if (asymmetric) cout << "Beta: " << this->system->getWavefunction()->getParameter(1) << endl;
-    cout << "OmegaXY: " << this->system->getHamiltonian()->getParameter(0) << endl;
-    if (elliptical) cout << "OmegaZ: " << this->system->getHamiltonian()->getParameter(1) << endl;
-    cout << "Writing to file: " << tofile << endl << endl;
+            << endl << "Solver: " << sol 
+            << endl << "Program selected: "; 
+
+    switch(selector){
+        case 0: cout << "single run analytical with alpha: " << this->system->getWavefunction()->getParameter(0) << " and Nsteps: " << this->system->getSolver()->getNsteps(); break;
+        case 1: cout << "single run numerical with alpha: " << this->system->getWavefunction()->getParameter(0) << " nd Nsteps: " << this->system->getSolver()->getNsteps(); break;
+        case 2: cout << "multiple runs varying alpha" ; break;
+        case 3: cout << "multiple runs varying dt with alpha: " << this->system->getWavefunction()->getParameter(0); break;
+        case 4: cout << "multiple runs varying Nparticles with alpha: " << this->system->getWavefunction()->getParameter(0) ; break;
+        case 5: cout << "gradient descent" ; break;
+        case 6: cout << "single run for onebody density evaluation with alpha "<< this->system->getWavefunction()->getParameter(0) << " and Nsteps: " << this->system->getSolver()->getNsteps(); break;
+    }
+
+    cout << endl << endl;
 }

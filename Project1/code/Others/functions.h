@@ -83,7 +83,7 @@ class Functions{
         void printResultsSolver(vector<double> res);
         
         /// Print the configuration and the parameters of the system before launching the simulation
-        void printConfiguration(bool asymmetric, bool elliptical, bool importance);
+        void printConfiguration(int selector, bool asymmetric, bool elliptical, bool importance);
 
     private:
         ofstream alphaFile, dtFile, NFile;

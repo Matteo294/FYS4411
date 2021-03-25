@@ -22,13 +22,15 @@ from numpy.linalg import inv
 ##################################
 #SELECTOR FROM COMMAND LINE
 ##################################
-ap = argparse.ArgumentParser(description="The program performs the blocking analysis on a given bunch of data. User can select between different operating mode")
-ap.add_argument("-p", "--Parallel_simulation", choices=['0', '1'], required=True, help=" 0--> standard_file_analysis; 1--> parallel_file_analysis")
-ap.add_argument("-c", "--Program_selector", choices=['0','1','2','3'], required=True, help="Chose Program:  \
-    \n 0--> Simple case one file analysis;\
-    \n 1--> multiple file varying alpha; \
-    \n 2--> multiple file varying dt;\
-    \n 3--> multiple file varying N")
+ap = argparse.ArgumentParser(description="The program performs the blocking analysis on a given bunch of data. User can select between different operating mode \
+    and different bunches of data will be analyzed as a consequence.")
+ap.add_argument("-p", "--Parallel_simulation", choices=['0', '1'], required=True, help=" 0--> Analyzes data from ./standard; \
+     1--> Analyzes data from ./parallel")
+ap.add_argument("-c", "--Program_selector", choices=['0','1','2','3'], required=True, help="After choosing between ./parallel and ./standard, chose Program:  \
+    0--> Analyzes data from prev_selection/singlerun/;\
+    1--> Analyzes data from prev_selection/varying_alpha/; \
+    2--> Analyzes data from prev_selection/varying_dt/;\
+    3--> Analyzes data from prev_selection/varying_dt/")
 args = vars(ap.parse_args())
 
 if args['Parallel_simulation']=='1': 
