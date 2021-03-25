@@ -1,6 +1,7 @@
 #include "functions.h"
 #include <omp.h>
 #include<string>
+using namespace std;
 
 Functions::Functions(System* system, bool parallel) { 
     this->system = system;
@@ -11,21 +12,17 @@ Functions::~Functions(){};
 vector<double> Functions::solve_singleRun(){
 
     if(this->system->getSolver()->getToFile()){
-
         if(this->parallel){
             this->system->getSolver()->setPrintFile("./Analysis/Data/parallel/singlerun/energyateverystep" + to_string(omp_get_thread_num()));
         } else {
             this->system->getSolver()->energytofile = fopen("./Analysis/Data/standard/singlerun/energyateverystep.dat","w");
         }
-        
     }
 
-    //cout << "qui" << endl;
     this->system->getSolver()->thermalize();
     vector<double> results= this->system->getSolver()->solve(false);
     this->printResultsSolver(results);
     
-
     return results;
 }
 
@@ -71,13 +68,12 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
     }
 
     for(k=0; k<=Nalphas; k++){
-        // initialize random variable
         random_device rd;
         mt19937_64 gen(rd());
         results[k].resize(3);
 
         kalpha = alpha_min + (double) k * (alpha_max - alpha_min) / Nalphas;
-        //set alpha
+        // set alpha
         this->system->getWavefunction()->setParameter(0, kalpha);
 
         if(this->system->getSolver()->getToFile()){
@@ -88,7 +84,6 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
             }
         }
         
-        // solve
         this->system->getSolver()->thermalize();
         results_prov = this->system->getSolver()->solve(false);
         results[k]= {kalpha, results_prov[0], results_prov[1], results_prov[2]};
@@ -101,7 +96,6 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
 
     }
     
-
     return results;
 }
 
@@ -118,15 +112,13 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
     int i=0, j=0, k=0, idx=0;
     double kexp, kdt;
 
-
-
     // print dt values to csv
     if(dttoFile){
         if( (this->parallel && (omp_get_thread_num()==0)) ){
             this->dtFile.open("./Analysis/Data/parallel/varying_dt/varying_dt.csv");
             this->dtFile << "dt";
             for(k=0; k<=Ndt; k++){
-                this->dtFile << endl << dt_min + k*(dt_max-dt_min)/Ndt; //pow(10, expmin + k*expstep);
+                this->dtFile << endl << pow(10, expmin + k*expstep);
 
             }
             this->dtFile.close();
@@ -134,8 +126,6 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
             this->dtFile.open("./Analysis/Data/standard/varying_dt/varying_dt.csv");
             this->dtFile << "dt,acceptance";
         }
-
-        
     }
 
     for(k=0; k<=Ndt; k++){
@@ -145,9 +135,6 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
         kexp = expmin + k*expstep;
         kdt = pow(10,kexp);
-        kdt = dt_min + k*(dt_max - dt_min)/Ndt;
-        //cout << kdt << " " << endl;
-
         // set dt
         this->system->getSolver()->setParameter(0, kdt);
 
@@ -180,7 +167,6 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
     {
         this->dtFile.close();
     }
-
 
     return results;
 }
@@ -268,8 +254,6 @@ double Functions::gradientDescent(double initialAlpha, double gamma, double tole
     }
     alpha -= deltaAlpha;
 
-    if(omp_get_thread_num()==0) { cout << scientific << setprecision(5) << "best alpha= " << alpha << endl; }
-
     if(initial_tofile==true) {this->system->getSolver()->setToFile(initial_tofile);}
 
     return alpha;
@@ -317,9 +301,30 @@ void Functions::printPresentation(){
 }
 
 void Functions::printResultsSolver(vector<double> res){
-    if(this->parallel){
-        cout << scientific << setprecision(5) << "core#" + to_string(omp_get_thread_num()) + "--> E: " << res[0] << "\t var: " << res[1] << fixed << "\t acceptance: " << res[2] << " " << endl;
+    if(this->parallel && (omp_get_thread_num()==0)){
+        cout << scientific << setprecision(5) << "core#0 --> E: " << res[0] << "\t var: " << res[1] << fixed << "\t acceptance: " << res[2] << " " << endl;
     } else if(!this->parallel) {
         cout << scientific << setprecision(5) << "E: " << res[0] << "\t var: " << res[1] << fixed << "\t acceptance: " << res[2] << endl;
     }
+}
+
+void Functions::printConfiguration(bool asymmetric, bool elliptical, bool importance){
+    string wf = asymmetric ? "Asymmetric gaussian" : "Simple gaussian";
+    string ham = elliptical ? "Elliptical potential" : "Spherical potential";
+    string imp = importance ? "Metropolis importance sampling" : "Metropolis brute-force sampling";
+    string solver_param = importance ? "dt: " : "stepsize: ";
+    string tofile = this->system->getSolver()->getToFile() ? "On" : "Off";
+    cout    << endl << "Dimensions: " << this->system->getDimension()
+            << endl << "Nparticles: " << this->system->getNParticles()
+            << endl << "Nsteps: " << this->system->getSolver()->getNsteps()*omp_get_num_threads() 
+            << endl << "Wavefunction: " << wf
+            << endl << "Hamiltonian: " << ham
+            << endl << "Solver: " << imp 
+            << endl << solver_param << this->system->getSolver()->getParameter(0)
+            << endl << "Alpha: " << this->system->getWavefunction()->getParameter(0) << endl;
+             
+    if (asymmetric) cout << "Beta: " << this->system->getWavefunction()->getParameter(1) << endl;
+    cout << "OmegaXY: " << this->system->getHamiltonian()->getParameter(0) << endl;
+    if (elliptical) cout << "OmegaZ: " << this->system->getHamiltonian()->getParameter(1) << endl;
+    cout << "Writing to file: " << tofile << endl << endl;
 }

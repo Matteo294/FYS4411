@@ -8,7 +8,6 @@ Metropolis::Metropolis(System* system, int Nsteps, int NstepsThermal, double ste
 }
 
 vector<double> Metropolis::solve(bool allAverages){
-    // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
     
@@ -64,11 +63,9 @@ vector<double> Metropolis::solve(bool allAverages){
             fprintf(energytofile, "%f\n",tmp1);
         }
         
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
-        }
-        
-       
+        }     
     
     }
 
@@ -87,7 +84,6 @@ vector<double> Metropolis::solve(bool allAverages){
 
 
 vector<double> Metropolis::solve(double h){
-    // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
     
@@ -135,10 +131,9 @@ vector<double> Metropolis::solve(double h){
             fprintf(energytofile, "%f\n",tmp1);
         }
 
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rthermalization progress " << 100 * (double) i / this->NstepsThermal << "%" << flush;
         }
-       
     
     }
 
@@ -154,7 +149,6 @@ vector<double> Metropolis::solve(double h){
 
 
 vector<double> Metropolis::solve(double r_max, int N_bins){
-    // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
 
@@ -219,7 +213,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
         }
 
         
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
 
@@ -235,22 +229,16 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
     fprintf(this->onebodyFile,"r,counts\n");
 
     for(i=0; i<N_bins; i++){
-        fprintf(this->onebodyFile, "%f,%f\n", r[i] + 0.5 * r_max / N_bins, (double) counts[i] / this->Nsteps/1 / this->system->getNParticles());
+        fprintf(this->onebodyFile, "%f,%f\n", r[i] + 0.5 * r_max / N_bins, (double) counts[i] / this->Nsteps / this->system->getNParticles());
     }
 
     fclose(this->onebodyFile);
-
     return {energy, energy2 - energy * energy, ratio_accepted};
 
 }
 
 
-
-
-
-
 void Metropolis::thermalize(){
-    // initialize random variable
     random_device rd;
     mt19937_64 gen(rd());
     
@@ -289,7 +277,7 @@ void Metropolis::thermalize(){
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } 
 
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
 

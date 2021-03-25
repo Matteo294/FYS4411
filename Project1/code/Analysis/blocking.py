@@ -113,11 +113,12 @@ def simplerun(dir):
 #Varying alpha 
 def var_alpha(dir):
     rep="/varying_alpha/" 
-    filelist =sorted_alphanumeric(fnmatch.filter(os.listdir(dir+rep), "*.dat"))
+    filelist = sorted_alphanumeric(fnmatch.filter(os.listdir(dir+rep), "*.dat"))
+    alpha_val = np.genfromtxt('./Data/parallel/varying_alpha/varying_alpha.csv',skip_header=True)
 
     with open(os.path.join(dir+rep, "post_analysis_alpha"+'.csv'), "w", newline='') as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
-        writer.writerow(["energy","std"])
+        writer.writerow(["alpha,energy","std"])
         for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))): # the variable i cycles on the different alpha
             x=[]
             for f in filelist:   
@@ -127,20 +128,21 @@ def var_alpha(dir):
             
             (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
             std = sqrt(var)
-            data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
+            data ={'Alpha':[alpha_val[i]], 'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
-            writer.writerow([mean,std[k]])
-            print("alpha nr.", i, " --> ", data)
+            writer.writerow([alpha_val[i],mean,std[k]])
+            print(data)
 
     fcsv.close()
 
 def var_dt(dir):
     rep= "/varying_dt/"
     filelist=sorted_alphanumeric(os.listdir(dir+rep))
+    dt_val = np.genfromtxt('./Data/parallel/varying_dt/varying_dt.csv',skip_header=True)
     
     with open(os.path.join(dir+rep, "post_analysis_dt"+'.csv'), "w", newline='') as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
-        writer.writerow(["energy","STD"])
+        writer.writerow(["dt,energy","STD"])
         for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))):
             x=[]
             for f in filelist:
@@ -150,19 +152,20 @@ def var_dt(dir):
             
             (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
             std = sqrt(var)
-            data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
+            data ={'dt':[dt_val[i]],'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
-            writer.writerow([mean,std[k]])
-            print("dt nr.", i, " --> ", data)
+            writer.writerow([dt_val[i], mean,std[k]])
+            print(data)
 
 
 def var_N(dir):
     rep= "/varying_N/"
     filelist =sorted_alphanumeric(os.listdir(dir+rep))
+    N_val = np.genfromtxt('./Data/parallel/varying_N/varying_N.csv',skip_header=True)
 
     with open(os.path.join(dir+rep, "post_analysis_N"+'.csv'), "w", newline='') as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
-        writer.writerow(["energy","STD"])
+        writer.writerow(["N,energy","STD"])
         for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))):
             x=[]
             for f in filelist:
@@ -171,10 +174,10 @@ def var_N(dir):
                     x = np.concatenate((x,np.genfromtxt(infile)))
             (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
             std = sqrt(var)
-            data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
+            data ={'N':[N_val[i]],'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
             writer = csv.writer(fcsv,delimiter =',')
-            writer.writerow([mean,std[k]])
-            print("N nr.", i, " --> ", data)
+            writer.writerow([N_val[i], mean,std[k]])
+            print(data)
 
 
 #sort alphanurecaly the files
@@ -191,9 +194,12 @@ def sorted_alphanumeric(data):
 if selector==0: #Simple run
     simplerun(dir)
 if selector==1: #Varyng alpha
+    print("Attention! The scripts analyzes all the scripts contained in the varying_alpha folder! If you just reduced the number of alphas you should manually delete files.")
     var_alpha(dir)
 if selector==2: #Varyng dt
+    print("Attention! The scripts analyzes all the scripts contained in the varying_dt folder! If you just reduced the number of alphas you should manually delete files.")
     var_dt(dir)
 if selector==3: #Varyng N
+    print("Attention! The scripts analyzes all the scripts contained in the varying_N folder! If you just reduced the number of alphas you should manually delete files.")
     var_N(dir)
 

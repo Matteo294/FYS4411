@@ -6,20 +6,23 @@ Gaussian::Gaussian(System* s, double alpha) : Wavefunction(s, 1){
     this->setParameter(0, alpha);
 }
 
+
 double Gaussian::evaluateAll(){ 
     return exp(-this->params[0] * this->s->r2((double) 1.0));
 }
 
+
 double Gaussian::evaluateSing(int part_idx){
     return exp(-this->params[0] * this->s->r2(this->s->getParticles()[part_idx]->getPosition(), (double) 1.0));
 }
+
 
 double Gaussian::numericalSecondDerivative(int part_idx, int direction, double h) {
     assert( direction < this->s->getDimension() );
     assert ( part_idx < this->s->getNParticles() );
     double res = 0.0;
 
-    // initialize a vector for moving the particle
+    // Initialize a vector for moving the particle
     vector<double> pos_var(this->s->getDimension(), 0.0);
     
     // evaluate wf(x+h)
@@ -34,12 +37,13 @@ double Gaussian::numericalSecondDerivative(int part_idx, int direction, double h
 
     // final result
     pos_var[direction] = h;
-    this->s->getParticles()[part_idx]->move(pos_var); // particles returns to its original position
+    this->s->getParticles()[part_idx]->move(pos_var); // particle returns to its original position
     res = wf_back + wf_forw - 2 * this->evaluateSing(part_idx);
 
     return res/pow(h, 2);
 
 }
+
 
 vector<double> Gaussian::DriftForce(int part_idx){
     vector<double> v = this->s->getParticles()[part_idx]->getPosition();

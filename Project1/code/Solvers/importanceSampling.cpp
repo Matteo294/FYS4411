@@ -27,9 +27,7 @@ vector<double> ImportanceSampling::solve(bool allAverages){
     vector<double> drift_old(this->system->getDimension(), 0.0);
     vector<double> drift_new(this->system->getDimension(), 0.0);
 
-    
-
-    //MCsteps
+    // particles arrive here already thermalized
     for(i=0; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
@@ -120,7 +118,7 @@ vector<double> ImportanceSampling::solve(double h){
     vector<double> drift_old(this->system->getDimension(), 0.0);
     vector<double> drift_new(this->system->getDimension(), 0.0);
 
-    //MCsteps
+    // particles arrive here already thermalized
     for(i=1; i<=this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
@@ -203,11 +201,10 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
     vector<int> counts(N_bins, 0);
     vector<double> r(N_bins+1, 0.0);
     for(i=0; i<N_bins; i++){
-        //r[i] = (double) i* r_max / N_bins;
         r[i] = (double) i* r_max / N_bins;
     }
 
-    //MCsteps
+    // particles arrive here already thermalized
     for(i=0; i<this->Nsteps; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
@@ -260,7 +257,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
             fprintf(energytofile, "%f\n", tmp1);
         }
 
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
     
@@ -280,11 +277,6 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
     fclose(this->onebodyFile);
     return {energy, energy2 - pow(energy,2), ratio_accepted};
 }
-
-
-
-
-
 
 
 void ImportanceSampling::thermalize(){
@@ -311,7 +303,6 @@ void ImportanceSampling::thermalize(){
 
     if(usematrix){ this->system->EvaluateRelativePosition(); this->system->EvaluateRelativeDistance();}
 
-    //MCsteps
     for(i=1; i<=this->NstepsThermal; i++){
         
         idx = (int) round( this->system->getRandomGenerator()->uniform(gen) * (this->system->getNParticles() - 1));
@@ -341,7 +332,7 @@ void ImportanceSampling::thermalize(){
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         } 
 
-        if(i%10000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
+        if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
             cout << fixed << setprecision(2) << "\rthermalization progress " << (double) 100 * i / this->NstepsThermal << "%" << flush;
         }       
        

@@ -3,10 +3,9 @@
 Wavefunction::~Wavefunction(){};
 
 Wavefunction::Wavefunction(System *s, int nparams){
-    this->s = s; // Simply saves the system pointer in the class
-    this->params.resize(nparams, 0.0); // Set number of parameters, set all parameters to 0
+    this->s = s; 
+    this->params.resize(nparams, 0.0); 
     this->nparams = nparams;
-    
 }
 
 double Wavefunction::getParameter(int idx){ 

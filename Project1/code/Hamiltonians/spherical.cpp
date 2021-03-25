@@ -8,8 +8,6 @@ Spherical::Spherical(System* system, double omega) : Hamiltonian(system, (int) 1
 
 
 double Spherical::LocalEnergyAnalytic(){
-    // things I need multiple times in the calculations or long expressions: better calculate them once for all
-    // !!!! Hard-code! this is true only for the chosen model
     double alpha = this->system->getWavefunction()->getParameter(0);
     double mass = this->system->getParticles()[0]->getMass(); 
     int i=0, j=0;
@@ -21,7 +19,6 @@ double Spherical::LocalEnergyAnalytic(){
     return res + alpha * this->system->getDimension() * this->system->getNParticles() / mass;
 
 }
-
 
 
 double Spherical::LocalEnergyNumeric(double h){

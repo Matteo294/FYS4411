@@ -8,14 +8,12 @@ using namespace std;
 
 class Metropolis : public Solver{
     public:
-        // Constructor and destructor
         Metropolis(class System* system, int Nsteps, int NstepsThermal, double step, bool tofile);
         ~Metropolis();
 
-        // Other functions
-        vector<double> solve(bool allAverages); // uses LocalEnergyAnalytic()
+        vector<double> solve(bool allAverages); 
         vector<double> solve(double r_max, int N_bins);
-        vector<double> solve(double h); // uses LocalEnergyNumeric(double h)
+        vector<double> solve(double h); 
 
         void thermalize();
 

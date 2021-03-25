@@ -8,10 +8,7 @@ Elliptical::Elliptical(System* system, double omegaXY, double omegaZ) : Hamilton
 }
 
 
-
 double Elliptical::LocalEnergyAnalytic(){
-    // things I need multiple times in the calculations or long expressions: better calculate them once for all
-    // Hardcoded mass=1
     double alpha = this->system->getWavefunction()->getParameter(0);
     double beta = this->system->getWavefunction()->getParameter(1);
     double a = this->system->getWavefunction()->getParameter(2);
@@ -24,7 +21,6 @@ double Elliptical::LocalEnergyAnalytic(){
     vector<double> pos_i(this->system->getDimension(), 0.0);
     vector<double> sum_m(this->system->getDimension(), 0.0);
     vector<double> pos_im(this->system->getDimension(), 0.0);
-    //vector<double> pos_ij(this->system->getDimension(), 0.0);
     
 
     for(i=0; i<Nparticles; i++){

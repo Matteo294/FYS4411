@@ -3,15 +3,16 @@
 AsymmetricGaussian::~AsymmetricGaussian(){};
 
 AsymmetricGaussian::AsymmetricGaussian(System* s, double alpha, double beta, double a) : Wavefunction(s, 3){
-    assert(s->getDimension() == 3); // Works only in 3D
+    assert(s->getDimension() == 3); // This wavefunction works only in 3D
     this->setParameter(0, alpha);
     this->setParameter(1, beta);
     this->setParameter(2, a);
 }
 
+
 double AsymmetricGaussian::evaluateAll(){
     double arg = 0.0; // Keeps track of the sum inside the exponetial
-    double f = 1.0; // this accounts for the interaction term that multipies the gaussian
+    double f = 1.0; // accounts for the interaction term that multipies the gaussian
     int k=0, j=0;
     
     for(int i=0; i<this->s->getNParticles(); i++){
@@ -25,6 +26,7 @@ double AsymmetricGaussian::evaluateAll(){
     
     return exp( - this->params[0] * this->s->r2((double) this->params[1])) * f;
 }
+
 
 double AsymmetricGaussian::evaluateSing(int part_idx){
     double arg = 0.0;
@@ -43,7 +45,7 @@ double AsymmetricGaussian::evaluateSing(int part_idx){
     return exp( - this->params[0] * this->s->r2(this->s->getParticles()[part_idx]->getPosition(), (double) this->params[1]) ) * f;
 }
 
-/* need to be fixed */
+
 vector<double> AsymmetricGaussian::DriftForce(int part_idx) {
     // reducing the notation, we will call part_idx as i in nominanting vectors
     vector<double> r_ij(3, 0.0);
@@ -62,6 +64,7 @@ vector<double> AsymmetricGaussian::DriftForce(int part_idx) {
             transform(res.begin(), res.end(), r_ij.begin(), res.begin(), plus<double>());
         }
     }
+    
     //at the end of the cycle I evaluated the whole sum over j appearing in the analytical expression
     // now I add the last term
     transform(res.begin(), res.end(), r_i.begin(), res.begin(), plus<double>());

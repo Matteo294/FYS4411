@@ -17,34 +17,34 @@ Solver::Solver(System* system, int Nsteps, int NstepsThermal, int nparams, bool 
 }
 
 // Getters
-    int Solver::getNsteps() { return this->Nsteps; }
-    double Solver::getNstepsThermal() { return this->NstepsThermal; }
-    int Solver::getnparameter(){ return this->nparams; }
-    double Solver::getParameter(int idx){
-        assert(idx < this->nparams);
-        return this->params[idx];
-    }
-    bool Solver::getToFile(){ return this->tofile; }
+int Solver::getNsteps() { return this->Nsteps; }
+double Solver::getNstepsThermal() { return this->NstepsThermal; }
+int Solver::getnparameter(){ return this->nparams; }
+double Solver::getParameter(int idx){
+    assert(idx < this->nparams);
+    return this->params[idx];
+}
+bool Solver::getToFile(){ return this->tofile; }
 
 // Setters
-    void Solver::setNsteps(int Nsteps) { this->Nsteps = Nsteps; }
-    void Solver::setNstepsThermal(int NstepsThermal) { this->NstepsThermal = NstepsThermal; }
-    void Solver::setParameter(int idx, double value){
-        assert(idx < this->nparams);
-        this->params[idx] = value;
-    }
-    void Solver::setToFile(bool tofile) {this->tofile=tofile;}
-    
-    void Solver::setPrintFile(string new_file){ 
-        char* char_arr;
-        string str_obj("./"+ new_file+".dat");
-        char_arr = &str_obj[0];
-        this->energytofile = fopen(char_arr,"w");
-    }
+void Solver::setNsteps(int Nsteps) { this->Nsteps = Nsteps; }
+void Solver::setNstepsThermal(int NstepsThermal) { this->NstepsThermal = NstepsThermal; }
+void Solver::setParameter(int idx, double value){
+    assert(idx < this->nparams);
+    this->params[idx] = value;
+}
+void Solver::setToFile(bool tofile) {this->tofile=tofile;}
 
-    void Solver::setOneBodyFile(string new_file){ 
-        char* char_arr;
-        string str_obj("./"+ new_file+".csv");
-        char_arr = &str_obj[0];
-        this->onebodyFile = fopen(char_arr,"w");
-    }
+void Solver::setPrintFile(string new_file){ 
+    char* char_arr;
+    string str_obj("./"+ new_file+".dat");
+    char_arr = &str_obj[0];
+    this->energytofile = fopen(char_arr,"w");
+}
+
+void Solver::setOneBodyFile(string new_file){ 
+    char* char_arr;
+    string str_obj("./"+ new_file+".csv");
+    char_arr = &str_obj[0];
+    this->onebodyFile = fopen(char_arr,"w");
+}

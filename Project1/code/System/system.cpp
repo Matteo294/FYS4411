@@ -2,15 +2,12 @@
 
 System::~System(){};
 
-/* ASSERT: Here I check that the dimension and the # of particles and if they satisfy the requirement
-then I proceed with the initialization.
-I initialize all the particles in the origin (with proper dimensions), each mass is set to 1 */
 System::System(int dim, int Npart, bool parallel) : relative_position(Npart), relative_distance(Npart){
     assert(dim>0 && Npart>=0);
     int i=0;
     this->dimension=dim;
     this->Nparticles=Npart;
-    this->usematrix = true; // this will be adjusted within the wavefunction class
+    this->usematrix = true; // default choice = true, this will be properly set within the setWavefunction
     this->parallel=parallel;
 
     this->particles.resize(Nparticles);
@@ -23,7 +20,7 @@ System::System(int dim, int Npart, bool parallel) : relative_position(Npart), re
     }
 }
 
-/* Add a particle by adding a new pointer to the vector of pointers - not tested yet */
+
 void System::addParticle(double mass, vector<double> pos){
     int i = this->Nparticles;
     vector<double> pos_i(3), pos_j(3), rel_pos(3);
@@ -53,6 +50,7 @@ void System::addParticle(double mass, vector<double> pos){
     }
     this->Nparticles++;
 }
+
 
 /* returns (x^2 + y^2 + param * z^2) for particle part_idx*/
 double System::r2(vector<double> vect, double parameter){
@@ -151,28 +149,28 @@ void System::EvaluateRelativeDistance(int idx){
 }
 
 // Getters
-        class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
-        class Wavefunction* System::getWavefunction() {return this->wavefunction;}
-        class Solver* System::getSolver(){return this->solver;}
-        class RandomGenerator* System::getRandomGenerator(){ return this->randomgenerator; }
-        int System::getDimension() {return this->dimension;}
-        int System::getNParticles() {return this->Nparticles;}
-        vector<class Particle*> System::getParticles(){return this->particles;}
-        bool System::getUseMatrix(){ return this->usematrix;}
-        bool System::getParallel(){ return this->parallel; }
-        
+class Hamiltonian* System::getHamiltonian() {return this->hamiltonian;}
+class Wavefunction* System::getWavefunction() {return this->wavefunction;}
+class Solver* System::getSolver(){return this->solver;}
+class RandomGenerator* System::getRandomGenerator(){ return this->randomgenerator; }
+int System::getDimension() {return this->dimension;}
+int System::getNParticles() {return this->Nparticles;}
+vector<class Particle*> System::getParticles(){return this->particles;}
+bool System::getUseMatrix(){ return this->usematrix;}
+bool System::getParallel(){ return this->parallel; }
+
         
 
 // Setters
-        void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
-        void System::setSolver(class Solver* solver) {this->solver = solver;}
-        void System::setWavefunction(class Wavefunction* wavefunction){
-            this->wavefunction = wavefunction;
-            if(wavefunction->getNparams()>1){ 
-                this->setUseMatrix(true); 
-            } else {
-                this->setUseMatrix(false);
-            }
-        }
-        void System::setRandomGenerator(class RandomGenerator* randomgenerator) { this->randomgenerator = randomgenerator; }
-        void System::setUseMatrix(bool usematrix){ this->usematrix = usematrix; }
+void System::setHamiltonian(class Hamiltonian* hamiltonian) {this->hamiltonian = hamiltonian;}
+void System::setSolver(class Solver* solver) {this->solver = solver;}
+void System::setWavefunction(class Wavefunction* wavefunction){
+    this->wavefunction = wavefunction;
+    if(wavefunction->getNparams()>1){ 
+        this->setUseMatrix(true); 
+    } else {
+        this->setUseMatrix(false);
+    }
+}
+void System::setRandomGenerator(class RandomGenerator* randomgenerator) { this->randomgenerator = randomgenerator; }
+void System::setUseMatrix(bool usematrix){ this->usematrix = usematrix; }

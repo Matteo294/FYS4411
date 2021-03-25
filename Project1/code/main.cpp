@@ -24,7 +24,7 @@
 #define NTHREADS 4
 
 #define DIMENSION 3
-#define NPARTICLES 10
+#define NPARTICLES 100
 #define USE_ASYMMETRIC 1
 #define USE_ELLIPTICAL 1
 #define USE_IMPORTANCE 1
@@ -35,9 +35,9 @@ using namespace std;
 int main(int argc, char *argv[]){
 
     // adjustable parameters
-    const int Nsteps_final = (int) pow(2,12); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,13); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
-    double alpha = 0.5; // variational parameter
+    double alpha = 0.482; // variational parameter
     const double step = 1.0; // only for metropolis
     const double dt = 0.1; // only for importance sampling
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]){
     // Mode 2 - varying alpha
     const double alpha_min = 0.3; // in mode 2 (varying alpha) minimum alpha
     const double alpha_max = 0.7; // in mode 2 (varying alpha) maximum alpha
-    const int N_alpha = 5; // in mode 2 (varying alpha) number of different alphas between alpha_min and alpha_max
+    const int N_alpha = 4; // in mode 2 (varying alpha) (number-1) of different alphas between alpha_min and alpha_max
     const bool alpha_to_file = true; // set true to save alpha values to file    
 
     // Mode 3 - varying dt
@@ -99,10 +99,9 @@ int main(int argc, char *argv[]){
     #endif
 
     auto start = chrono::steady_clock::now(); // Store starting time to measure run time
-    double x=0.0, y=0.0;
 
     omp_set_num_threads(Nthreads);
-    #pragma omp parallel reduction (+:x,y)
+    #pragma omp parallel
     {
         System system((int) DIMENSION, (int) NPARTICLES, (bool) RUN_PARALLEL);
 
@@ -146,28 +145,21 @@ int main(int argc, char *argv[]){
         
         if(omp_get_thread_num()==0) {functions.printPresentation();}
         
-        vector<double> res(4,0.0);
         switch(selector){
-            case 0: functions.solve_singleRun();  break; // Simple simulation
-            case 1: res=functions.solve_singleRun(h); break; // Simple simulation with numerical derivative
+            case 0: functions.solve_singleRun()[0];  break; 
+            case 1: functions.solve_singleRun(h); break; 
             case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
             case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;
             case 4: functions.solve_varying_N(Ns, N_to_file); break;
-            case 5: x+=functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); break;
+            case 5: functions.gradientDescent(initial_alpha, gamma, tolerance, Nmax_gradient, Nsteps_gradient); break;
             case 6: functions.solve_singleRun(r_max, Nbins); break;
         }
-        x=res[0];
-        y=res[2];
 
     }
-
-    cout << "energy_averaged= " <<  x/Nthreads << "\t acceptance_averaged=" << y/Nthreads << endl;
 
     auto stop = chrono::steady_clock::now(); // Store starting time to measure run time
     auto diff = stop - start; // Time difference
     cout << endl << fixed << "Simulation termined. Total running time: " << chrono::duration <double, milli> (diff).count()/1000 << " s" << endl; // Print run time*/
-
-    
     
 }
 

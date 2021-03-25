@@ -16,32 +16,51 @@ using namespace std;
 class System{
     public:
 
-        // Constructor and destructor
+        /** Initializes the system with a certain dimensionality and a certain number of particles. If the simulations are run
+         * in parallel, bool parallel is true. Particles are initialized in the origin, they will be moved while calling the termalizer.
+         * \see Solver::thermalize() **/
         System(int dim, int Npart, bool parallel);
         ~System();           
 
-        // Getters
+        /** Returns the pointer to the selected Hamiltonian **/
         class Hamiltonian* getHamiltonian();
+        /** Returns the pointer to the selected Wavefunction **/
         class Wavefunction* getWavefunction();
+        /** Returns the pointer to the selected Solver **/
         class Solver* getSolver();
+        /** Returns the pointer to the random generator **/
         class RandomGenerator* getRandomGenerator();
+        /** Returns the dimensionality of the system **/
         int getDimension();
+        /** Returns the number of particles present in the system **/
         int getNParticles();
-        vector<class Particle*> getParticles();
+        /** Returns True if the evaluation of the matrices for relative distance and position is enabled for the current simulation.**/
         bool getUseMatrix();
+        /** Returns True if the simulation is run in parallel. **/
         bool getParallel();
+        /** Vector of pointers to Particles object 
+         * \see class Particle) **/
+        vector<class Particle*> getParticles();
 
-        // Setters
+        /** Sets the Hamiltonian for the system, \see class Hamiltonian **/
         void setHamiltonian(class Hamiltonian* hamiltonian);
+        /** Sets the Solver for the system, \see class Solver **/
         void setSolver(class Solver* solver);
+        /** Sets the Wavefunvtion for the system, \see class Wavefunction **/
         void setWavefunction(class Wavefunction* wavefunction);
+        /** Sets the Random generator for the system, \see class RandomGenerator **/
         void setRandomGenerator(class RandomGenerator* randomgenerator);
-        /// \see relative_position, relative_distance
+        /** If set to True, imposes the update of the relative_positions and relative_distances matrices every time that a particle is moved
+         * This flag is automatically assigned when we set the wavefunction to the system and the choice is made depending on the number
+         * of paramerers characterizing the assigned wavefunction:
+         * Gaussian does not require the mentioned matrices and has 1 parameter, while AsymmGaussian gaussian requires it and has
+         * 2 parameters. 
+         * \see System::setWavefunction() **/
         void setUseMatrix(bool usematrix);
 
-        // Other functions
-        /// Adds a particle to the system
+        /** Adds a particle to the system, placing it in the position specified by pos.**/
         void addParticle(double mass, vector<double> pos); 
+
         /** Evaluates the squared distance of particles and sums.
          * The parameter can be set to give a different coefficient to the last squared coordinate 
          * of each particle (useful for asymmetric wavefunction and elliptical potential)
@@ -73,14 +92,11 @@ class System{
         
 
     private:
-        // Attributes
         class Hamiltonian* hamiltonian;
         class Wavefunction* wavefunction;
         class Solver* solver;
-        vector<class Particle*> particles; // vector of pointers to the single particles in the system   
+        vector<class Particle*> particles;  
         class RandomGenerator* randomgenerator;
-
-        // Access this data only via getters
         int dimension;
         int Nparticles;
         // Flag to activate/deactivate the relative positions and relative distances matrices
