@@ -30,13 +30,20 @@ ap.add_argument("-c", "--Program_selector", choices=['0','1','2','3'], required=
     0--> Analyzes data from prev_selection/singlerun/;\
     1--> Analyzes data from prev_selection/varying_alpha/; \
     2--> Analyzes data from prev_selection/varying_dt/;\
-    3--> Analyzes data from prev_selection/varying_dt/")
+    3--> Analyzes data from prev_selection/varying_dt/ \
+    Case 1,2,3 produce a .csv file with the resume of the analysis.")
 args = vars(ap.parse_args())
 
 if args['Parallel_simulation']=='1': 
     dir = './Data/parallel'
+    seach_word_alpha = 'core0'
+    seach_word_dt = 'core0'
+    seach_word_N = 'core0'
 elif args['Parallel_simulation']=='0':
     dir = "./Data/standard"
+    seach_word_alpha = 'stepalpha'
+    seach_word_dt = 'stepdt'
+    seach_word_N = 'stepN'
 
 selector =int(args['Program_selector'])
 
@@ -60,8 +67,6 @@ def block(x):
     d = int(log2(n))
     s, gamma = zeros(d), zeros(d)
     mu = np.mean(x)
-    var_to_compare = np.var(x)
-    std_k0 = np.sqrt(var_to_compare/n)
 
     # estimate the auto-covariance and variances 
     # for each blocking transformation
@@ -90,7 +95,7 @@ def block(x):
     for i in arange(0,d):
         s[i] = s[i]/2**(d-i)
     
-    return mu, s[0:d], k, var_to_compare, std_k0
+    return mu, s[0:d], k
 
 
 #simple run
@@ -104,10 +109,10 @@ def simplerun(dir):
         x = np.concatenate((x,np.genfromtxt(infile)))
 
     
-    (mean, var, k, var_to_compare, std_k0) = block(x) 
+    (mean, s, k) = block(x) 
     
-    std = sqrt(var)
-    data ={'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
+    std = sqrt(s)
+    data ={'Mean':[mean], 'sigma_block':[std[k]], 'full_std':std[0]}
     print(data)
     print ("\n=========================================\n")
 
@@ -116,67 +121,73 @@ def simplerun(dir):
 def var_alpha(dir):
     rep="/varying_alpha/" 
     filelist = sorted_alphanumeric(fnmatch.filter(os.listdir(dir+rep), "*.dat"))
-    alpha_val = np.genfromtxt('./Data/parallel/varying_alpha/varying_alpha.csv',skip_header=True)
+    alpha_val = np.genfromtxt(dir+'/varying_alpha/varying_alpha.csv',skip_header=True)
 
     with open(os.path.join(dir+rep, "post_analysis_alpha"+'.csv'), "w", newline='') as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
-        writer.writerow(["alpha,energy","std"])
-        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))): # the variable i cycles on the different alpha
+        writer.writerow(["alpha,energy,std"])
+        for i in range(0, int(len(fnmatch.filter(os.listdir(dir+rep), '*'+ seach_word_alpha +'*.dat')))): # the variable i cycles on the different alpha
             x=[]
             for f in filelist:   
                 if fnmatch.fnmatch(f, '*alpha'+str(i)+'.dat'): # here we collect all the data from file that represent the same alpha 
                     infile = data_path(dir+rep+f)
                     x = np.concatenate((x,np.genfromtxt(infile)))
-            
-            (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
-            std = sqrt(var)
-            data ={'Alpha':[alpha_val[i]], 'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
+        
+            (mean, s ,k) = block(x) #blocking analysis
+            std = sqrt(s)
+            data ={'Alpha':[alpha_val[i]], 'Mean':[mean], 'signa_block':[std[k]], 'full_std':[std[0]]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([alpha_val[i],mean,std[k]])
             print(data)
 
     fcsv.close()
 
+
+
 def var_dt(dir):
     rep= "/varying_dt/"
     filelist=sorted_alphanumeric(os.listdir(dir+rep))
-    dt_val = np.genfromtxt('./Data/parallel/varying_dt/varying_dt.csv',skip_header=True)
+    dt_val = np.genfromtxt(dir+'/varying_dt/varying_dt.csv',skip_header=True)
     
     with open(os.path.join(dir+rep, "post_analysis_dt"+'.csv'), "w", newline='') as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
-        writer.writerow(["dt,energy","STD"])
-        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))):
+        writer.writerow(["dt,energy,std"])
+        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*'+seach_word_dt+'*.dat')))):
             x=[]
             for f in filelist:
                 if fnmatch.fnmatch(f, '*dt'+str(i)+'.dat'):  
                     infile = data_path(dir+rep+f)
                     x = np.concatenate((x,np.genfromtxt(infile)))
             
-            (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
-            std = sqrt(var)
-            data ={'dt':[dt_val[i]],'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
+            (mean, s ,k) = block(x) #blocking analysis
+            std = sqrt(s)
+            data ={'dt':[dt_val[i]],'Mean':[mean], 'sigma_block':[std[k]], 'full_std':[std[0]]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([dt_val[i], mean,std[k]])
             print(data)
+    
+    fcsv.close()
 
 
 def var_N(dir):
     rep= "/varying_N/"
     filelist =sorted_alphanumeric(os.listdir(dir+rep))
-    N_val = np.genfromtxt('./Data/parallel/varying_N/varying_N.csv',skip_header=True)
+    N_val = np.genfromtxt(dir+'/varying_N/varying_N.csv',skip_header=True)
 
     with open(os.path.join(dir+rep, "post_analysis_N"+'.csv'), "w", newline='') as fcsv:
         writer = csv.writer(fcsv,delimiter =',')
-        writer.writerow(["N,energy","STD"])
-        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*core0*.dat')))):
+        writer.writerow(["N,energy,std"])
+        for i in range(0,int(len(fnmatch.filter(os.listdir(dir+rep), '*'+seach_word_N+'*.dat')))):
             x=[]
             for f in filelist:
                 if fnmatch.fnmatch(f, '*N'+str(i)+'.dat'):  
                     infile = data_path(dir+rep+f)
                     x = np.concatenate((x,np.genfromtxt(infile)))
-            (mean, var ,k, var_to_compare, std_k0) = block(x) #blocking analysis
-            std = sqrt(var)
-            data ={'N':[N_val[i]],'Mean':[mean], 'STDev':[std[k]], 'Var_to_compare':[var_to_compare], 'std_k0':[std_k0]}
+                    
+            
+            (mean, s ,k) = block(x) #blocking analysis
+            std = sqrt(s)
+            data ={'N':[N_val[i]],'Mean':[mean], 'signa_block':[std[k]], 'std':[std[0]]}
             writer = csv.writer(fcsv,delimiter =',')
             writer.writerow([N_val[i], mean,std[k]])
             print(data)
@@ -196,12 +207,12 @@ def sorted_alphanumeric(data):
 if selector==0: #Simple run
     simplerun(dir)
 if selector==1: #Varyng alpha
-    print("Attention! The scripts analyzes all the scripts contained in the varying_alpha folder! If you just reduced the number of alphas you should manually delete files.")
+    print("ATTENTION! The scripts analyzes all the scripts contained in the varying_alpha folder! If you just reduced the number of alphas you should manually delete files.")
     var_alpha(dir)
 if selector==2: #Varyng dt
-    print("Attention! The scripts analyzes all the scripts contained in the varying_dt folder! If you just reduced the number of alphas you should manually delete files.")
+    print("ATTENTION! The scripts analyzes all the scripts contained in the varying_dt folder! If you just reduced the number of dt values you should manually delete files.")
     var_dt(dir)
 if selector==3: #Varyng N
-    print("Attention! The scripts analyzes all the scripts contained in the varying_N folder! If you just reduced the number of alphas you should manually delete files.")
+    print("ATTENTION! The scripts analyzes all the scripts contained in the varying_N folder! If you just reduced the number of N values you should manually delete files.")
     var_N(dir)
 

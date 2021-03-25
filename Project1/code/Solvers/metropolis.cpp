@@ -20,7 +20,7 @@ vector<double> Metropolis::solve(bool allAverages){
     bool usematrix=this->system->getUseMatrix();
     vector<double> pos_old(this->system->getDimension(), 0.0);
     vector<double> pos_var(this->system->getDimension(), 0.0);
-
+    
 
     // particles arrive here already thermalized
     for(i=0; i<this->Nsteps; i++){
@@ -32,11 +32,11 @@ vector<double> Metropolis::solve(bool allAverages){
         for(j=0; j<this->system->getDimension(); j++){
             pos_var[j] = 2*this->params[0]*( this->system->getRandomGenerator()->uniform(gen) - 0.5);
         }
-
+        
         this->system->getParticles()[idx]->move(pos_var);
         if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
         psi_new = this->system->getWavefunction()->evaluateSing(idx);
-
+    
         if( this->system->getRandomGenerator()->uniform(gen) > ( pow(psi_new,2) / pow(psi_old,2) )){
             this->system->getParticles()[idx]->setPosition(pos_old);
             if(usematrix){ this->system->EvaluateRelativePosition(idx); this->system->EvaluateRelativeDistance(idx);}
@@ -45,20 +45,20 @@ vector<double> Metropolis::solve(bool allAverages){
             accepted++;
             last_accepted = 1;
         }
-
+        
         if(i==0 || last_accepted){
             tmp1 = (double) this->system->getHamiltonian()->LocalEnergyAnalytic();
         }
-
+        
         energy += tmp1;
         energy2 += tmp1*tmp1;
-
+        
         if (allAverages){
             tmp2 = this->system->getWavefunction()->psibar_psi();
             psi_bar_psi += tmp2;
             psi_bar_psi_EL += tmp2 * tmp1;
         }
-
+        
         if (this->tofile){
             fprintf(energytofile, "%f\n",tmp1);
         }
@@ -132,7 +132,7 @@ vector<double> Metropolis::solve(double h){
         }
 
         if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
-            cout << fixed << setprecision(2) << "\rthermalization progress " << 100 * (double) i / this->NstepsThermal << "%" << flush;
+            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
         }
     
     }
@@ -278,7 +278,7 @@ void Metropolis::thermalize(){
         } 
 
         if(i%1000==0 && ( (this->system->getParallel() && omp_get_thread_num()==0) || !this->system->getParallel() )){
-            cout << fixed << setprecision(2) << "\rprogress " << 100 * (double) i / this->Nsteps << "%" << flush;
+            cout << fixed << setprecision(2) << "\rThermalization progress " << 100 * (double) i / this->NstepsThermal << "%" << flush;
         }
 
     }

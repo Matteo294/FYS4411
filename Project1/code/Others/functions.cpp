@@ -103,7 +103,7 @@ vector<vector<double>> Functions::solve_varying_alpha(double alpha_min, double a
 
 
 vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max, int Ndt, bool dttoFile) {
-    assert(this->system->getSolver()->getnparameter()==2);
+    assert(this->system->getSolver()->getnparameter()==2 && "ERROR: this function requires Importance sampling");
     double expmin = log10(dt_min);
     double expmax = log10(dt_max);
     double expstep = (double) (expmax-expmin)/Ndt;
@@ -117,15 +117,15 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
         if( (this->parallel && (omp_get_thread_num()==0)) ){
             this->dtFile.open("./Analysis/Data/parallel/varying_dt/varying_dt.csv");
             this->dtFile << "dt";
-            for(k=0; k<=Ndt; k++){
-                this->dtFile << endl << pow(10, expmin + k*expstep);
-
-            }
-            this->dtFile.close();
         } else if (!this->parallel ){
             this->dtFile.open("./Analysis/Data/standard/varying_dt/varying_dt.csv");
-            this->dtFile << "dt,acceptance";
+            this->dtFile << "dt";
         }
+
+        for(k=0; k<=Ndt; k++){
+            this->dtFile << endl << pow(10, expmin + k*expstep);
+        }
+        this->dtFile.close();
     }
 
     for(k=0; k<=Ndt; k++){
@@ -151,10 +151,6 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
         results_prov = this->system->getSolver()->solve(false);
         results[k] = {kdt, results_prov[0], results_prov[1], results_prov[2]};
 
-        if(dttoFile && !this->parallel){
-            this->dtFile << endl <<  kdt << "," << results_prov[2];
-        }
-
         if( (this->parallel && (omp_get_thread_num()==0)) || (!this->parallel)){
             cout << fixed << setprecision(5) << "dt: " << kdt << "\t ";
             this->printResultsSolver(results_prov);
@@ -173,7 +169,12 @@ vector<vector<double>> Functions::solve_varying_dt(double dt_min, double dt_max,
 
 
 vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool NtoFile){
-    assert(this->system->getNParticles() <= N.at(0) );
+    assert(this->system->getNParticles() <= N.at(0) && "WARNING: initialize the system with a Nparticles smaller than or equal to the first N selected" );
+    bool error=false;
+    for(int p=0; p<(N.size()-1); p++){
+       if(N[p]>N[p+1]) {error=true;}
+    }
+    assert(error==false && "WARNING: elements of N vector must be increasing");
     vector<vector<double>> results(N.size());
     vector<double> results_prov(3, 0.0);
     vector<double> zeros(this->system->getDimension(), 0.0);
@@ -187,7 +188,7 @@ vector<vector<double>> Functions::solve_varying_N(vector<int> N, bool NtoFile){
         }
 
         this->NFile << "N";
-        for(n=0; n<=N.size(); n++){
+        for(n=0; n<N.size(); n++){
             this->NFile << endl <<  N[n];
         }
         this->NFile.close();
@@ -309,6 +310,10 @@ void Functions::printResultsSolver(vector<double> res){
 }
 
 void Functions::printConfiguration(int selector, bool asymmetric, bool elliptical, bool importance){
+
+    if((this->system->getDimension()!=3 && (asymmetric || elliptical)) && (omp_get_thread_num()==0 || !this->parallel)) {
+        cout << "WARNING: selected hamiltonian/wavefunction not compatible with a system with dimensionality less than 3. Defalult setup applies." << endl;
+    }
     
     string wf = asymmetric ? "Asymmetric gaussian" : "Simple gaussian";
     string ham = elliptical ? "Elliptical potential" : "Spherical potential";

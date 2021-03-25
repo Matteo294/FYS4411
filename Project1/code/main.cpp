@@ -24,9 +24,9 @@
 #define NTHREADS 4
 
 #define DIMENSION 3
-#define NPARTICLES 100
-#define USE_ASYMMETRIC 1
-#define USE_ELLIPTICAL 1
+#define NPARTICLES 10
+#define USE_ASYMMETRIC 0
+#define USE_ELLIPTICAL 0
 #define USE_IMPORTANCE 1
 #define TO_FILE 1 // set true to save local energy at every step to file
 
@@ -35,7 +35,7 @@ using namespace std;
 int main(int argc, char *argv[]){
 
     // adjustable parameters
-    const int Nsteps_final = (int) pow(2,13); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,16); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     double alpha = 0.482; // variational parameter
     const double step = 1.0; // only for metropolis
@@ -71,11 +71,11 @@ int main(int argc, char *argv[]){
     // Mode 3 - varying dt
     const double dt_min = 1e-3; // in mode 3 (varying dt) minimum dt
     const double dt_max = 10; // in mode 3 (varying dt) maximum dt
-    const int N_dt = 20; // in mode 3 (varying dt) number of different dts between dt_min dt_max
+    const int N_dt = 5; // in mode 3 (varying dt) number of different dts between dt_min dt_max
     const bool dt_to_file = true; // set true to save dt values to file
 
     // Mode 4 - varying N
-    vector<int> Ns {1, 10, 50, 100, 500}; // in mode 4 (varying N) different values of N
+    vector<int> Ns {11, 12, 13, 14, 15}; // in mode 4 (varying N) different values of N
     const bool N_to_file = true; // set true to save N values to file
 
     // Mode 5 - Gradient Descent
@@ -104,16 +104,7 @@ int main(int argc, char *argv[]){
     {
         System system((int) DIMENSION, (int) NPARTICLES, (bool) RUN_PARALLEL);
 
-        // Hamiltonians
-        #if USE_ELLIPTICAL == 1
-            Elliptical elliptical(&system, omegaXY, omegaZ);
-            system.setHamiltonian(&elliptical);
-        #else
-            Spherical spherical(&system, omegaXY);
-            system.setHamiltonian(&spherical);
-        #endif
-
-        // Wavefunctions
+        // Wavefunctions & Hamiltonians
         #if DIMENSION == 3 
             #if USE_ASYMMETRIC
                 AsymmetricGaussian asymmgaussian(&system, alpha, beta, a);
@@ -122,9 +113,22 @@ int main(int argc, char *argv[]){
                 Gaussian gaussian(&system, alpha);
                 system.setWavefunction(&gaussian);          
             #endif
+            
+            #if USE_ELLIPTICAL == 1 
+                Elliptical elliptical(&system, omegaXY, omegaZ);
+                system.setHamiltonian(&elliptical);
+            #else
+                Spherical spherical(&system, omegaXY);
+                system.setHamiltonian(&spherical);
+            #endif
         #else
+            
             Gaussian gaussian(&system, alpha);
             system.setWavefunction(&gaussian);  
+            
+            Spherical spherical(&system, omegaXY);
+            system.setHamiltonian(&spherical);
+
         #endif
 
         // Solvers
