@@ -229,7 +229,7 @@ vector<double> Metropolis::solve(double r_max, int N_bins){
     fprintf(this->onebodyFile,"r,counts\n");
 
     for(i=0; i<N_bins; i++){
-        fprintf(this->onebodyFile, "%f,%f\n", r[i] + 0.5 * r_max / N_bins, (double) counts[i] / this->Nsteps / this->system->getNParticles());
+        fprintf(this->onebodyFile, "%f,%f\n", r[i], (double) counts[i] / this->Nsteps / this->system->getNParticles());
     }
 
     fclose(this->onebodyFile);

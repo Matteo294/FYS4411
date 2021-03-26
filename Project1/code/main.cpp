@@ -23,30 +23,30 @@
 // Set the correct number depending on your number of cores
 #define NTHREADS 4
 
-#define DIMENSION 3
-#define NPARTICLES 10
-#define USE_ASYMMETRIC 0
-#define USE_ELLIPTICAL 0
+#define DIMENSION 1
+#define NPARTICLES 5
+#define USE_ASYMMETRIC 1
+#define USE_ELLIPTICAL 1
 #define USE_IMPORTANCE 1
-#define TO_FILE 1 // set true to save local energy at every step to file
+#define TO_FILE 0 // set true to save local energy at every step to file
 
 using namespace std;
 
 int main(int argc, char *argv[]){
 
     // adjustable parameters
-    const int Nsteps_final = (int) pow(2,16); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,15); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
-    double alpha = 0.482; // variational parameter
+    double alpha = 0.4891; // variational parameter
     const double step = 1.0; // only for metropolis
     const double dt = 0.1; // only for importance sampling
 
     // Select working mode : run "make" command. Then "./main x" where x is the number indicating working mode (see switch below)
     int selector = 0;
     if(argc>1){
-        int a = stoi(argv[1]);
-        assert(a>=0 && a<=6);
-        selector = a;
+        int p = stoi(argv[1]);
+        assert(p>=0 && p<=6);
+        selector = p;
     }
 
     // Some constants
@@ -86,8 +86,8 @@ int main(int argc, char *argv[]){
     const double tolerance = 1e-8; // in mode 5 (gradient descent) Condition to stop the gradient descent
 
     // Mode 6 - One Body density
-    const double r_max = 4.0; // in mode 6 (one-body density) maximum r appearing in the histogram
-    const int Nbins = 200; // in mode 6 (one-body density) number of bins for the histogram
+    const double r_max = 6.0; // in mode 6 (one-body density) maximum r appearing in the histogram
+    const int Nbins = 400; // in mode 6 (one-body density) number of bins for the histogram
 
 
     #if RUN_PARALLEL == 1
@@ -152,7 +152,7 @@ int main(int argc, char *argv[]){
         }
         
         switch(selector){
-            case 0: functions.solve_singleRun()[0];  break; 
+            case 0: functions.solve_singleRun();  break; 
             case 1: functions.solve_singleRun(h); break; 
             case 2: functions.solve_varying_alpha(alpha_min, alpha_max, N_alpha, alpha_to_file); break;
             case 3: functions.solve_varying_dt(dt_min, dt_max, N_dt, dt_to_file); break;

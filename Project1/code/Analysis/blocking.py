@@ -23,7 +23,8 @@ from numpy.linalg import inv
 #SELECTOR FROM COMMAND LINE
 ##################################
 ap = argparse.ArgumentParser(description="The program performs the blocking analysis on a given bunch of data. User can select between different operating mode \
-    and different bunches of data will be analyzed as a consequence.")
+    and different bunches of data will be analyzed as a consequence. For each bunch of analyzed data the program prints on terminal \
+    the mean value, the error estimated through the blocking procedure and the std/sqrt(N_MC_steps) evaluated on the whole set of data.")
 ap.add_argument("-p", "--Parallel_simulation", choices=['0', '1'], required=True, help=" 0--> Analyzes data from ./standard; \
      1--> Analyzes data from ./parallel")
 ap.add_argument("-c", "--Program_selector", choices=['0','1','2','3'], required=True, help="After choosing between ./parallel and ./standard, chose Program:  \

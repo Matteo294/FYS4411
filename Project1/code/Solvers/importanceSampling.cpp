@@ -201,7 +201,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
     vector<int> counts(N_bins, 0);
     vector<double> r(N_bins+1, 0.0);
     for(i=0; i<N_bins; i++){
-        r[i] = (double) i* r_max / N_bins;
+        r[i] = (double) i * r_max / N_bins;
     }
 
     // particles arrive here already thermalized
@@ -239,13 +239,14 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
         }
 
         if(i==0 || last_accepted){
+            tmp1 = this->system->getHamiltonian()->LocalEnergyAnalytic();
         }
 
         energy += tmp1;
         energy2 += tmp1*tmp1;
 
         for(j=0; j<this->system->getNParticles(); j++){
-            dist = abs(this->system->getParticles()[j]->getPosition()[2]);
+            dist = sqrt(this->system->r2(this->system->getParticles()[j]->getPosition(), (double) 1.0));
             for(k=0; k<(N_bins); k++){
                 if((r[k] < dist) && (dist < r[k+1])){
                     counts[k]++;
@@ -271,7 +272,7 @@ vector<double> ImportanceSampling::solve(double r_max, int N_bins){
 
     fprintf(this->onebodyFile,"r,counts\n");
     for(i=0; i<N_bins; i++){
-        fprintf(this->onebodyFile, "%f,%f\n", r[i] + 0.5 * r_max / N_bins, (double) counts[i] / this->Nsteps / this->system->getNParticles());
+        fprintf(this->onebodyFile, "%f,%f\n", r[i], (double) counts[i] / this->Nsteps / this->system->getNParticles());
     }
     
     fclose(this->onebodyFile);
