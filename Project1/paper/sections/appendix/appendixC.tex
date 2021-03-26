@@ -1,0 +1,26 @@
+Here we aim to evaluate the derivative of the expected value of the local energy with respect to the variational parameter $\alpha$. This expression enters in the generation of a new value $\alpha_k$ in the context of the gradient descent method for the research of the minimum energy of a given system. Starting from the content of Eq.\,\ref{local_energy} and Eq.\,\ref{energy_integral}, we proceed as follows
+\begin{align*}
+    &\frac{\partial\langle E_L \rangle}{\partial\alpha} = \frac{\partial}{\partial \alpha} \left[ \int d\bm{R} P(\bm{R}, \bm{\alpha}) E_L(\bm{R}, \bm{\alpha}) \right]  \\
+    &= \frac{\partial}{\partial \alpha} \left[ \frac{\int d\bm{R} \Psi_T^* \hat{H} \Psi_T}{\int d\bm{R} \Psi_T^* \Psi_T} \right]
+\end{align*}
+For the cases treated in the problem the trial wavefunction is real, leading to a simplification in the calculations. Furthermore, for the sake of reducing the notation, in the following steps we omit the dependences of $\Psi_T$, thus
+\begin{align*}
+\begin{split}
+    &\frac{\partial\langle E_L \rangle}{\partial\alpha} = \frac{\partial}{\partial \alpha} \left[ \frac{\int d\bm{R} \Psi_T \hat{H} \Psi_T}{\int d\bm{R} \Psi_T^2} \right] \\
+    &=\frac{1}{ \left[\int d\bm{R} \Psi_T^2 \right]^2} \bigg\{ \bigg[ \int d\bm{R} \overline{\Psi}_T \hat{H} \Psi_T + \int d\bm{R} \Psi_T \hat{H}\overline{\Psi}_T \bigg] \times \\
+    &\times \left[\int d\bm{R} \Psi_T^2 \right] - \left[ \int d\bm{R} \Psi_T \hat{H} \Psi_T \right] \left[ \int d\bm{R} 2 \Psi_T \overline{\Psi}_T \right] \bigg\}
+    \end{split}
+\end{align*}
+where $\overline{\Psi}_T$ is the derivative of $\Psi_T$ with respect to alpha. Using now the Hermiticity of $\hat{H}$, we get
+\begin{equation*}
+    \int d\bm{R} \Psi_T \hat{H} \overline{\Psi}_T = \langle \Psi_T \vert \hat{H} \vert \overline{\Psi}_T \rangle = \langle \hat{H} \Psi_T \vert \overline{\Psi}_T \rangle = \int d\bm{R} \overline{\Psi}_T \hat{H} \Psi_T
+\end{equation*}
+Thus we reduce to
+\begin{align*}
+    &\frac{\partial\langle E_L(\alpha) \rangle}{\partial\alpha} = \frac{2}{ \left[\int d\bm{R} \Psi_T^2 \right]^{\cancel{2}} } \left[ \int d\bm{R} \frac{\overline{\Psi}_T}{\Psi_T} \frac{\hat{H} \Psi_T}{\Psi_T} \Psi_T^2 \right] \cancel{\int d\bm{R} \Psi_T^2} - \\
+    &- \frac{2}{ \left[\int d\bm{R} \Psi_T^2 \right]^2} \left[ \int d\bm{R} \frac{\hat{H} \Psi_T}{\Psi_T} \Psi_T^2 \right] \left[ \int d\bm{R}  \frac{\overline{\Psi}_T}{\Psi_T} \Psi_T^2 \right] \\
+    &= 2\left[ \bigg\langle \frac{\overline{\Psi}_T}{\Psi_T} E_L \bigg\rangle - \bigg\langle \frac{\overline{\Psi}_T}{\Psi_T} \bigg\rangle \langle E_L \rangle \right]
+\end{align*}
+which is the result reported in Eq.\,\ref{dEnergy_dalpha}.
+
+\bigskip

@@ -14,10 +14,11 @@
 \usepackage{amsthm}
 \usepackage{wrapfig}
 \usepackage{subcaption}
-\usepackage{caption}
+\usepackage[belowskip=-3pt, aboveskip=3pt]{caption}
 \captionsetup{font={stretch=0.85}}
 \usepackage{svg}
 \usepackage{afterpage}
+\usepackage{hyperref}
 \usepackage{makecell}
 \usepackage[separate-uncertainty=true]{siunitx}
 \sisetup{mode=text,range-phrase = {\text{~to~}}}
@@ -27,10 +28,12 @@
 \usepackage{xcolor}
 \definecolor{lemonchiffon}{rgb}{1.0, 0.98, 0.8}
 \usepackage{amsmath, bm}
+\allowdisplaybreaks
 \usepackage{textcomp}
 \usepackage{cancel}
 \usepackage{booktabs}
-\usepackage{nonfloat}
+\usepackage{float}
+\usepackage{fixltx2e}
 \usepackage{siunitx}
 \usepackage{placeins}
 \usepackage{changepage}
@@ -46,15 +49,17 @@
 
 \usepackage{etoolbox}
 \BeforeBeginEnvironment{tabular}{\begin{small}}
-\AfterEndEnvironment{tabular}{\end{small} \vspace{5pt}}
+\AfterEndEnvironment{tabular}{\end{small}}
 
 \usepackage{multicol}
 \setlength{\columnsep}{0.75cm}
 
 \usepackage{titlesec}
-\titleformat*{\section}{\normalfont\centering}
+\titleformat*{\section}{\normalfont\centering\bfseries}
 \titleformat*{\subsection}{\normalfont\centering}
 \titleformat*{\subsubsection}{\normalfont\centering}
+\titlespacing{\section}{0pt}{30pt}{10pt}
+\titlespacing{\subsection}{0pt}{20pt}{10pt}
 
 % for tables
 \aboverulesep = 0.405mm
