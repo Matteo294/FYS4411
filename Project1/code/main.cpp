@@ -66,17 +66,17 @@ int main(int argc, char *argv[]){
     const double alpha_min = 0.3; // in mode 2 (varying alpha) minimum alpha
     const double alpha_max = 0.7; // in mode 2 (varying alpha) maximum alpha
     const int N_alpha = 4; // in mode 2 (varying alpha) (number-1) of different alphas between alpha_min and alpha_max
-    const bool alpha_to_file = true; // set true to save alpha values to file    
+    const bool alpha_to_file = false; // set true to save alpha values to file    
 
     // Mode 3 - varying dt
     const double dt_min = 1e-3; // in mode 3 (varying dt) minimum dt
     const double dt_max = 10; // in mode 3 (varying dt) maximum dt
     const int N_dt = 5; // in mode 3 (varying dt) number of different dts between dt_min dt_max
-    const bool dt_to_file = true; // set true to save dt values to file
+    const bool dt_to_file = false; // set true to save dt values to file
 
     // Mode 4 - varying N
     vector<int> Ns {11, 12, 13, 14, 15}; // in mode 4 (varying N) different values of N
-    const bool N_to_file = true; // set true to save N values to file
+    const bool N_to_file = false; // set true to save N values to file
 
     // Mode 5 - Gradient Descent
     double initial_alpha = 0.4; // in mode 5 (gradient descent) initial guess for alpha
