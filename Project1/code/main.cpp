@@ -23,8 +23,8 @@
 // Set the correct number depending on your number of cores
 #define NTHREADS 4
 
-#define DIMENSION 1
-#define NPARTICLES 5
+#define DIMENSION 3
+#define NPARTICLES 10
 #define USE_ASYMMETRIC 1
 #define USE_ELLIPTICAL 1
 #define USE_IMPORTANCE 1
