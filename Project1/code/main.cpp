@@ -35,7 +35,7 @@ using namespace std;
 int main(int argc, char *argv[]){
 
     // adjustable parameters
-    const int Nsteps_final = (int) pow(2,15); // MC steps for the final simulation
+    const int Nsteps_final = (int) pow(2,20); // MC steps for the final simulation
     const int NstepsThermal = (int) 1e5; // Fraction of septs to wait for the system thermalization
     double alpha = 0.4891; // variational parameter
     const double step = 1.0; // only for metropolis
@@ -86,8 +86,8 @@ int main(int argc, char *argv[]){
     const double tolerance = 1e-8; // in mode 5 (gradient descent) Condition to stop the gradient descent
 
     // Mode 6 - One Body density
-    const double r_max = 6.0; // in mode 6 (one-body density) maximum r appearing in the histogram
-    const int Nbins = 400; // in mode 6 (one-body density) number of bins for the histogram
+    const double r_max = 4.0; // in mode 6 (one-body density) maximum r appearing in the histogram
+    const int Nbins = 300; // in mode 6 (one-body density) number of bins for the histogram
 
 
     #if RUN_PARALLEL == 1
