@@ -319,8 +319,8 @@ void Functions::printConfiguration(int selector, bool asymmetric, bool elliptica
         use_elliptical = false;
     }
     
-    string wf = asymmetric ? "Asymmetric gaussian" : "Simple gaussian";
-    string ham = elliptical ? "Elliptical potential" : "Spherical potential";
+    string wf = use_asymmetric ? "Asymmetric gaussian" : "Simple gaussian";
+    string ham = use_elliptical ? "Elliptical potential" : "Spherical potential";
     string sol = importance ? "Metropolis importance sampling" : "Metropolis brute-force sampling";
     cout    << endl << "Starting a simulation with..."
             << endl << "Parallelization: "; if(this->parallel) {cout << "ON"; } else {cout << "OFF";}
