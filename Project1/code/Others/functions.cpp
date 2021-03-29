@@ -310,9 +310,13 @@ void Functions::printResultsSolver(vector<double> res){
 }
 
 void Functions::printConfiguration(int selector, bool asymmetric, bool elliptical, bool importance){
-
+    bool use_asymmetric = asymmetric;
+    bool use_elliptical = elliptical;
+    
     if((this->system->getDimension()!=3 && (asymmetric || elliptical)) && (omp_get_thread_num()==0 || !this->parallel)) {
         cout << "WARNING: selected hamiltonian/wavefunction not compatible with a system with dimensionality less than 3. Defalult setup applies." << endl;
+        use_asymmetric = false;
+        use_elliptical = false;
     }
     
     string wf = asymmetric ? "Asymmetric gaussian" : "Simple gaussian";
