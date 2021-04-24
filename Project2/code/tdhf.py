@@ -5,7 +5,7 @@ import scipy.integrate
 from quantum_systems import ODQD, GeneralOrbitalSystem
 
 def plot_AO(odho):
-    fig = plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(8, 5))
     plt.plot(odho.grid, potential(odho.grid))
 
     for i in range(l):
@@ -15,38 +15,78 @@ def plot_AO(odho):
     plt.legend()
     plt.show()
 
-def solve_HF(system, tolerance, max_iter):
+def plot_MO(system, epsilon, C):
+    plt.figure(figsize=(16,10))
+    plt.plot(system.grid, potential(system.grid))
+
+    for i in range(len(C)):
+        to_plot = np.zeros( system.grid.shape, np.complex64 )
+        for j in range(len(C)):
+            #to_plot += np.abs(system.spf[j])**2 * np.abs(C[j,i])**2
+            to_plot += system.spf[j] * C[j,i]
+        plt.plot( system.grid,  np.abs(to_plot)**2 + epsilon[i], label=r"$\phi_{" + f"{i}" + r"}$" )
+
+    plt.grid()
+    plt.legend()
+    plt.show()
+
+
+def plot_MO_abc(system, epsilon):
+    plt.figure(figsize=(8, 5))
+    plt.plot(system.grid, potential(system.grid))
+
+    for i in range(len(epsilon)):
+        plt.plot( system.grid, np.abs(system.spf[i]) ** 2 + epsilon[i], label=r"$\chi_{" + f"{i}" + r"}$" )
+
+    plt.grid()
+    plt.legend()
+    plt.show()
+
+def solve_HF(system, nparticles, tolerance, max_iter):
     i = 0
-    f = np.zeros( system.h.shape, dtype=np.complex128 )
+    f = np.zeros( system.h.shape, dtype=np.complex64 )
     epsilon, C = scipy.linalg.eigh(system.h)
-    print(C[0,0])
+    epsilon_old = epsilon
+    density = evaluate_density_matrix(nparticles, C)
     deltaE=1
-    
+
     while i<max_iter and deltaE>tolerance:
-        
-        for j in range(len(system.h)):
-            for k in range(len(system.h)):
-                
-                two_body_term = 0
-                for m in range(len(system.h)):
-                    for n in range(len(system.h)): 
-                        if (m+n)%2!=0:
-                            two_body_term += 0
-                        else:
-                            sum_c = 0
-                            for p in range(len(system.h)):
-                                sum_c += C[m,p]*C[n,p]
-                            two_body_term +=  sum_c*system.u[j,m,k,n]
-                f[j,k] = two_body_term + system.h[j,k]
-                
+        f = np.zeros( system.h.shape, dtype=np.complex64 )
+        density = evaluate_density_matrix(nparticles, C)
+
+        for a in range(len(system.h)):
+            for b in range(len(system.h)):
+
+                for c in range(len(system.h)):
+                    for d in range(len(system.h)):
+                        f[a,b] += density[c,d] * system.u[a,c,b,d]
+
+        f += system.h
         epsilon, C = scipy.linalg.eigh(f)
-        print(epsilon)
+        deltaE = sum(np.abs(epsilon - epsilon_old))/len(system.h)
+        epsilon_old = epsilon
         i+=1
+
+    return epsilon, C
+    
+
+def evaluate_density_matrix(nparticles, coefficients):
+    density = np.zeros( coefficients.shape, dtype=np.complex64)
+
+    for i in range(nparticles):
+        density += np.outer( coefficients[:,i], np.conjugate(coefficients[:,i]))
+    
+    return density
+
+def total_energy(system, epsilon):
+    for i in range(len(epsilon)):
+        print(system.h[i,i])
+        
 
 
                             
 ### PARAMETERS ###
-l = 5 # Number of eigenstates of the HO potential --> we use these functions to generate the single particle WF
+l = 10 # Number of eigenstates of the HO potential --> we use these functions to generate the single particle WF
 grid_length = 10  # The width of the one-dimensional grid
 num_grid_points = 101  # The number of discretized points on the grid.
 # More points give better results for the single-particle basis at the cost of slower setup.
@@ -58,7 +98,12 @@ nparticles = 2
 
 odho = ODQD(l, grid_length, num_grid_points, a=a, alpha=alpha, potential=potential )
 system = GeneralOrbitalSystem(n=nparticles, basis_set=odho, anti_symmetrize=True)
-solve_HF(system, tolerance=1e-3, max_iter=10)
+epsilon, C = solve_HF(system, nparticles=nparticles, tolerance=1e-12, max_iter=10)
+plot_MO(system, epsilon, C)
+
+system.change_basis(C)
+plot_MO_abc(system, epsilon)
+total_energy(system, epsilon)
 
 
 
