@@ -9,7 +9,8 @@ cd code
 
 To run the simplest simulation just type the commands
 ```
-make
+make 
+
 ./main 0
 ```
 The simulation will be run with the preset configuration (open main.cpp to edit and see parameters).
