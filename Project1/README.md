@@ -34,6 +34,8 @@ chmod +x setup.sh
 sh setup.sh
 ```
 At this point one can set the flag **TO_FILE** to 1 and proceed with the desired simulation. Some modalitites contain an extra flag for printing to file that can be set in the corresponding parameters section in **main.cpp**.  
+
+Please note that after every modification performed on the **.cpp** files, one should run again the **make** command.
   
 The Blocking variance analysis is carried by the script **blocking.py** in the **Analysis** folder. Once moved into the folder with the command
 ```
