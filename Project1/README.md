@@ -15,9 +15,9 @@ At this point the program can be run in multpliple ways, briefly listed here
 1. **Single analytical simulation** (ID 0): run a single simulation using analytical formulas for the local energy
 2. **Single numerical simulation** (ID 1): run a single simulation using the numerical approximation for the second derivative of the wavefunction when evaluating the local energy
 3. **Varying alpha** (ID 2): run multiple simulations varying the variational parameter in the wavefunction
-4. **Varying dt** (ID 3): run multiple simulations varying the time step length used to numerically integrate the Fokker-Planck equation
+4. **Varying dt** (ID 3): run multiple simulations varying the time step length used with the Metropolis-Hastings algorithm
 5. **Varying N** (ID 4): run multiple simulations varying the number of particles
-6. **Gradient descent** (ID 5): run a gradient descent algorithm to find the best value for the variational parameter in the trial wavefunction. Then run a simple simulation using the obtained value for the variational parameter
+6. **Gradient descent** (ID 5): run a gradient descent algorithm to find the best value for the variational parameter in the trial wavefunction
 7. **One body density** (ID 6): simple simulation whose only purpose is to store the data needed for the one-body density, skipping unrelevant calculations.
 
 To run the program in one particular mode one just needs to enter the corresponing ID when launching the main. For example, in the case of the simple simulation (ID 0) the command becomes
