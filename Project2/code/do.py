@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg, scipy.integrate
 from quantum_systems import ODQD, GeneralOrbitalSystem
+from IPython.display import display, clear_output
 
 #can be called only after creation of odho and before creation of system!!!
 # plots the Atormic Orbital basis --> in our case the HO eigenstates
@@ -56,14 +57,11 @@ def change_basis(coefficients):
 def laser_potential(t, omega, epsilon0):
     return epsilon0 * np.sin( omega * t )
 
-
 def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0):
     f = np.zeros(system.h.shape, dtype=np.complex128)    
     density = fill_density_matrix(nparticles, C)
     
-    for a in range(system.l):
-        for b in range(system.l):
-            f[a,b] = np.einsum('ij,ij', density, system.u[a,:,b,:], dtype=np.complex128)
+    f = np.einsum('ij,aibj->ab', density, system.u, dtype=np.complex128)
     f += system.h
     f += system.position[0] * laser_potential(t,omega,epsilon0)
     return f
@@ -73,7 +71,7 @@ def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0):
 def fill_density_matrix(nparticles, coefficients):
     density = np.zeros( coefficients.shape, dtype=np.complex128)
     for i in range(nparticles):
-        density += np.outer( coefficients[:,i], np.conjugate(coefficients[:,i]))
+        density += np.outer( np.conjugate(coefficients[:,i]), coefficients[:,i])
     
     return density
 
@@ -117,6 +115,15 @@ def plot_overlap_one_body_density(system, obd):
     plt.grid()
     plt.show()
 
+def plot_overlap_slater_det(system, overlap, time):
+    plt.figure(figsize=(12,8))
+    img = plt.imread("theoretical_overlap.png")
+    ext = [0.0, 4.0, 0.0, 1.0]
+    plt.imshow(img, zorder=0, extent=ext)
+    aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
+    plt.gca().set_aspect(aspect)
+    plt.plot(time, overlap)
+
 def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False):
     epsilon, C = scipy.linalg.eigh(system.h)
     epsilon_old = epsilon
@@ -135,7 +142,7 @@ def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False):
     return epsilon, C
 
 
-def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles):
+def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, animation=False):
     # returns a 1-d array with the right-hand side of time-dependent HF equation
     # this function needs to be defined here because passing f_args to integrator is broken
     def rhs(t, C):
@@ -151,19 +158,25 @@ def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles):
 
     integrator = scipy.integrate.ode(rhs).set_integrator('zvode')
     integrator.set_initial_value( np.reshape(C0, len(C0)**2 ), 0)
+
+    if animation==True:
+        fig = plt.figure(figsize=(12,8))
+        ax = fig.add_subplot(1, 1, 1)   
+            
     
     i=0
     while integrator.successful() and i<i_max:
         C = integrator.integrate(integrator.t+dt)
         C = np.matrix(np.reshape(C, system.h.shape))
         overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
+        if animation==True:
+            ax.cla()
+            ax.plot(system.grid, eval_one_body_density(system, nparticles, C0).real, color='red')
+            ax.plot(system.grid, eval_one_body_density(system, nparticles, C).real)
+            display(fig)
+            clear_output(wait=True)
+            
         i += 1
     
-
-    plt.figure(figsize=(12,8))
-    img = plt.imread("theoretical_overlap.png")
-    ext = [0.0, 4.0, 0.0, 1.0]
-    plt.imshow(img, zorder=0, extent=ext)
-    aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
-    plt.gca().set_aspect(aspect)
-    plt.plot(time, overlap)
+    return overlap, time
+    
