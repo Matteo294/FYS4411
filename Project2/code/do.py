@@ -6,9 +6,9 @@ from IPython.display import display, clear_output
 
 #can be called only after creation of odho and before creation of system!!!
 # plots the Atormic Orbital basis --> in our case the HO eigenstates
-def plot_AO(odho): 
+def plot_AO(odho, potential): 
     plt.figure(figsize=(8, 5))
-    plt.plot(odho.grid, odho.potential(odho.grid))
+    plt.plot(odho.grid, potential(odho.grid))
 
     for i in range(odho.l):
         plt.plot( odho.grid, np.abs(odho.spf[i]) ** 2 + odho.h[i, i].real, label=r"$\chi_{" + f"{i}" + r"}$" )
@@ -20,9 +20,9 @@ def plot_AO(odho):
 # prints the Molecular Orbitals obtained after the convergence of the HF method
 # the basis has not been changed for the system
 # it is used just for a comparison with the output of plot_MO_abc()
-def plot_MO(system, epsilon, C):
-    plt.figure(figsize=(12,8))
-    plt.plot(system.grid, system.potential(system.grid))
+def plot_MO(system, potential, epsilon, C):
+    plt.figure(figsize=(8,5))
+    plt.plot(system.grid, potential(system.grid))
 
     for i in range(system.l):
         to_plot = np.zeros( system.grid.shape, np.complex128 )
@@ -37,22 +37,26 @@ def plot_MO(system, epsilon, C):
 # abc = after basis change, can be called only after system.change_basis(C)
 # plots the Molecular Orbitals obtained after the convergence of the HF procedure
 # here the basis of the system has already been changed
-def plot_MO_abc(system, epsilon):
-    plt.figure(figsize=(12, 8))
-    plt.plot(system.grid, system.potential(system.grid))
+def plot_MO_abc(system, potential, epsilon):
+    plt.figure(figsize=(8, 5))
+    plt.plot(system.grid, potential(system.grid))
 
     for i in range(system.l):
-        plt.plot( system.grid, np.abs(system.spf[i]) ** 2 + epsilon[i], label=r"$\chi_{" + f"{i}" + r"}$" )
+        plt.plot( system.grid, np.abs(system.spf[i]) ** 2 + epsilon[i], label=r"$\phi_{" + f"{i}" + r"}$" )
 
     plt.grid()
     plt.legend()
     plt.show()
 
-
-def change_basis(coefficients):
-    ###### to be completed ##########
-    return 0
-
+# changes basis and modifies system as a consequence
+def change_basis(system, C):
+    
+    ####### system.spf ########
+    spf = np.copy(system.spf)
+    for i in range(system.l):
+        system.spf[i] = np.zeros(system.grid.shape, dtype=np.complex128)
+        for j in range(system.l):
+            system.spf[i] += spf[j,:] * C[j,i]   
 
 def laser_potential(t, omega, epsilon0):
     return epsilon0 * np.sin( omega * t )
@@ -98,7 +102,6 @@ def evaluate_total_energy(system, epsilon=None):
 def eval_one_body_density(system, nparticles, coefficients):
     obd = np.zeros( len(system.grid) )
     density = fill_density_matrix(nparticles, coefficients)
-    
     obd = np.einsum('mi,mn,ni->i', system.spf, density, system.spf, dtype=np.complex128)
     return obd
 
@@ -160,7 +163,7 @@ def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, animation=Fal
     integrator.set_initial_value( np.reshape(C0, len(C0)**2 ), 0)
 
     if animation==True:
-        fig = plt.figure(figsize=(12,8))
+        fig = plt.figure(figsize=(8,5))
         ax = fig.add_subplot(1, 1, 1)   
             
     
