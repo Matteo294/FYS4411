@@ -176,9 +176,6 @@ def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, animation=Fal
             ax.cla()
             ax.plot(system.grid, eval_one_body_density(system, nparticles, C0).real, color='red')
             ax.plot(system.grid, eval_one_body_density(system, nparticles, C).real)
-            display(fig)
-            clear_output(wait=True)
-            
         i += 1
     
     return overlap, time
