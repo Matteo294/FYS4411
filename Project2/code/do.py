@@ -161,21 +161,24 @@ def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, animation=Fal
 
     integrator = scipy.integrate.ode(rhs).set_integrator('zvode')
     integrator.set_initial_value( np.reshape(C0, len(C0)**2 ), 0)
+    obd0 = eval_one_body_density(system, nparticles, C0).real
 
     if animation==True:
         fig = plt.figure(figsize=(8,5))
         ax = fig.add_subplot(1, 1, 1)   
-            
+    
     
     i=0
     while integrator.successful() and i<i_max:
         C = integrator.integrate(integrator.t+dt)
         C = np.matrix(np.reshape(C, system.h.shape))
         overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
-        if animation==True:
+        if animation==True and i%(int(i_max*0.01))==0:
             ax.cla()
-            ax.plot(system.grid, eval_one_body_density(system, nparticles, C0).real, color='red')
+            ax.plot(system.grid, obd0, color='red')
             ax.plot(system.grid, eval_one_body_density(system, nparticles, C).real)
+            display(fig)
+            clear_output(wait=True)
         i += 1
     
     return overlap, time
