@@ -31,7 +31,7 @@ def plot_MO(system, potential, epsilon, C):
         plt.plot( system.grid,  np.abs(to_plot)**2 + epsilon[i], label=r"$\phi_{" + f"{i}" + r"}$" )
 
     plt.grid()
-    plt.legend()
+    #plt.legend()
     plt.show()
 
 # abc = after basis change, can be called only after system.change_basis(C)
@@ -45,25 +45,34 @@ def plot_MO_abc(system, potential, epsilon):
         plt.plot( system.grid, np.abs(system.spf[i]) ** 2 + epsilon[i], label=r"$\phi_{" + f"{i}" + r"}$" )
 
     plt.grid()
-    plt.legend()
+    #plt.legend()
     plt.show()
 
 # changes basis and modifies system as a consequence
 def change_basis(system, C):
-    
+        
     ####### system.spf ########
     spf = np.copy(system.spf)
-    for i in range(system.l):
-        system.spf[i] = np.zeros(system.grid.shape, dtype=np.complex128)
-        for j in range(system.l):
-            system.spf[i] += spf[j,:] * C[j,i]   
+    system._basis_set._spf = np.einsum('ki,kj->ij', C, spf)
+    
+    ####### system.h #########
+    h = np.copy(system.h)
+    cc = np.einsum('ai,bj->aibj', np.conjugate(C), C)
+    system._basis_set._h = np.einsum('aibj,ab->ij', cc, h)
+
+    ####### system.u #########
+    u = np.copy(system.u)
+    u1 = np.einsum('am,abcd->mbcd', np.conjugate(C), u)
+    u2 = np.einsum('bn, mbcd->mncd', np.conjugate(C), u1)
+    u3 = np.einsum('cp, mncd->mnpd', C, u2)
+    system._basis_set._u = np.einsum('dq,mnpd->mnpq', C, u3)
 
 def laser_potential(t, omega, epsilon0):
     return epsilon0 * np.sin( omega * t )
 
 def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0):
     f = np.zeros(system.h.shape, dtype=np.complex128)    
-    density = fill_density_matrix(nparticles, C)
+    density = fill_density_matrix(C,nparticles)
     
     f = np.einsum('ij,aibj->ab', density, system.u, dtype=np.complex128)
     f += system.h
@@ -72,36 +81,44 @@ def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0):
 
 
 # density matrix
-def fill_density_matrix(nparticles, coefficients):
+def fill_density_matrix(coefficients, Nparticles=None):
+    if Nparticles is None: 
+        Nparticles=len(coefficients)
+
     density = np.zeros( coefficients.shape, dtype=np.complex128)
-    for i in range(nparticles):
+    for i in range(Nparticles):
         density += np.outer( np.conjugate(coefficients[:,i]), coefficients[:,i])
     
     return density
 
 
-# contains two THEORETICALLY equivalent ways of evaluating the energy of the system
-# at the moment it works only after the basis has been changed
-def evaluate_total_energy(system, epsilon=None):
+# evaluates the total energy of the system
+# adapts the formulas depending on the fact that the basis change has been performed or not
+def evaluate_total_energy(system, nparticles, C, changed=False, epsilon=None):
     energy = 0
-    
-    if epsilon is None:
-        for i in range(2):
-            energy += system.h[i,i]
-            for j in range(2):
-                energy += 0.5 * system.u[i,j,i,j]
+    if changed is True:
+        if epsilon is None:
+            for i in range(2):
+                energy += system.h[i,i]
+                for j in range(2):
+                    energy += 0.5 * system.u[i,j,i,j]
+        else:
+            for i in range(2):
+                for j in range(2):
+                    energy -= system.u[i,j,i,j] 
+            energy = energy*0.5 + epsilon[0] + epsilon[1]
+    # HO basis
     else:
-        for i in range(2):
-            for j in range(2):
-                energy -= system.u[i,j,i,j] 
-        energy = energy*0.5 + epsilon[0] + epsilon[1]
-
+        density = fill_density_matrix(C,nparticles)
+        rhorho = np.einsum('ab,cd->abcd', density, density, dtype=np.complex128)
+        energy = np.einsum('ij,ij', density, system.h) + 0.5*np.einsum('abcd,acbd', rhorho, system.u, dtype=np.complex128)
+        
     return energy
 
 
 def eval_one_body_density(system, nparticles, coefficients):
     obd = np.zeros( len(system.grid) )
-    density = fill_density_matrix(nparticles, coefficients)
+    density = fill_density_matrix(coefficients,nparticles)
     obd = np.einsum('mi,mn,ni->i', system.spf, density, system.spf, dtype=np.complex128)
     return obd
 
