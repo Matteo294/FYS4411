@@ -52,7 +52,8 @@ def plot_MO_abc(system, potential, epsilon):
 def change_basis(system, C):
         
     ####### system.spf ########
-    spf = np.copy(system.spf)
+    #spf = np.copy(system.spf)
+    spf = system.spf
     system._basis_set._spf = np.einsum('ki,kj->ij', C, spf)
     
     ####### system.h #########
@@ -161,31 +162,35 @@ def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False):
     elif i>=max_iter and print_on==True : print("Max iteration number reached")
     return epsilon, C
 
+class wrapfunc(object):
+    def __init__(self, func, args=[]):
+        self.ff = func
+        self.args = args
+    def f(self, t, C):
+        return self.ff(t, C, *self.args)
 
-def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, animation=False):
+def rhsf(t, C, system, omega, epsilon0, nparticles):
+    C = np.reshape(C, system.h.shape)
+    f = fill_fock_matrix(system, nparticles, C, t, omega, epsilon0)
+    res = -1.0j * (f @ C)
+    res = np.reshape(res, (len(res)**2) )
+    return res
+
+def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, integrator, animation=False):
     # returns a 1-d array with the right-hand side of time-dependent HF equation
     # this function needs to be defined here because passing f_args to integrator is broken
-    def rhs(t, C):
-        C = np.reshape(C, system.h.shape)
-        f = fill_fock_matrix(system, nparticles, C, t, omega, epsilon0)
-        res = -1.0j * (f @ C)
-        res = np.reshape(res, (len(res)**2) )
-        return res
 
     i_max = int( np.floor(t_max / dt) )
     overlap = np.zeros( (i_max) )
     time = np.linspace( 0, i_max*dt, i_max ) * 0.5 * omega / np.pi
-
-    integrator = scipy.integrate.ode(rhs).set_integrator('zvode')
-    integrator.set_initial_value( np.reshape(C0, len(C0)**2 ), 0)
+    
     obd0 = eval_one_body_density(system, nparticles, C0).real
 
     if animation==True:
         fig = plt.figure(figsize=(8,5))
         ax = fig.add_subplot(1, 1, 1)   
-    
-    
     i=0
+    print(integrator.t, dt)
     while integrator.successful() and i<i_max:
         C = integrator.integrate(integrator.t+dt)
         C = np.matrix(np.reshape(C, system.h.shape))
@@ -199,4 +204,20 @@ def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, animation=Fal
         i += 1
     
     return overlap, time
+
+def animation(i, line, system, dt, t_max, C0, omega, epsilon0, nparticles, integrator):
+
+    i_max = int( np.floor(t_max / dt) )
+    overlap = np.zeros( (i_max) )
+    time = np.linspace( 0, i_max*dt, i_max ) * 0.5 * omega / np.pi
+
+    obd0 = eval_one_body_density(system, nparticles, C0).real
+
+    C = integrator.integrate(integrator.t+dt)
+    C = np.matrix(np.reshape(C, system.h.shape))
+    overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
+    
+    line.set_ydata(eval_one_body_density(system, nparticles, C).real)
+    return line,
+    
     
