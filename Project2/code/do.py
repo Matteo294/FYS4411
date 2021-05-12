@@ -190,7 +190,7 @@ def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, integrator, a
         fig = plt.figure(figsize=(8,5))
         ax = fig.add_subplot(1, 1, 1)   
     i=0
-    print(integrator.t, dt)
+    
     while integrator.successful() and i<i_max:
         C = integrator.integrate(integrator.t+dt)
         C = np.matrix(np.reshape(C, system.h.shape))
