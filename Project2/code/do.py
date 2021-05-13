@@ -71,15 +71,6 @@ def change_basis(system, C):
 def laser_potential(t, omega, epsilon0):
     return epsilon0 * np.sin( omega * t )
 
-def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0):
-    f = np.zeros(system.h.shape, dtype=np.complex128)    
-    density = fill_density_matrix(C,nparticles)
-    
-    f = np.einsum('ij,aibj->ab', density, system.u, dtype=np.complex128)
-    f += system.h
-    f += system.position[0] * laser_potential(t,omega,epsilon0)
-    return f
-
 
 # density matrix
 def fill_density_matrix(coefficients, Nparticles=None):
@@ -93,27 +84,60 @@ def fill_density_matrix(coefficients, Nparticles=None):
     return density
 
 
+def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0, unrestricted=False):
+    f = np.zeros(system.h.shape, dtype=np.complex128)    
+    density = fill_density_matrix(C,nparticles)
+    
+    if unrestricted==False:
+        f = np.einsum('ij,aibj->ab', density, system.u, dtype=np.complex128)
+        f += system.h
+        f += system.position[0] * laser_potential(t, omega, epsilon0)
+    else:
+        f = np.einsum('ij,aibj->ab', density, system.u, dtype=np.complex128)
+        x = np.zeros(system.u.shape)
+        x[::2,::2,::2,::2] = 1
+        x[1::2,1::2,1::2,1::2] = 1
+        x = x*system.u
+        f -= np.einsum('ij,aijb->ab', density, x, dtype=np.complex128)
+        f += system.h
+        f += system.position[0] * laser_potential(t, omega, epsilon0)
+
+    return f
+
+
 # evaluates the total energy of the system
 # adapts the formulas depending on the fact that the basis change has been performed or not
-def evaluate_total_energy(system, nparticles, C, changed=False, epsilon=None):
+def evaluate_total_energy(system, nparticles, C, changed=False, epsilon=None, unrestricted=False):
     energy = 0
-    if changed is True:
-        if epsilon is None:
-            for i in range(2):
-                energy += system.h[i,i]
-                for j in range(2):
-                    energy += 0.5 * system.u[i,j,i,j]
+    if unrestricted==False:
+        if changed is True:
+            if epsilon is None:
+                for i in range(2):
+                    energy += system.h[i,i]
+                    for j in range(2):
+                        energy += 0.5 * system.u[i,j,i,j]
+            else:
+                for i in range(2):
+                    for j in range(2):
+                        energy -= system.u[i,j,i,j] 
+                energy = energy*0.5 + epsilon[0] + epsilon[1]
+        # HO basis
         else:
-            for i in range(2):
-                for j in range(2):
-                    energy -= system.u[i,j,i,j] 
-            energy = energy*0.5 + epsilon[0] + epsilon[1]
-    # HO basis
+            density = fill_density_matrix(C,nparticles)
+            rhorho = np.einsum('ab,cd->abcd', density, density, dtype=np.complex128)
+            energy = np.einsum('ij,ij', density, system.h) + 0.5*np.einsum('abcd,acbd', rhorho, system.u, dtype=np.complex128)
+    
     else:
         density = fill_density_matrix(C,nparticles)
         rhorho = np.einsum('ab,cd->abcd', density, density, dtype=np.complex128)
         energy = np.einsum('ij,ij', density, system.h) + 0.5*np.einsum('abcd,acbd', rhorho, system.u, dtype=np.complex128)
-        
+        x = np.zeros(system.u.shape)
+        x[::2,::2,::2,::2] = 1
+        x[1::2,1::2,1::2,1::2] = 1
+        x = x*system.u
+        energy -= 0.5*np.einsum('abcd,acdb', rhorho, system.u, dtype=np.complex128)
+
+    print(energy)
     return energy
 
 
@@ -145,14 +169,15 @@ def plot_overlap_slater_det(system, overlap, time):
     plt.gca().set_aspect(aspect)
     plt.plot(time, overlap)
 
-def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False):
+def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False, unrestricted=False):
     epsilon, C = scipy.linalg.eigh(system.h)
     epsilon_old = epsilon
     deltaE=1
     i = 0
     
     while i<max_iter and deltaE>tolerance:
-        f = fill_fock_matrix(system, nparticles, C, t=0, omega=0, epsilon0=0)
+        f = fill_fock_matrix(system, nparticles, C, t=0, omega=0, epsilon0=0, unrestricted=unrestricted)
+        #print(f[:,0:2])
         epsilon, C = scipy.linalg.eigh(f)
         deltaE = sum(np.abs(epsilon - epsilon_old))/system.l
         epsilon_old = epsilon
@@ -219,5 +244,4 @@ def animation(i, line, system, dt, t_max, C0, omega, epsilon0, nparticles, integ
     
     line.set_ydata(eval_one_body_density(system, nparticles, C).real)
     return line,
-    
     
