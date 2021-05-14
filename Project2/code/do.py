@@ -137,7 +137,7 @@ def evaluate_total_energy(system, nparticles, C, changed=False, epsilon=None, un
         x = x*system.u
         energy -= 0.5*np.einsum('abcd,acdb', rhorho, system.u, dtype=np.complex128)
 
-    print(energy)
+    
     return energy
 
 
@@ -174,18 +174,19 @@ def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False, unrestri
     epsilon_old = epsilon
     deltaE=1
     i = 0
+    energy = np.zeros((max_iter), dtype=np.complex128)
     
     while i<max_iter and deltaE>tolerance:
         f = fill_fock_matrix(system, nparticles, C, t=0, omega=0, epsilon0=0, unrestricted=unrestricted)
-        #print(f[:,0:2])
         epsilon, C = scipy.linalg.eigh(f)
         deltaE = sum(np.abs(epsilon - epsilon_old))/system.l
         epsilon_old = epsilon
+        energy[i] = evaluate_total_energy(system, nparticles, C, changed=False, epsilon=None, unrestricted=unrestricted)
         i+=1
     
     if deltaE<tolerance and print_on==True: print("Converged")
     elif i>=max_iter and print_on==True : print("Max iteration number reached")
-    return epsilon, C
+    return epsilon, C, energy
 
 class wrapfunc(object):
     def __init__(self, func, args=[]):
