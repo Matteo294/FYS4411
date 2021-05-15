@@ -2,6 +2,7 @@ from os import system
 import re
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.core.fromnumeric import shape
 from numpy.lib.type_check import imag
 import scipy.linalg, scipy.integrate
 from quantum_systems import ODQD, GeneralOrbitalSystem
@@ -155,41 +156,53 @@ class GHF:
         res = np.reshape(res, (len(res)**2) )
         return res
     
-    def solve_TDHF(self, dt, t_max, C0, eval_overlap=False, eval_dipole=False):
+    def rhsf_OFF(self, t, C):
+        C = np.reshape(C, self.system.h.shape)
+        f = self.fill_fock_matrix(C, t=0)
+        res = -1.0j * (f @ C)
+        res = np.reshape(res, (len(res)**2) )
+        return res
+    
+    def solve_TDHF(self, tstart, dt, t_max, C0, eval_overlap=False, eval_dipole=False, laser_ON=True):
         # returns a 1-d array with the right-hand side of time-dependent HF equation
         # this function needs to be defined here because passing f_args to integrator is broken
-
-        i_max = int( np.floor(t_max / dt) )
-        time = np.linspace( 0, i_max*dt, i_max ) * 0.5 * self.omega / np.pi
+        #print(np.reshape(C0, len(C0)**2 ))
+        i_max = int( np.floor((t_max - tstart)/ dt) )
+        time = np.linspace( tstart, tstart+i_max*dt, i_max ) * 0.5 * self.omega / np.pi
 
         if eval_overlap==True:
             overlap = np.zeros( (i_max), dtype=np.complex128 )
         if eval_dipole==True:
             dipole = np.zeros( (i_max), dtype=np.complex128 )
+        if laser_ON==True:
+            integrator = scipy.integrate.ode(self.rhsf).set_integrator('zvode')
+        elif laser_ON==False:
+            integrator = scipy.integrate.ode(self.rhsf_OFF).set_integrator('zvode')
+        
+        integrator.set_initial_value( np.reshape(C0, (len(C0)**2,) ), tstart)
 
-        integrator = scipy.integrate.ode(self.rhsf).set_integrator('zvode')
-        integrator.set_initial_value( np.reshape(C0, len(C0)**2 ), 0)
-                
         i=0
         while integrator.successful() and i<i_max:
             C = integrator.integrate(integrator.t+dt)
             C = np.matrix(np.reshape(C, self.system.h.shape))
+
             if eval_overlap==True:
                 overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
             if eval_dipole==True:
                 dipole[i] = self.eval_dipole(C)
             i += 1
-
+        
+        C = np.array(C)
         if eval_overlap==True:
             if eval_dipole==True:
-                return time, overlap, dipole
+                return C, time, overlap, dipole
             else:
-                return time, overlap
+                return C, time, overlap
         elif eval_overlap==False:
             if eval_dipole==True:
-                return time, dipole
+                return C, time, dipole
             else:
-                return time
+                return C, time
             
     
     def animation(self, i, line, dt, t_max, C0):
@@ -204,6 +217,7 @@ class GHF:
         
         line.set_ydata(self.eval_one_body_density(C).real)
         return line,
+    
     
 
 
