@@ -61,11 +61,11 @@ class GHF:
         plt.imshow(img, zorder=0, extent=ext)
         aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
         plt.gca().set_aspect(aspect)
-        plt.plot(time, overlap)
+        plt.plot(time* 0.5 * self.omega / np.pi, overlap)
     
     def plot_dipole(self, time, dipole):
         plt.figure(figsize=(8,5))
-        plt.plot(time, dipole)
+        plt.plot(time* 0.5 * self.omega / np.pi, dipole)
         plt.grid()
     
     def plot_energy_per_iteration(self, energy_ghf, energy_rhf):
@@ -110,7 +110,7 @@ class GHF:
         obd = np.einsum('mi,mn,ni->i', self.system.spf, density, self.system.spf, dtype=np.complex128)
 
         if plot_ON==True: 
-            plt.figure(figsize=(10, 10))
+            plt.figure(figsize=(13, 13))
             img = plt.imread("theoretical_density.png")
             ext = [-6.0, 6.0, 0.00, 0.4]
             plt.imshow(img, zorder=0, extent=ext)
@@ -139,7 +139,7 @@ class GHF:
         #     # print(np.sum(np.abs(C[:,i])**2))
         
         # epsilon = np.ones(self.system.l)
-        epsilon_old = epsilon
+        density_old = self.eval_one_body_density(C)
         deltaE=1
         i=0
 
@@ -151,8 +151,9 @@ class GHF:
         while i<max_iter and deltaE>tolerance:
             f = self.fill_fock_matrix(C, t=0)
             epsilon, C = scipy.linalg.eigh(f)
-            deltaE = sum(np.abs(epsilon - epsilon_old))/self.system.l
-            epsilon_old = epsilon
+            density = self.eval_one_body_density(C)
+            deltaE = scipy.integrate.trapz(np.abs(density - density_old), self.system.grid)
+            density_old = density
             if energy_per_step_ON == True:
                 energy_per_step[i] = self.evaluate_total_energy(C)
             i+=1
@@ -179,12 +180,9 @@ class GHF:
         return res
     
     def solve_TDHF(self, tstart, dt, t_max, C0, eval_overlap=False, eval_dipole=False, laser_ON=True):
-        # returns a 1-d array with the right-hand side of time-dependent HF equation
-        # this function needs to be defined here because passing f_args to integrator is broken
-        #print(np.reshape(C0, len(C0)**2 ))
+        
         i_max = int( np.floor((t_max - tstart)/ dt) )
         time = np.linspace( tstart, tstart+i_max*dt, i_max )
-        # time = np.linspace( tstart, tstart+i_max*dt, i_max ) * 0.5 * self.omega / np.pi
 
         if eval_overlap==True:
             overlap = np.zeros( (i_max), dtype=np.complex128 )
@@ -201,7 +199,6 @@ class GHF:
         while integrator.successful() and i<i_max:
             C = integrator.integrate(integrator.t+dt)
             C = np.matrix(np.reshape(C, self.system.h.shape))
-            print(f'progress= {100*i/i_max}%', end='\r')
 
             if eval_overlap==True:
                 overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
@@ -221,6 +218,25 @@ class GHF:
             else:
                 return C, time
             
+    def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt, plot_dipole=False, plot_fft=True):
+        epsilon, C0 = self.solve_TIHF(tolerance=tolerance, max_iter=max_iter, print_ON=False, energy_per_step_ON=False)
+        C1, time1, dipole1 = self.solve_TDHF(0, dt, t_laser_ON, C0, eval_overlap=False, eval_dipole=True, laser_ON=True)
+        C2, time2, dipole2 = self.solve_TDHF(t_laser_ON,  dt, t_max, C1, eval_overlap=False, eval_dipole=True, laser_ON=False)
+        time = np.concatenate((time1,time2))
+        dipole = np.concatenate((dipole1, dipole2))
+
+        signalFFT = np.fft.fft(dipole2)
+        freqFFT = np.fft.fftfreq(len(dipole2), dt)
+
+        if plot_dipole==True:
+            plt.figure(figsize=(8,5))
+            plt.plot(time, dipole)
+
+        if plot_fft==True:
+            plt.figure(figsize=(8,5))
+            plt.plot(2*np.pi*freqFFT, np.abs(signalFFT))
+            plt.xlim([0, 3])
+
     
     def animation(self, i, line, dt, t_max, C0):
         i_max = int( np.floor(t_max / dt) )
@@ -246,38 +262,60 @@ class RHF(GHF):
         else:
             self.potential = potential
         
-        self.system = ODQD(l, grid_length, num_grid_points, a, alpha, potential=potential)
+        self.system = ODQD(l, grid_length, num_grid_points, a, alpha, potential=self.potential)
         self.nparticles = nparticles
         self.Omega = Omega
         self.omega = omega
         self.epsilon0 = epsilon0
     
+    def fill_density_matrix(self, C, full_density=False):
+        if full_density is True: 
+            imax = len(C)
+        else:
+            imax = int(self.nparticles/2)
+
+        density = np.zeros( C.shape, dtype=np.complex128)
+        for i in range(imax):
+            density += np.outer( np.conjugate(C[:,i]), C[:,i])
+        
+        return density
+        return 
+
     def fill_fock_matrix(self, C, t):
         f = np.zeros(self.system.h.shape, dtype=np.complex128)    
         density = self.fill_density_matrix(C)
-        
-        f = np.einsum('ij,aibj->ab', density, self.system.u, dtype=np.complex128)
-        x = np.zeros(self.system.u.shape)
-        x[::2,::2,::2,::2] = 1
-        x[1::2,1::2,1::2,1::2] = 1
-        x = x*self.system.u
-        f -= np.einsum('ij,aijb->ab', density, x, dtype=np.complex128)
+        f = 2*np.einsum('ij,aibj->ab', density, self.system.u, dtype=np.complex128)
+        f -= np.einsum('ij,aijb->ab', density, self.system.u, dtype=np.complex128)
         f += self.system.h
         f += self.system.position[0] * self.laser_potential(t)
 
         return f
-
+    
     def evaluate_total_energy(self, C):
         density = self.fill_density_matrix(C)
         rhorho = np.einsum('ab,cd->abcd', density, density, dtype=np.complex128)
-        energy = np.einsum('ij,ij', density, self.system.h) + 0.5*np.einsum('abcd,acbd', rhorho, self.system.u, dtype=np.complex128)
-        x = np.zeros(self.system.u.shape)
-        x[::2,::2,::2,::2] = 1
-        x[1::2,1::2,1::2,1::2] = 1
-        x = x*self.system.u
-        energy -= 0.5*np.einsum('abcd,acdb', rhorho, self.system.u, dtype=np.complex128)
+        energy = 2*np.einsum('ij,ij', density, self.system.h) 
+        energy += 2*np.einsum('abcd,acbd', rhorho, self.system.u, dtype=np.complex128)
+        energy -= np.einsum('abcd,acdb', rhorho, self.system.u, dtype=np.complex128)
         
         return energy
     
+    def eval_one_body_density(self, C, plot_ON=False):
+        obd = np.zeros( len(self.system.grid) )
+        density = self.fill_density_matrix(C)
+        obd = 2*np.einsum('mi,mn,ni->i', self.system.spf, density, self.system.spf, dtype=np.complex128)
+
+        if plot_ON==True: 
+            plt.figure(figsize=(13, 13))
+            img = plt.imread("theoretical_density.png")
+            ext = [-6.0, 6.0, 0.00, 0.4]
+            plt.imshow(img, zorder=0, extent=ext)
+            aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
+            plt.gca().set_aspect(aspect)
+            plt.plot(self.system.grid, obd.real)
+            plt.grid()
+            plt.show()
+
+        return obd
 
     
