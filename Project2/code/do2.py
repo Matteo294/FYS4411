@@ -1,5 +1,6 @@
 from os import system
 import re
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.core.fromnumeric import shape
@@ -12,15 +13,19 @@ class GHF:
     def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=True):
         if potential is None:
             self.potential = ODQD.HOPotential(Omega)
+            # x=np.arange(-1,1,1e-3)
+            # plt.plot(x, self.potential(x))
         else:
             self.potential = potential
         
-        odho = ODQD(l, grid_length, num_grid_points, a, alpha, potential=potential)
+        odho = ODQD(l, grid_length, num_grid_points, a, alpha, potential=self.potential)
         self.system = GeneralOrbitalSystem(n=nparticles, basis_set=odho, anti_symmetrize=antisymmetrize)
         
         self.nparticles = nparticles
+        self.Omega = Omega
         self.omega = omega
         self.epsilon0 = epsilon0
+        
     
     def laser_potential(self, t):
         return self.epsilon0 * np.sin( self.omega * t )
@@ -124,6 +129,16 @@ class GHF:
     
     def solve_TIHF(self, tolerance, max_iter, print_ON=False, energy_per_step_ON=False):
         epsilon, C = scipy.linalg.eigh(np.eye(self.system.l))
+        
+        # C = np.empty((self.system.l, self.system.l))
+        # for i in range(self.system.l):
+        #     x = np.array([np.random.random() for j in range(self.system.l - 1)])
+        #     y = (self.system.l - np.sum(np.abs(x)**2))**0.5
+        #     x = np.append(x, y)/ np.sqrt(self.system.l)
+        #     C[:,i] = x.T
+        #     # print(np.sum(np.abs(C[:,i])**2))
+        
+        # epsilon = np.ones(self.system.l)
         epsilon_old = epsilon
         deltaE=1
         i=0
@@ -168,7 +183,8 @@ class GHF:
         # this function needs to be defined here because passing f_args to integrator is broken
         #print(np.reshape(C0, len(C0)**2 ))
         i_max = int( np.floor((t_max - tstart)/ dt) )
-        time = np.linspace( tstart, tstart+i_max*dt, i_max ) * 0.5 * self.omega / np.pi
+        time = np.linspace( tstart, tstart+i_max*dt, i_max )
+        # time = np.linspace( tstart, tstart+i_max*dt, i_max ) * 0.5 * self.omega / np.pi
 
         if eval_overlap==True:
             overlap = np.zeros( (i_max), dtype=np.complex128 )
@@ -185,6 +201,7 @@ class GHF:
         while integrator.successful() and i<i_max:
             C = integrator.integrate(integrator.t+dt)
             C = np.matrix(np.reshape(C, self.system.h.shape))
+            print(f'progress= {100*i/i_max}%', end='\r')
 
             if eval_overlap==True:
                 overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
@@ -221,6 +238,7 @@ class GHF:
     
 
 
+
 class RHF(GHF):
     def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=False):
         if potential is None:
@@ -228,10 +246,9 @@ class RHF(GHF):
         else:
             self.potential = potential
         
-        odho = ODQD(l, grid_length, num_grid_points, a, alpha, potential=potential)
-        self.system = GeneralOrbitalSystem(n=nparticles, basis_set=odho, anti_symmetrize=antisymmetrize)
-        
+        self.system = ODQD(l, grid_length, num_grid_points, a, alpha, potential=potential)
         self.nparticles = nparticles
+        self.Omega = Omega
         self.omega = omega
         self.epsilon0 = epsilon0
     
@@ -262,15 +279,5 @@ class RHF(GHF):
         
         return energy
     
-    
-
-
-
-class wrapfunc(object):
-    def __init__(self, func, args=[]):
-        self.ff = func
-        self.args = args
-    def f(self, t, C):
-        return self.ff(t, C, *self.args)
 
     
