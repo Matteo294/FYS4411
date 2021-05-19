@@ -1,6 +1,7 @@
 from os import system
 import re
 import sys
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.core.fromnumeric import shape
@@ -8,6 +9,8 @@ from numpy.lib.type_check import imag
 import scipy.linalg, scipy.integrate
 from quantum_systems import ODQD, GeneralOrbitalSystem
 from IPython.display import display, clear_output
+matplotlib.rcParams['mathtext.fontset'] = 'stix'
+matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
 class GHF:
     def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=True):
@@ -54,27 +57,70 @@ class GHF:
         plt.grid()
         plt.show()
     
-    def plot_overlap(self, time, overlap):
-        plt.figure(figsize=(8,5))
+    def plot_overlap(self, time, overlap, save_fig=False):
+        plt.figure(figsize=(16,16))
         img = plt.imread("theoretical_overlap.png")
         ext = [0.0, 4.0, 0.0, 1.0]
         plt.imshow(img, zorder=0, extent=ext)
         aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
         plt.gca().set_aspect(aspect)
         plt.plot(time* 0.5 * self.omega / np.pi, overlap)
+        plt.xlabel(r'$t\omega/2\pi}$', fontsize=16)
+        plt.ylabel(r'$\xi(t)$', fontsize=16)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+        plt.grid()
+        if save_fig==True:
+            plt.savefig('../paper/images/time_dependent_overlap.pdf', bbox_inches='tight')
+        plt.show()
     
-    def plot_dipole(self, time, dipole):
+    def plot_dipole(self, time, dipole, save_fig=False):
         plt.figure(figsize=(8,5))
         plt.plot(time* 0.5 * self.omega / np.pi, dipole)
+        plt.xlabel(r'$t\omega/2\pi}$', fontsize=16)
+        plt.ylabel(r'$\overline{x}(t)$', fontsize=16)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
         plt.grid()
+        if save_fig==True:
+            plt.savefig('../paper/images/time_dependent_dipole.pdf', bbox_inches='tight')
+        plt.show()
     
-    def plot_energy_per_iteration(self, energy_ghf, energy_rhf):
-        plt.figure(figsize=(8,5))
+    def plot_energy_per_iteration(self, energy_ghf, energy_rhf, save_fig=False):
+        plt.figure(figsize=(10,8))
         plt.plot(np.arange(len(energy_ghf)), energy_ghf, label='GHF')
         plt.plot(np.arange(len(energy_rhf)), energy_rhf, label='RHF')
+        plt.xlabel('Iteration', fontsize=16)
+        plt.ylabel('Energy', fontsize=16)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
         plt.grid()
         plt.legend()
+        if save_fig==True:
+            plt.savefig('../paper/images/energy_at_every_step.pdf', bbox_inches='tight')
+        plt.show()
         
+    
+    def plot_onebody_comparison(self, onebodyg, onebodyr, save_fig=False):
+        plt.figure(figsize=(13, 13))
+        img = plt.imread("theoretical_density.png")
+        ext = [-6.0, 6.0, 0.00, 0.4]
+        plt.imshow(img, zorder=0, extent=ext)
+        aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
+        plt.gca().set_aspect(aspect)
+        plt.plot(self.system.grid, onebodyg.real, label='GHF')
+        plt.plot(self.system.grid, onebodyr.real, label='RHF')
+        plt.xlabel('x', fontsize=16)
+        plt.ylabel(r'$\rho(x)$', fontsize=16)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+        plt.grid()
+        plt.legend()
+        if save_fig==True:
+            plt.savefig('../paper/images/one_body_density_comparison.pdf', bbox_inches='tight')
+        plt.show()
+
+
     
     def fill_density_matrix(self, C, full_density=False):
         if full_density is True: 
@@ -104,7 +150,7 @@ class GHF:
         
         return energy
     
-    def eval_one_body_density(self, C, plot_ON=False):
+    def eval_one_body_density(self, C, plot_ON=False, save_fig=False):
         obd = np.zeros( len(self.system.grid) )
         density = self.fill_density_matrix(C)
         obd = np.einsum('mi,mn,ni->i', self.system.spf, density, self.system.spf, dtype=np.complex128)
@@ -117,7 +163,13 @@ class GHF:
             aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
             plt.gca().set_aspect(aspect)
             plt.plot(self.system.grid, obd.real)
+            plt.xlabel('x', fontsize=16)
+            plt.ylabel(r'$\rho(x)$', fontsize=16)
+            ax = plt.gca()
+            ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
             plt.grid()
+            if save_fig==True:
+                plt.savefig('../paper/images/one_body_density_comparison.pdf', bbox_inches='tight')
             plt.show()
 
         return obd
@@ -129,7 +181,11 @@ class GHF:
     
     def solve_TIHF(self, tolerance, max_iter, print_ON=False, energy_per_step_ON=False):
         epsilon, C = scipy.linalg.eigh(np.eye(self.system.l))
-        
+        C[0,0] = 1/np.sqrt(2)
+        C[0,1] = 1/np.sqrt(2)
+        C[1,0] = 1/np.sqrt(2)
+        C[1,1] = 1/np.sqrt(2)
+
         # C = np.empty((self.system.l, self.system.l))
         # for i in range(self.system.l):
         #     x = np.array([np.random.random() for j in range(self.system.l - 1)])
@@ -138,8 +194,8 @@ class GHF:
         #     C[:,i] = x.T
         #     # print(np.sum(np.abs(C[:,i])**2))
         
-        # epsilon = np.ones(self.system.l)
-        density_old = self.eval_one_body_density(C)
+        # density_old = self.eval_one_body_density(C)
+        epsilon_old = epsilon
         deltaE=1
         i=0
 
@@ -151,9 +207,8 @@ class GHF:
         while i<max_iter and deltaE>tolerance:
             f = self.fill_fock_matrix(C, t=0)
             epsilon, C = scipy.linalg.eigh(f)
-            density = self.eval_one_body_density(C)
-            deltaE = scipy.integrate.trapz(np.abs(density - density_old), self.system.grid)
-            density_old = density
+            deltaE = np.sum(np.abs(epsilon - epsilon_old))/self.system.l
+            epsilon_old = epsilon
             if energy_per_step_ON == True:
                 energy_per_step[i] = self.evaluate_total_energy(C)
             i+=1
@@ -218,7 +273,7 @@ class GHF:
             else:
                 return C, time
             
-    def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt, plot_dipole=False, plot_fft=True):
+    def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt, plot_dipole=False, plot_fft=False):
         epsilon, C0 = self.solve_TIHF(tolerance=tolerance, max_iter=max_iter, print_ON=False, energy_per_step_ON=False)
         C1, time1, dipole1 = self.solve_TDHF(0, dt, t_laser_ON, C0, eval_overlap=False, eval_dipole=True, laser_ON=True)
         C2, time2, dipole2 = self.solve_TDHF(t_laser_ON,  dt, t_max, C1, eval_overlap=False, eval_dipole=True, laser_ON=False)
@@ -236,6 +291,8 @@ class GHF:
             plt.figure(figsize=(8,5))
             plt.plot(2*np.pi*freqFFT, np.abs(signalFFT))
             plt.xlim([0, 3])
+        
+        return C2
 
     
     def animation(self, i, line, dt, t_max, C0):
