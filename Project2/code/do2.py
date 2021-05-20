@@ -13,6 +13,11 @@ matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
 class GHF:
+    """
+    
+    General Hartree-Fock
+    
+    """
     def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=True):
         if potential is None:
             self.potential = ODQD.HOPotential(Omega)
@@ -20,7 +25,7 @@ class GHF:
             # plt.plot(x, self.potential(x))
         else:
             self.potential = potential
-        
+
         odho = ODQD(l, grid_length, num_grid_points, a, alpha, potential=self.potential)
         self.system = GeneralOrbitalSystem(n=nparticles, basis_set=odho, anti_symmetrize=antisymmetrize)
         
@@ -30,10 +35,10 @@ class GHF:
         self.epsilon0 = epsilon0
         
     
-    def laser_potential(self, t):
-        return self.epsilon0 * np.sin( self.omega * t )
-    
     def plot_AO(self): 
+
+        """ This function can be called only after creation of odho and before creation of system.
+        This plots the Atormic Orbital basis --> in our case the HO eigenstates """
         plt.figure(figsize=(8, 5))
         plt.plot(self.system.grid, self.potential(self.system.grid))
 
@@ -45,6 +50,9 @@ class GHF:
         plt.show()
     
     def plot_MO(self, epsilon, C):
+        """ This function prints the Molecular Orbitals obtained after the convergence of the HF method
+    the basis has not been changed for the system it is used just for a comparison with the output of plot_MO_abc()"""
+
         plt.figure(figsize=(8,5))
         plt.plot(self.system.grid, self.potential(self.system.grid))
 
@@ -56,8 +64,9 @@ class GHF:
 
         plt.grid()
         plt.show()
-    
+
     def plot_overlap(self, time, overlap, save_fig=False):
+        
         plt.figure(figsize=(16,16))
         img = plt.imread("theoretical_overlap.png")
         ext = [0.0, 4.0, 0.0, 1.0]
@@ -119,10 +128,13 @@ class GHF:
         if save_fig==True:
             plt.savefig('../paper/images/one_body_density_comparison.pdf', bbox_inches='tight')
         plt.show()
-
-
+    
+    def laser_potential(self, t):
+        """ This function sets up the laser potential"""
+        return self.epsilon0 * np.sin( self.omega * t )
     
     def fill_density_matrix(self, C, full_density=False):
+        """This function fills the density matrix from the coefficient matrix""" 
         if full_density is True: 
             imax = len(C)
         else:
@@ -135,6 +147,7 @@ class GHF:
         return density
     
     def fill_fock_matrix(self, C, t):
+        """This function fills the fock matrix""" 
         f = np.zeros(self.system.h.shape, dtype=np.complex128)    
         density = self.fill_density_matrix(C)
         
@@ -144,13 +157,14 @@ class GHF:
         return f
     
     def evaluate_total_energy(self, C):
+        """This function evaluates the total energy of the system. It adapts the formulas depending on the fact that the basis change has been performed or not"""
         density = self.fill_density_matrix(C)
         rhorho = np.einsum('ab,cd->abcd', density, density, dtype=np.complex128)
         energy = np.einsum('ij,ij', density, self.system.h) + 0.5*np.einsum('abcd,acbd', rhorho, self.system.u, dtype=np.complex128)
-        
         return energy
     
     def eval_one_body_density(self, C, plot_ON=False, save_fig=False):
+        
         obd = np.zeros( len(self.system.grid) )
         density = self.fill_density_matrix(C)
         obd = np.einsum('mi,mn,ni->i', self.system.spf, density, self.system.spf, dtype=np.complex128)
@@ -175,11 +189,13 @@ class GHF:
         return obd
     
     def eval_dipole(self, C):
+        """ This function evaluates the expectation value of dipole"""
         density = self.fill_density_matrix(C)
         dipole = np.einsum('mn,mn', density, self.system.position[0])
         return dipole
     
     def solve_TIHF(self, tolerance, max_iter, print_ON=False, energy_per_step_ON=False):
+        """ This function solves the time Independent hartree fock"""
         epsilon, C = scipy.linalg.eigh(np.eye(self.system.l))
         C[0,0] = 1/np.sqrt(2)
         C[0,1] = 1/np.sqrt(2)
@@ -221,6 +237,7 @@ class GHF:
             return epsilon, C
 
     def rhsf(self, t, C):
+        """This is the right  half side when the laser potential is turned on"""
         C = np.reshape(C, self.system.h.shape)
         f = self.fill_fock_matrix(C, t)
         res = -1.0j * (f @ C)
@@ -228,6 +245,7 @@ class GHF:
         return res
     
     def rhsf_OFF(self, t, C):
+        """This is the right half side when the laser potential is turned on"""
         C = np.reshape(C, self.system.h.shape)
         f = self.fill_fock_matrix(C, t=0)
         res = -1.0j * (f @ C)
@@ -235,7 +253,7 @@ class GHF:
         return res
     
     def solve_TDHF(self, tstart, dt, t_max, C0, eval_overlap=False, eval_dipole=False, laser_ON=True):
-        
+        """ This function solves the time dependent hartree fock"""
         i_max = int( np.floor((t_max - tstart)/ dt) )
         time = np.linspace( tstart, tstart+i_max*dt, i_max )
 
@@ -274,6 +292,9 @@ class GHF:
                 return C, time
             
     def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt, plot_dipole=False, plot_fft=False):
+        """Fourier analisys:
+         This function runs a simulation with a laser pulse, and plot the Fourier 
+        spectra of the overlap and the dipole moment after the pulse is turned off."""
         epsilon, C0 = self.solve_TIHF(tolerance=tolerance, max_iter=max_iter, print_ON=False, energy_per_step_ON=False)
         C1, time1, dipole1 = self.solve_TDHF(0, dt, t_laser_ON, C0, eval_overlap=False, eval_dipole=True, laser_ON=True)
         C2, time2, dipole2 = self.solve_TDHF(t_laser_ON,  dt, t_max, C1, eval_overlap=False, eval_dipole=True, laser_ON=False)
@@ -313,6 +334,14 @@ class GHF:
 
 
 class RHF(GHF):
+    """Restricted Hartree-Fock
+
+    The class ereditates all the neccesary functions from the General Hartree Fock class, and modifies only those ones that require different conditions
+    to compute the restricted case
+    
+    Parent class with constructor and main interface functions.
+     See also: GHF
+    """
     def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=False):
         if potential is None:
             self.potential = ODQD.HOPotential(Omega)

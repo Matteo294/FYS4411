@@ -4,9 +4,13 @@ import scipy.linalg, scipy.integrate
 from quantum_systems import ODQD, GeneralOrbitalSystem
 from IPython.display import display, clear_output
 
-#can be called only after creation of odho and before creation of system!!!
-# plots the Atormic Orbital basis --> in our case the HO eigenstates
+
 def plot_AO(odho, potential): 
+
+    """ This function can be called only after creation of odho and before creation of system.
+    This plots the Atormic Orbital basis --> in our case the HO eigenstates """
+
+
     plt.figure(figsize=(8, 5))
     plt.plot(odho.grid, potential(odho.grid))
 
@@ -17,10 +21,14 @@ def plot_AO(odho, potential):
     plt.legend()
     plt.show()
 
-# prints the Molecular Orbitals obtained after the convergence of the HF method
-# the basis has not been changed for the system
-# it is used just for a comparison with the output of plot_MO_abc()
+
 def plot_MO(system, potential, epsilon, C):
+
+
+    """ This function prints the Molecular Orbitals obtained after the convergence of the HF method
+    the basis has not been changed for the system it is used just for a comparison with the output of plot_MO_abc()"""
+
+
     plt.figure(figsize=(8,5))
     plt.plot(system.grid, potential(system.grid))
 
@@ -34,10 +42,9 @@ def plot_MO(system, potential, epsilon, C):
     #plt.legend()
     plt.show()
 
-# abc = after basis change, can be called only after system.change_basis(C)
-# plots the Molecular Orbitals obtained after the convergence of the HF procedure
-# here the basis of the system has already been changed
 def plot_MO_abc(system, potential, epsilon):
+    """abc = after basis change, can be called only after system.change_basis(C).
+    This function plots the Molecular Orbitals obtained after the convergence of the HF procedure when the basis of the system has already been changed"""
     plt.figure(figsize=(8, 5))
     plt.plot(system.grid, potential(system.grid))
 
@@ -48,9 +55,13 @@ def plot_MO_abc(system, potential, epsilon):
     #plt.legend()
     plt.show()
 
-# changes basis and modifies system as a consequence
 def change_basis(system, C):
-        
+
+
+    """changes basis and modifies system as a consequence (change basis of system.spf , system.h, system.u)
+    """
+
+
     ####### system.spf ########
     #spf = np.copy(system.spf)
     spf = system.spf
@@ -69,11 +80,13 @@ def change_basis(system, C):
     system._basis_set._u = np.einsum('dq,mnpd->mnpq', C, u3)
 
 def laser_potential(t, omega, epsilon0):
+    """ This function sets up the laser potential"""
     return epsilon0 * np.sin( omega * t )
 
 
 # density matrix
 def fill_density_matrix(coefficients, Nparticles=None):
+    """This function fills the density matrix from the coefficient matrix""" 
     if Nparticles is None: 
         Nparticles=len(coefficients)
 
@@ -85,6 +98,7 @@ def fill_density_matrix(coefficients, Nparticles=None):
 
 
 def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0, unrestricted=False):
+    """This function fills the fock matrix""" 
     f = np.zeros(system.h.shape, dtype=np.complex128)    
     density = fill_density_matrix(C,nparticles)
     
@@ -108,6 +122,7 @@ def fill_fock_matrix(system, nparticles, C, t, omega, epsilon0, unrestricted=Fal
 # evaluates the total energy of the system
 # adapts the formulas depending on the fact that the basis change has been performed or not
 def evaluate_total_energy(system, nparticles, C, changed=False, epsilon=None, unrestricted=False):
+    """This function evaluates the total energy of the system. It adapts the formulas depending on the fact that the basis change has been performed or not"""
     energy = 0
     if unrestricted==False:
         if changed is True:
@@ -142,14 +157,16 @@ def evaluate_total_energy(system, nparticles, C, changed=False, epsilon=None, un
 
 
 def eval_one_body_density(system, nparticles, coefficients):
+    """This function evvaluates the body density """
     obd = np.zeros( len(system.grid) )
     density = fill_density_matrix(coefficients,nparticles)
     obd = np.einsum('mi,mn,ni->i', system.spf, density, system.spf, dtype=np.complex128)
     return obd
 
 
-# evaluates the one-body density and plots it overlapped with the curve from the article
+# 
 def plot_overlap_one_body_density(system, obd):  
+    """This function plots the one body density overlapped with the curve from the article (put link)"""
     plt.figure(figsize=(16, 16))
     img = plt.imread("theoretical_density.png")
     ext = [-6.0, 6.0, 0.00, 0.4]
@@ -161,6 +178,9 @@ def plot_overlap_one_body_density(system, obd):
     plt.show()
 
 def plot_overlap_slater_det(system, overlap, time):
+
+    """ This function plots the one body density overlapped with the curve from the article (put link)"""
+
     plt.figure(figsize=(12,8))
     img = plt.imread("theoretical_overlap.png")
     ext = [0.0, 4.0, 0.0, 1.0]
@@ -170,6 +190,7 @@ def plot_overlap_slater_det(system, overlap, time):
     plt.plot(time, overlap)
 
 def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False, unrestricted=False):
+    """ This function solves the time Independent hartree fock"""
     epsilon, C = scipy.linalg.eigh(system.h)
     epsilon_old = epsilon
     deltaE=1
@@ -189,6 +210,7 @@ def solve_TIHF(system, nparticles, tolerance, max_iter, print_on=False, unrestri
     return epsilon, C, energy
 
 class wrapfunc(object):
+    """ wrapfunction"""
     def __init__(self, func, args=[]):
         self.ff = func
         self.args = args
@@ -196,6 +218,7 @@ class wrapfunc(object):
         return self.ff(t, C, *self.args)
 
 def rhsf(t, C, system, omega, epsilon0, nparticles):
+    """Right half side"""
     C = np.reshape(C, system.h.shape)
     f = fill_fock_matrix(system, nparticles, C, t, omega, epsilon0)
     res = -1.0j * (f @ C)
@@ -203,8 +226,9 @@ def rhsf(t, C, system, omega, epsilon0, nparticles):
     return res
 
 def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, integrator, animation=False):
-    # returns a 1-d array with the right-hand side of time-dependent HF equation
-    # this function needs to be defined here because passing f_args to integrator is broken
+    """ This function solves the time dependent hartree fock and 
+    returns a 1-d array with the right-hand side of time-dependent HF equation.
+    This function needs to be defined here because passing f_args to integrator is broken"""
 
     i_max = int( np.floor(t_max / dt) )
     overlap = np.zeros( (i_max) )
@@ -232,7 +256,7 @@ def solve_TDHF(system, dt, t_max, C0, omega, epsilon0, nparticles, integrator, a
     return overlap, time
 
 def animation(i, line, system, dt, t_max, C0, omega, epsilon0, nparticles, integrator):
-
+    """This function plots the animation of the one body density over time"""
     i_max = int( np.floor(t_max / dt) )
     overlap = np.zeros( (i_max) )
     time = np.linspace( 0, i_max*dt, i_max ) * 0.5 * omega / np.pi
