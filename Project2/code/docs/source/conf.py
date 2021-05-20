@@ -2,7 +2,7 @@
 #
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Path setup --------------------------------------------------------------
 
@@ -12,24 +12,26 @@
 #
 import os
 import sys
-
 sys.path.insert(0, os.path.abspath("."))
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath("../../.."))
 
 
 # -- Project information -----------------------------------------------------
 
-project = "Quantum Systems"
-copyright = "2019, Schoyen, gregwinther"
-author = "Schoyen, gregwinther"
+project = 'Time Dependent Hartree-Fock'
+copyright = '2021, Emiliano Staffoli, Matteo Zortea, Alexander Ferraro'
+author = 'Emiliano Staffoli, Matteo Zortea, Alexander Ferraro'
 
+# The full version, including alpha/beta/rc tags
+release = '2021'
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.mathjax", "sphinx.ext.napoleon"]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.mathjax", "sphinx.ext.napoleon","rinoh.frontend.sphinx"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
