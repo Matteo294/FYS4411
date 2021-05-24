@@ -1,3 +1,5 @@
+from logging import log
+from operator import pos
 from os import system
 import re
 import sys
@@ -16,8 +18,6 @@ class GHF:
     def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=True):
         if potential is None:
             self.potential = ODQD.HOPotential(Omega)
-            # x=np.arange(-1,1,1e-3)
-            # plt.plot(x, self.potential(x))
         else:
             self.potential = potential
         
@@ -47,7 +47,7 @@ class GHF:
     def plot_MO(self, epsilon, C):
         plt.figure(figsize=(8,5))
         plt.plot(self.system.grid, self.potential(self.system.grid))
-
+        
         for i in range(self.system.l):
             to_plot = np.zeros( self.system.grid.shape, np.complex128 )
             for j in range(self.system.l):
@@ -58,7 +58,7 @@ class GHF:
         plt.show()
     
     def plot_overlap(self, time, overlap, save_fig=False):
-        plt.figure(figsize=(16,16))
+        plt.figure(figsize=(16,5))
         img = plt.imread("theoretical_overlap.png")
         ext = [0.0, 4.0, 0.0, 1.0]
         plt.imshow(img, zorder=0, extent=ext)
@@ -67,42 +67,92 @@ class GHF:
         plt.plot(time* 0.5 * self.omega / np.pi, overlap)
         plt.xlabel(r'$t\omega/2\pi}$', fontsize=16)
         plt.ylabel(r'$\xi(t)$', fontsize=16)
+        #plt.xlim([0,8])
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
         plt.grid()
         if save_fig==True:
             plt.savefig('../paper/images/time_dependent_overlap.pdf', bbox_inches='tight')
         plt.show()
-    
+
     def plot_dipole(self, time, dipole, save_fig=False):
-        plt.figure(figsize=(8,5))
+        plt.figure(figsize=(10,7))
         plt.plot(time* 0.5 * self.omega / np.pi, dipole)
-        plt.xlabel(r'$t\omega/2\pi}$', fontsize=16)
-        plt.ylabel(r'$\overline{x}(t)$', fontsize=16)
+        plt.xlabel(r'$t\omega/2\pi}$', fontsize=22)
+        plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
         ax = plt.gca()
-        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
         plt.grid()
         if save_fig==True:
             plt.savefig('../paper/images/time_dependent_dipole.pdf', bbox_inches='tight')
         plt.show()
-    
-    def plot_energy_per_iteration(self, energy_ghf, energy_rhf, save_fig=False):
-        plt.figure(figsize=(10,8))
-        plt.plot(np.arange(len(energy_ghf)), energy_ghf, label='GHF')
-        plt.plot(np.arange(len(energy_rhf)), energy_rhf, label='RHF')
-        plt.xlabel('Iteration', fontsize=16)
-        plt.ylabel('Energy', fontsize=16)
+        
+    def plot_overlaps(self, time, overlap1, overlap2, overlap3, save_fig=False):
+        plt.figure(figsize=(16,5))
+        plt.plot(time* 0.5 * self.Omega / np.pi, overlap1, label=r'$\omega=8\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, overlap2, label=r'$\omega=4\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, overlap3, label=r'$\omega=32\Omega$')
+        plt.xlabel(r'$\frac{t}{2\pi/\Omega}$', fontsize=16)
+        plt.ylabel(r'$\xi(t)$', fontsize=16)
+        plt.xlim([0, 1.2])
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
         plt.grid()
-        plt.legend()
+        plt.legend(fontsize=16)
+        if save_fig==True:
+            plt.savefig('../paper/images/overlaps_different_omega.pdf', bbox_inches='tight')
+        plt.show()
+    
+
+    def plot_dipoles(self, time, dipole1, dipole2, dipole3, save_fig=False):
+        plt.figure(figsize=(10,7))
+        plt.plot(time* 0.5 * self.Omega / np.pi, dipole1, label=r'$\omega=8\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, dipole2, label=r'$\omega=4\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, dipole3, label=r'$\omega=32\Omega$')
+        plt.xlabel(r'$t\omega/2\pi}$', fontsize=22)
+        plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        plt.grid()
+        plt.legend(fontsize=16)
+        if save_fig==True:
+            plt.savefig('../paper/images/dipoles_different_omega.pdf', bbox_inches='tight')
+        plt.show()
+    
+    def plot_energy_per_iteration(self, energy_ghf, energy_rhf, save_fig=False):
+        plt.figure(figsize=(10,7))
+        plt.plot(np.arange(len(energy_ghf)), energy_ghf, label='GHF')
+        plt.plot(np.arange(len(energy_rhf)), energy_rhf, label='RHF')
+        plt.xlabel('Iteration', fontsize=22)
+        plt.ylabel('Energy', fontsize=22)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        plt.grid()
+        plt.legend(fontsize=14)
+
         if save_fig==True:
             plt.savefig('../paper/images/energy_at_every_step.pdf', bbox_inches='tight')
         plt.show()
         
+    def plot_delta_per_iteration(self, delta_ghf, delta_rhf, tolerance, save_fig=False):
+        plt.figure(figsize=(10,7))
+        plt.plot(np.arange(len(delta_ghf)), delta_ghf, label='GHF')
+        plt.plot(np.arange(len(delta_rhf)), delta_rhf, label='RHF')
+        plt.plot(np.arange(len(delta_rhf)), tolerance*np.ones(len(delta_ghf)), linestyle='--', color='red', label=r'$\delta$')
+        plt.xlabel('Iteration', fontsize=22)
+        plt.ylabel(r'$\Delta$', fontsize=22)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        ax.set_yscale('log')
+        plt.grid()
+        plt.legend(fontsize=14)
+
+        if save_fig==True:
+            plt.savefig('../paper/images/delta_at_every_step.pdf', bbox_inches='tight')
+        plt.show()
     
     def plot_onebody_comparison(self, onebodyg, onebodyr, save_fig=False):
-        plt.figure(figsize=(13, 13))
+        plt.figure(figsize=(16, 16))
         img = plt.imread("theoretical_density.png")
         ext = [-6.0, 6.0, 0.00, 0.4]
         plt.imshow(img, zorder=0, extent=ext)
@@ -115,13 +165,35 @@ class GHF:
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
         plt.grid()
-        plt.legend()
+        plt.legend(fontsize=12)
         if save_fig==True:
             plt.savefig('../paper/images/one_body_density_comparison.pdf', bbox_inches='tight')
         plt.show()
 
+    def plot_fft_comparison(self, freq1,freq2,freq3, fft1, fft2, fft3, save_fig=False):
+        plt.figure(figsize=(10,7))
+        freq1 = freq1[freq1>=0]
+        freq2 = freq2[freq2>=0]
+        freq3 = freq3[freq3>=0]
+        fft1 = fft1[0:len(freq1)]
+        fft2 = fft2[0:len(freq2)]
+        fft3 = fft3[0:len(freq2)]
+        
+        plt.plot(2*np.pi*freq1, np.abs(fft1), label=r'$\Omega=0.25, \omega=2.0$')
+        plt.plot(2*np.pi*freq2, np.abs(fft2), label=r'$\Omega=0.5, \omega=3.0$')
+        plt.plot(2*np.pi*freq3, np.abs(fft3), label=r'$\Omega=1.0, \omega=4.0$')
+        plt.xlabel(r'$\omega_{fft}$', fontsize=22)
+        plt.ylabel('FFT', fontsize=22)
+        plt.xlim([0, 2])
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        plt.grid()
+        plt.legend(fontsize=14)
 
-    
+        if save_fig==True:
+            plt.savefig('../paper/images/spectra.pdf', bbox_inches='tight')
+        plt.show()
+
     def fill_density_matrix(self, C, full_density=False):
         if full_density is True: 
             imax = len(C)
@@ -165,6 +237,7 @@ class GHF:
             plt.plot(self.system.grid, obd.real)
             plt.xlabel('x', fontsize=16)
             plt.ylabel(r'$\rho(x)$', fontsize=16)
+            plt.xlim([-10, 10])
             ax = plt.gca()
             ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
             plt.grid()
@@ -179,30 +252,17 @@ class GHF:
         dipole = np.einsum('mn,mn', density, self.system.position[0])
         return dipole
     
-    def solve_TIHF(self, tolerance, max_iter, print_ON=False, energy_per_step_ON=False):
+    def solve_TIHF(self, tolerance, max_iter, print_ON=False, energy_per_step_ON=False, return_delta=False):
         epsilon, C = scipy.linalg.eigh(np.eye(self.system.l))
-        C[0,0] = 1/np.sqrt(2)
-        C[0,1] = 1/np.sqrt(2)
-        C[1,0] = 1/np.sqrt(2)
-        C[1,1] = 1/np.sqrt(2)
-
-        # C = np.empty((self.system.l, self.system.l))
-        # for i in range(self.system.l):
-        #     x = np.array([np.random.random() for j in range(self.system.l - 1)])
-        #     y = (self.system.l - np.sum(np.abs(x)**2))**0.5
-        #     x = np.append(x, y)/ np.sqrt(self.system.l)
-        #     C[:,i] = x.T
-        #     # print(np.sum(np.abs(C[:,i])**2))
         
-        # density_old = self.eval_one_body_density(C)
         epsilon_old = epsilon
         deltaE=1
         i=0
 
         if energy_per_step_ON == True:
             energy_per_step = np.zeros((max_iter), dtype=np.complex128)
-        else:
-            energy_per_step = None
+        if return_delta==True:
+            delta = np.zeros((max_iter), dtype=np.complex128)
         
         while i<max_iter and deltaE>tolerance:
             f = self.fill_fock_matrix(C, t=0)
@@ -211,14 +271,24 @@ class GHF:
             epsilon_old = epsilon
             if energy_per_step_ON == True:
                 energy_per_step[i] = self.evaluate_total_energy(C)
+            if return_delta==True:
+                delta[i] = deltaE
             i+=1
         
         if deltaE<tolerance and print_ON==True: print("Converged")
         elif i>=max_iter and print_ON==True : print("Max iteration number reached")
+        
         if energy_per_step_ON==True:
-            return epsilon, C, energy_per_step
+            if return_delta==True:
+                return epsilon, C, energy_per_step, delta
+            else:
+                return epsilon, C, energy_per_step
         else:
-            return epsilon, C
+            if return_delta==True:
+                return epsilon, C, delta
+            else:
+                return epsilon, C
+            
 
     def rhsf(self, t, C):
         C = np.reshape(C, self.system.h.shape)
@@ -256,10 +326,12 @@ class GHF:
             C = np.matrix(np.reshape(C, self.system.h.shape))
 
             if eval_overlap==True:
-                overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
+                overlap[i] = np.abs(np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
             if eval_dipole==True:
                 dipole[i] = self.eval_dipole(C)
             i += 1
+            if i%10==0:
+                print('\rprogress = %.2f' % (100*i/i_max), end='')
         
         C = np.array(C)
         if eval_overlap==True:
@@ -273,26 +345,71 @@ class GHF:
             else:
                 return C, time
             
-    def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt, plot_dipole=False, plot_fft=False):
+    def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt, plot_dipole=False, plot_overlap=False, plot_fft_x=False, plot_fft_overlap=False, save_dipole=False, save_fft_x=False, save_fft_overlap=False):
         epsilon, C0 = self.solve_TIHF(tolerance=tolerance, max_iter=max_iter, print_ON=False, energy_per_step_ON=False)
-        C1, time1, dipole1 = self.solve_TDHF(0, dt, t_laser_ON, C0, eval_overlap=False, eval_dipole=True, laser_ON=True)
-        C2, time2, dipole2 = self.solve_TDHF(t_laser_ON,  dt, t_max, C1, eval_overlap=False, eval_dipole=True, laser_ON=False)
+        C1, time1, overlap1, dipole1 = self.solve_TDHF(0, dt, t_laser_ON, C0, eval_overlap=True, eval_dipole=True, laser_ON=True)
+        C2, time2, overlap2, dipole2 = self.solve_TDHF(t_laser_ON,  dt, t_max, C1, eval_overlap=True, eval_dipole=True, laser_ON=False)
         time = np.concatenate((time1,time2))
         dipole = np.concatenate((dipole1, dipole2))
+        overlap = np.concatenate((overlap1, overlap2))
 
-        signalFFT = np.fft.fft(dipole2)
-        freqFFT = np.fft.fftfreq(len(dipole2), dt)
+        xFFT = np.fft.fft(dipole2)
+        xfreqFFT = np.fft.fftfreq(len(dipole2), dt)
+        overlapFFT = np.fft.fft(overlap2)
+        overlapfreqFFT = np.fft.fftfreq(len(overlap2), dt)
 
         if plot_dipole==True:
-            plt.figure(figsize=(8,5))
-            plt.plot(time, dipole)
-
-        if plot_fft==True:
-            plt.figure(figsize=(8,5))
-            plt.plot(2*np.pi*freqFFT, np.abs(signalFFT))
-            plt.xlim([0, 3])
+            plt.figure(figsize=(16,5))
+            plt.plot(time*self.omega*0.5/np.pi, dipole.real)
+            plt.xlabel(r'$t\omega/2\pi$', fontsize=16)
+            plt.ylabel(r'$\overline{x}(t)$', fontsize=16)
+            ax = plt.gca()
+            ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
+            plt.grid()
+            if save_dipole==True:
+                plt.savefig('../paper/images/laser_on_off.pdf', bbox_inches='tight')
+            plt.show()
         
-        return C2
+        if plot_overlap==True:
+            plt.figure(figsize=(16,5))
+            plt.plot(time*self.omega*0.5/np.pi, overlap.real)
+            plt.xlabel(r'$t\omega/2\pi$', fontsize=16)
+            plt.ylabel(r'$\overline{x}(t)$', fontsize=16)
+            ax = plt.gca()
+            ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
+            plt.grid()
+            if save_dipole==True:
+                plt.savefig('../paper/images/laser_on_off.pdf', bbox_inches='tight')
+            plt.show()
+
+        if plot_fft_x==True:
+            plt.figure(figsize=(10,7))
+            plt.plot(2*np.pi*xfreqFFT, np.abs(xFFT))
+            plt.xlim([0, 3])
+            plt.xlabel(r'$\omega_{comp}$', fontsize=22)
+            plt.ylabel(r'$FFT[\overline{x}(t)]$', fontsize=22)
+            ax = plt.gca()
+            ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+            plt.grid()
+            if save_fft_x==True:
+                plt.savefig('../paper/images/x_spectrum.pdf', bbox_inches='tight')
+            plt.show()
+        
+        if plot_fft_overlap==True:
+            plt.figure(figsize=(10,7))
+            plt.plot(2*np.pi*overlapfreqFFT, np.abs(overlapFFT))
+            plt.xlim([0, 3])
+            plt.xlabel(r'$\omega_{comp}$', fontsize=22)
+            plt.ylabel(r'$FFT[\xi_{T}(t)]$', fontsize=22)
+            ax = plt.gca()
+            ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+            plt.grid()
+            if save_fft_x==True:
+                plt.savefig('../paper/images/overlap_spectrum.pdf', bbox_inches='tight')
+            plt.show()
+        
+        
+        return C2, time, dipole, overlap, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT
 
     
     def animation(self, i, line, dt, t_max, C0):
