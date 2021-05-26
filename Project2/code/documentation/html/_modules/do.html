@@ -46,17 +46,51 @@
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;mathtext.fontset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;stix&#39;</span>
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;STIXGeneral&#39;</span>
 
-
 <div class="viewcode-block" id="GHF"><a class="viewcode-back" href="../index.html#do.GHF">[docs]</a><span class="k">class</span> <span class="nc">GHF</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Contains tools to solve the Hartree-Fock equations in the general spin representation. The default values in the creator are referred to the analyzed case. &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a system in the general spin representation. The default values in the creator are referred to the analyzed case.</span>
+<span class="sd">        A more detailed description is provided in the paper folder in this same GitHub repository.</span>
+<span class="sd">        The quantum-system documentation appears in https://schoyen.github.io/quantum-systems/</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions</span>
+
+<span class="sd">            grid_length (int) : extension of the mesh goes from -grid_length to grid_length</span>
+
+<span class="sd">            num_grid_points (int) : number of points in the mesh</span>
+
+<span class="sd">            alpha (float) : strength parameter in the shielded Coulomb potential</span>
+
+<span class="sd">            a (float) : shielding parameter in the shielded Coulomb potential</span>
+
+<span class="sd">            Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</span>
+
+<span class="sd">            omega (float) : frequency of the laser source</span>
+
+<span class="sd">            epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</span>
+
+<span class="sd">            nparticles (int) : number of electrons in the system</span>
+
+<span class="sd">            antisymmetrize (bool) : if True, antisymmetrizes the system.u matrix</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            potential (func) : ODQD.HOPotential(Omega) </span>
+
+<span class="sd">            system : GeneralOrbitalSystem object (see https://schoyen.github.io/quantum-systems/)</span>
+
+<span class="sd">            Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</span>
+
+<span class="sd">            omega (float) : frequency of the laser source</span>
+
+<span class="sd">            epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</span>
+
+<span class="sd">            nparticles (int) : number of electrons in the system</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">grid_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">Omega</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsilon0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nparticles</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">antisymmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">grid_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">Omega</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsilon0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nparticles</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">antisymmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     	
-        <span class="k">if</span> <span class="n">potential</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">ODQD</span><span class="o">.</span><span class="n">HOPotential</span><span class="p">(</span><span class="n">Omega</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">potential</span>
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">ODQD</span><span class="o">.</span><span class="n">HOPotential</span><span class="p">(</span><span class="n">Omega</span><span class="p">)</span>        
         <span class="n">odho</span> <span class="o">=</span> <span class="n">ODQD</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">grid_length</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">GeneralOrbitalSystem</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">nparticles</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="n">odho</span><span class="p">,</span> <span class="n">anti_symmetrize</span><span class="o">=</span><span class="n">antisymmetrize</span><span class="p">)</span>
         
@@ -70,8 +104,11 @@
 <span class="sd">        Returns the value of the laser potential at time t.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            t : time instant</span>
+<span class="sd">            t (float) : time instant</span>
 <span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (float) epsilon0 * sin( omega * t )</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="o">*</span> <span class="n">t</span> <span class="p">)</span></div>
 
@@ -80,7 +117,10 @@
 <span class="sd">        Returns the density matrix evaluated using the coefficient matrix C.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            density_matrix (np.ndarray)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nparticles</span><span class="p">):</span>
@@ -93,8 +133,13 @@
 <span class="sd">        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
-<span class="sd">            t : time instant</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
+
+<span class="sd">            t (float) : time instant</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            fock_matrix (np.ndarray)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>    
         <span class="n">density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_density_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
@@ -109,7 +154,11 @@
 <span class="sd">        Returns the total energy of the system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            energy (float)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_density_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
         <span class="n">rhorho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ab,cd-&gt;abcd&#39;</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
@@ -121,10 +170,13 @@
 <span class="sd">        Returns the one-body density of the system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
 
 <span class="sd">        Kwargs:</span>
 <span class="sd">            plot_ON (bool) : if True plots the one-body density</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            one_body_density (np.array)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">obd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="p">)</span>
@@ -149,7 +201,11 @@
 <span class="sd">        Returns the expected value of the position operator for the system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:            </span>
+<span class="sd">            dipole (float) : expected value for position operator</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_density_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
         <span class="n">dipole</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;mn,mn&#39;</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -160,16 +216,26 @@
 <span class="sd">        Solves the Ruthaan-Hall equations for the system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            tolerance : stopping condition for the algorithm.</span>
+<span class="sd">            tolerance (float) : stopping condition for the algorithm.</span>
 <span class="sd">            </span>
-<span class="sd">            max_iter : maximum number of iterations before the algorithm stops</span>
+<span class="sd">            max_iter (int) : maximum number of iterations before the algorithm stops</span>
 
 <span class="sd">        Kwargs:</span>
 <span class="sd">            print_ON (bool) : if True prints if the convergence or the max number of iterations has been reached.</span>
 
-<span class="sd">            energy_per_step : if True, the energy of the system is evaluated at every step</span>
+<span class="sd">            energy_per_step (bool) : if True, the energy of the system is evaluated at every step</span>
 
-<span class="sd">            delta_per_step : if True, the delta parameter of the system is evaluated at every step</span>
+<span class="sd">            delta_per_step (bool) : if True, the delta parameter of the system is evaluated at every step</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            epsilon (np.array) : final eigenvalues</span>
+<span class="sd">            </span>
+<span class="sd">            C (np.ndarray) : final coefficient matrix</span>
+<span class="sd">            </span>
+<span class="sd">            energy_per_step (np.array) : None if energy_per_step==False</span>
+<span class="sd">            </span>
+<span class="sd">            delta_per_step (np.array) : None if delta_per_step==False</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">epsilon</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">l</span><span class="p">))</span>
@@ -213,6 +279,9 @@
 <span class="sd">                t : time</span>
 
 <span class="sd">                C : coefficient matrix</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                rhs (np.ndarray)</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -229,7 +298,10 @@
 <span class="sd">                t : time</span>
 
 <span class="sd">                C : coefficient matrix</span>
-<span class="sd">        </span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                rhs (np.ndarray)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_fock_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -255,6 +327,16 @@
 <span class="sd">            eval_dipole : if True, the expected value for the dipole operator is evaluated at every instant</span>
 
 <span class="sd">            laser_ON : if True, the laser source is on</span>
+<span class="sd">        </span>
+<span class="sd">        Returns: </span>
+<span class="sd">            C (np.ndarray) : coefficient matrix at t=t_max</span>
+<span class="sd">            </span>
+<span class="sd">            time (np.array) : time instants from tstart to t_max spaced by dt</span>
+<span class="sd">            </span>
+<span class="sd">            overlap (np.array) : None if eval_overlap==False</span>
+<span class="sd">            </span>
+<span class="sd">            dipole (np.array) : None if eval_dipole==False</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">i_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">tstart</span><span class="p">)</span><span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="p">)</span>
         <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tstart</span><span class="o">+</span><span class="n">i_max</span><span class="o">*</span><span class="n">dt</span><span class="p">,</span> <span class="n">i_max</span> <span class="p">)</span>
@@ -309,6 +391,24 @@
 <span class="sd">            t_max : final instant for time evolution</span>
 
 <span class="sd">            dt : time step</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            C2 (np.ndarray) : coefficient matrix for t=t_max</span>
+
+<span class="sd">            time (np.array) : time instants from tstart to t_max spaced by dt</span>
+
+<span class="sd">            dipole (np.array) : dipole evaluated at each time instant</span>
+
+<span class="sd">            overlap (np.array) : overlap evaluated at each time instant</span>
+
+<span class="sd">            dipoleFFT (np.array) : fft of dipole values for t&gt;t_laser_ON</span>
+
+<span class="sd">            dipolefreqFFT (np.array) : array of frequencies corresponding to dipoleFFT</span>
+
+<span class="sd">            overlapFFT (np.array) : fft of overlap values for t&gt;t_laser_ON</span>
+
+<span class="sd">            overlapfreqFFT (np.array) : array of frequencies corresponding to overlapFFT</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">epsilon</span><span class="p">,</span> <span class="n">C0</span><span class="p">,</span> <span class="n">energy_per_step</span><span class="p">,</span> <span class="n">delta_per_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_TIHF</span><span class="p">(</span><span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">print_ON</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">C1</span><span class="p">,</span> <span class="n">time1</span><span class="p">,</span> <span class="n">overlap1</span><span class="p">,</span> <span class="n">dipole1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_TDHF</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">t_laser_ON</span><span class="p">,</span> <span class="n">C0</span><span class="p">,</span> <span class="n">eval_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eval_dipole</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">laser_ON</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -343,14 +443,49 @@
 
 
 <div class="viewcode-block" id="RHF"><a class="viewcode-back" href="../index.html#do.RHF">[docs]</a><span class="k">class</span> <span class="nc">RHF</span><span class="p">(</span><span class="n">GHF</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Contains tools to solve the Hartree-Fock equations in the restricted spin representation. The default values in the creator are referred to the analyzed case. &quot;&quot;&quot;</span>
-   
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">grid_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">Omega</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsilon0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nparticles</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">antisymmetrize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">potential</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">ODQD</span><span class="o">.</span><span class="n">HOPotential</span><span class="p">(</span><span class="n">Omega</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">potential</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a system in the restricted spin representation. The default values in the creator are referred to the analyzed case.</span>
+<span class="sd">        A more detailed description is provided in the paper folder in this same GitHub repository.</span>
+<span class="sd">        The quantum-system documentation appears in https://schoyen.github.io/quantum-systems/</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions</span>
+
+<span class="sd">            grid_length (int) : extension of the mesh goes from -grid_length to grid_length</span>
+
+<span class="sd">            num_grid_points (int) : number of points in the mesh</span>
+
+<span class="sd">            alpha (float) : strength parameter in the shielded Coulomb potential</span>
+
+<span class="sd">            a (float) : shielding parameter in the shielded Coulomb potential</span>
+
+<span class="sd">            Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</span>
+
+<span class="sd">            omega (float) : frequency of the laser source</span>
+
+<span class="sd">            epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</span>
+
+<span class="sd">            nparticles (int) : number of electrons in the system</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            potential (func) : ODQD.HOPotential(Omega)  </span>
+
+<span class="sd">            system : ODQD object (see https://schoyen.github.io/quantum-systems/)</span>
+
+<span class="sd">            Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</span>
+
+<span class="sd">            omega (float) : frequency of the laser source</span>
+
+<span class="sd">            epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</span>
+
+<span class="sd">            nparticles (int) : number of electrons in the system</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">grid_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">Omega</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsilon0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nparticles</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">ODQD</span><span class="o">.</span><span class="n">HOPotential</span><span class="p">(</span><span class="n">Omega</span><span class="p">)</span>
+                
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">ODQD</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">grid_length</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nparticles</span> <span class="o">=</span> <span class="n">nparticles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Omega</span> <span class="o">=</span> <span class="n">Omega</span>
@@ -362,7 +497,10 @@
 <span class="sd">        Returns the density matrix evaluated using the coefficient matrix C.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            density_matrix (np.ndarray)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">full_density</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span> 
             <span class="n">imax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
@@ -395,10 +533,16 @@
     
 <div class="viewcode-block" id="RHF.evaluate_total_energy"><a class="viewcode-back" href="../index.html#do.RHF.evaluate_total_energy">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_total_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the total energy of the system.</span>
+<span class="sd">        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
+
+<span class="sd">            t (float) : time instant</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            fock_matrix (np.ndarray)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_density_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
         <span class="n">rhorho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ab,cd-&gt;abcd&#39;</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
@@ -413,11 +557,15 @@
 <span class="sd">        Returns the one-body density of the system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
 
 <span class="sd">        Kwargs:</span>
 <span class="sd">            plot_ON (bool) : if True plots the one-body density</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            one_body_density (np.array)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">obd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="p">)</span>
         <span class="n">density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_density_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
         <span class="n">obd</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;mi,mn,ni-&gt;i&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">spf</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">spf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>

@@ -33,15 +33,41 @@
 <span id="welcome-to-project-2-s-documentation"></span><h1>Welcome to Project 2’s documentation!<a class="headerlink" href="#module-do" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="do.GHF">
-<em class="property">class </em><code class="descclassname">do.</code><code class="descname">GHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>potential=None</em>, <em>antisymmetrize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains tools to solve the Hartree-Fock equations in the general spin representation. The default values in the creator are referred to the analyzed case.</p>
+<em class="property">class </em><code class="descclassname">do.</code><code class="descname">GHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>antisymmetrize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a system in the general spin representation. The default values in the creator are referred to the analyzed case.
+A more detailed description is provided in the paper folder in this same GitHub repository.
+The quantum-system documentation appears in <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions</p>
+<p>grid_length (int) : extension of the mesh goes from -grid_length to grid_length</p>
+<p>num_grid_points (int) : number of points in the mesh</p>
+<p>alpha (float) : strength parameter in the shielded Coulomb potential</p>
+<p>a (float) : shielding parameter in the shielded Coulomb potential</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p>nparticles (int) : number of electrons in the system</p>
+<p class="last">antisymmetrize (bool) : if True, antisymmetrizes the system.u matrix</p>
+</dd>
+<dt>Attributes:</dt>
+<dd><p class="first">potential (func) : ODQD.HOPotential(Omega)</p>
+<p>system : GeneralOrbitalSystem object (see <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a>)</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p class="last">nparticles (int) : number of electrons in the system</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="do.GHF.eval_dipole">
 <code class="descname">eval_dipole</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.eval_dipole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.eval_dipole" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the expected value of the position operator for the system.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix</dd>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:            </dt>
+<dd>dipole (float) : expected value for position operator</dd>
 </dl>
 </dd></dl>
 
@@ -51,9 +77,11 @@
 <dd><p>Returns the one-body density of the system.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix</dd>
+<dd>C (np.ndarray) : coefficient matrix</dd>
 <dt>Kwargs:</dt>
 <dd>plot_ON (bool) : if True plots the one-body density</dd>
+<dt>Returns:</dt>
+<dd>one_body_density (np.array)</dd>
 </dl>
 </dd></dl>
 
@@ -63,7 +91,9 @@
 <dd><p>Returns the total energy of the system.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix</dd>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:</dt>
+<dd>energy (float)</dd>
 </dl>
 </dd></dl>
 
@@ -73,7 +103,9 @@
 <dd><p>Returns the density matrix evaluated using the coefficient matrix C.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix</dd>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:</dt>
+<dd>density_matrix (np.ndarray)</dd>
 </dl>
 </dd></dl>
 
@@ -83,8 +115,11 @@
 <dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix
-t : time instant</dd>
+<dd><p class="first">C (np.ndarray) : coefficient matrix</p>
+<p class="last">t (float) : time instant</p>
+</dd>
+<dt>Returns:</dt>
+<dd>fock_matrix (np.ndarray)</dd>
 </dl>
 </dd></dl>
 
@@ -101,6 +136,16 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 <p>t_max : final instant for time evolution</p>
 <p class="last">dt : time step</p>
 </dd>
+<dt>Returns:</dt>
+<dd><p class="first">C2 (np.ndarray) : coefficient matrix for t=t_max</p>
+<p>time (np.array) : time instants from tstart to t_max spaced by dt</p>
+<p>dipole (np.array) : dipole evaluated at each time instant</p>
+<p>overlap (np.array) : overlap evaluated at each time instant</p>
+<p>dipoleFFT (np.array) : fft of dipole values for t&gt;t_laser_ON</p>
+<p>dipolefreqFFT (np.array) : array of frequencies corresponding to dipoleFFT</p>
+<p>overlapFFT (np.array) : fft of overlap values for t&gt;t_laser_ON</p>
+<p class="last">overlapfreqFFT (np.array) : array of frequencies corresponding to overlapFFT</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -110,7 +155,9 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 <dd><p>Returns the value of the laser potential at time t.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>t : time instant</dd>
+<dd>t (float) : time instant</dd>
+<dt>Returns:</dt>
+<dd>(float) epsilon0 * sin( omega * t )</dd>
 </dl>
 </dd></dl>
 
@@ -123,6 +170,8 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 <dd><p class="first">t : time</p>
 <p class="last">C : coefficient matrix</p>
 </dd>
+<dt>Returns:</dt>
+<dd>rhs (np.ndarray)</dd>
 </dl>
 </dd></dl>
 
@@ -135,6 +184,8 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 <dd><p class="first">t : time</p>
 <p class="last">C : coefficient matrix</p>
 </dd>
+<dt>Returns:</dt>
+<dd>rhs (np.ndarray)</dd>
 </dl>
 </dd></dl>
 
@@ -152,6 +203,12 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 <p>eval_dipole : if True, the expected value for the dipole operator is evaluated at every instant</p>
 <p class="last">laser_ON : if True, the laser source is on</p>
 </dd>
+<dt>Returns: </dt>
+<dd><p class="first">C (np.ndarray) : coefficient matrix at t=t_max</p>
+<p>time (np.array) : time instants from tstart to t_max spaced by dt</p>
+<p>overlap (np.array) : None if eval_overlap==False</p>
+<p class="last">dipole (np.array) : None if eval_dipole==False</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -161,13 +218,19 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 <dd><p>Solves the Ruthaan-Hall equations for the system.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><p class="first">tolerance : stopping condition for the algorithm.</p>
-<p class="last">max_iter : maximum number of iterations before the algorithm stops</p>
+<dd><p class="first">tolerance (float) : stopping condition for the algorithm.</p>
+<p class="last">max_iter (int) : maximum number of iterations before the algorithm stops</p>
 </dd>
 <dt>Kwargs:</dt>
 <dd><p class="first">print_ON (bool) : if True prints if the convergence or the max number of iterations has been reached.</p>
-<p>energy_per_step : if True, the energy of the system is evaluated at every step</p>
-<p class="last">delta_per_step : if True, the delta parameter of the system is evaluated at every step</p>
+<p>energy_per_step (bool) : if True, the energy of the system is evaluated at every step</p>
+<p class="last">delta_per_step (bool) : if True, the delta parameter of the system is evaluated at every step</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">epsilon (np.array) : final eigenvalues</p>
+<p>C (np.ndarray) : final coefficient matrix</p>
+<p>energy_per_step (np.array) : None if energy_per_step==False</p>
+<p class="last">delta_per_step (np.array) : None if delta_per_step==False</p>
 </dd>
 </dl>
 </dd></dl>
@@ -176,27 +239,56 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 
 <dl class="class">
 <dt id="do.RHF">
-<em class="property">class </em><code class="descclassname">do.</code><code class="descname">RHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>potential=None</em>, <em>antisymmetrize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains tools to solve the Hartree-Fock equations in the restricted spin representation. The default values in the creator are referred to the analyzed case.</p>
+<em class="property">class </em><code class="descclassname">do.</code><code class="descname">RHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>potential=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a system in the restricted spin representation. The default values in the creator are referred to the analyzed case.
+A more detailed description is provided in the paper folder in this same GitHub repository.
+The quantum-system documentation appears in <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions</p>
+<p>grid_length (int) : extension of the mesh goes from -grid_length to grid_length</p>
+<p>num_grid_points (int) : number of points in the mesh</p>
+<p>alpha (float) : strength parameter in the shielded Coulomb potential</p>
+<p>a (float) : shielding parameter in the shielded Coulomb potential</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p class="last">nparticles (int) : number of electrons in the system</p>
+</dd>
+<dt>Attributes:</dt>
+<dd><p class="first">potential (func) : ODQD.HOPotential(Omega)</p>
+<p>system : ODQD object (see <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a>)</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p class="last">nparticles (int) : number of electrons in the system</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="do.RHF.eval_one_body_density">
 <code class="descname">eval_one_body_density</code><span class="sig-paren">(</span><em>C</em>, <em>plot_ON=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.eval_one_body_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.eval_one_body_density" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the one-body density of the system.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix</dd>
+<dd>C (np.ndarray) : coefficient matrix</dd>
 <dt>Kwargs:</dt>
 <dd>plot_ON (bool) : if True plots the one-body density</dd>
+<dt>Returns:</dt>
+<dd>one_body_density (np.array)</dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="do.RHF.evaluate_total_energy">
 <code class="descname">evaluate_total_energy</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.evaluate_total_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.evaluate_total_energy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the total energy of the system.</p>
+<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix</dd>
+<dd><p class="first">C (np.ndarray) : coefficient matrix</p>
+<p class="last">t (float) : time instant</p>
+</dd>
+<dt>Returns:</dt>
+<dd>fock_matrix (np.ndarray)</dd>
 </dl>
 </dd></dl>
 
@@ -206,7 +298,9 @@ Performs the Fourier analysis on the curves for overlap and dipole moment obtain
 <dd><p>Returns the density matrix evaluated using the coefficient matrix C.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix</dd>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:</dt>
+<dd>density_matrix (np.ndarray)</dd>
 </dl>
 </dd></dl>
 
@@ -230,7 +324,6 @@ t : time instant</dd>
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
