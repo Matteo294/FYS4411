@@ -1,0 +1,294 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to Project 2’s documentation! &#8212; Project 2  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-do">
+<span id="welcome-to-project-2-s-documentation"></span><h1>Welcome to Project 2’s documentation!<a class="headerlink" href="#module-do" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="do.GHF">
+<em class="property">class </em><code class="descclassname">do.</code><code class="descname">GHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>potential=None</em>, <em>antisymmetrize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains tools to solve the Hartree-Fock equations in the general spin representation. The default values in the creator are referred to the analyzed case.</p>
+<dl class="method">
+<dt id="do.GHF.eval_dipole">
+<code class="descname">eval_dipole</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.eval_dipole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.eval_dipole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the expected value of the position operator for the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.eval_one_body_density">
+<code class="descname">eval_one_body_density</code><span class="sig-paren">(</span><em>C</em>, <em>plot_ON=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.eval_one_body_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.eval_one_body_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the one-body density of the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix</dd>
+<dt>Kwargs:</dt>
+<dd>plot_ON (bool) : if True plots the one-body density</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.evaluate_total_energy">
+<code class="descname">evaluate_total_energy</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.evaluate_total_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.evaluate_total_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total energy of the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.fill_density_matrix">
+<code class="descname">fill_density_matrix</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fill_density_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fill_density_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the density matrix evaluated using the coefficient matrix C.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.fill_fock_matrix">
+<code class="descname">fill_fock_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fill_fock_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fill_fock_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix
+t : time instant</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.fourier_analysis">
+<code class="descname">fourier_analysis</code><span class="sig-paren">(</span><em>tolerance</em>, <em>max_iter</em>, <em>t_laser_ON</em>, <em>t_max</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fourier_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fourier_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves the time-independent Ruthaan-Hall equations and then performs a time-evolution of the system switching off the laser source at a certain time.
+Performs the Fourier analysis on the curves for overlap and dipole moment obtained for t&gt;t_laser_ON</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">tolerance : stopping condition for the time-independent solver.</p>
+<p>max_iter : maximum number of iterations before the time-independent solver stops.</p>
+<p>t_laser_ON : instant at which the laser is switched off</p>
+<p>t_max : final instant for time evolution</p>
+<p class="last">dt : time step</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.laser_potential">
+<code class="descname">laser_potential</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.laser_potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.laser_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the laser potential at time t.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>t : time instant</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.rhsf">
+<code class="descname">rhsf</code><span class="sig-paren">(</span><em>t</em>, <em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.rhsf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.rhsf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source on.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">t : time</p>
+<p class="last">C : coefficient matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.rhsf_OFF">
+<code class="descname">rhsf_OFF</code><span class="sig-paren">(</span><em>t</em>, <em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.rhsf_OFF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.rhsf_OFF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source off.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">t : time</p>
+<p class="last">C : coefficient matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.solve_TDHF">
+<code class="descname">solve_TDHF</code><span class="sig-paren">(</span><em>tstart</em>, <em>dt</em>, <em>t_max</em>, <em>C0</em>, <em>eval_overlap=False</em>, <em>eval_dipole=False</em>, <em>laser_ON=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.solve_TDHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.solve_TDHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves iteratively the time-dependent Ruthaan-Hall equations for the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">t_start : time at which the evolution begins</p>
+<p>dt : time step</p>
+<p>t_max : time at which the evolution ends</p>
+<p>C0 : coefficient matrix at time t_start</p>
+<p>eval_overlap : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant</p>
+<p>eval_dipole : if True, the expected value for the dipole operator is evaluated at every instant</p>
+<p class="last">laser_ON : if True, the laser source is on</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.solve_TIHF">
+<code class="descname">solve_TIHF</code><span class="sig-paren">(</span><em>tolerance</em>, <em>max_iter</em>, <em>print_ON=False</em>, <em>eval_energy_per_step=False</em>, <em>eval_delta=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.solve_TIHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.solve_TIHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves the Ruthaan-Hall equations for the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">tolerance : stopping condition for the algorithm.</p>
+<p class="last">max_iter : maximum number of iterations before the algorithm stops</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd><p class="first">print_ON (bool) : if True prints if the convergence or the max number of iterations has been reached.</p>
+<p>energy_per_step : if True, the energy of the system is evaluated at every step</p>
+<p class="last">delta_per_step : if True, the delta parameter of the system is evaluated at every step</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="do.RHF">
+<em class="property">class </em><code class="descclassname">do.</code><code class="descname">RHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>potential=None</em>, <em>antisymmetrize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains tools to solve the Hartree-Fock equations in the restricted spin representation. The default values in the creator are referred to the analyzed case.</p>
+<dl class="method">
+<dt id="do.RHF.eval_one_body_density">
+<code class="descname">eval_one_body_density</code><span class="sig-paren">(</span><em>C</em>, <em>plot_ON=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.eval_one_body_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.eval_one_body_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the one-body density of the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix</dd>
+<dt>Kwargs:</dt>
+<dd>plot_ON (bool) : if True plots the one-body density</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.RHF.evaluate_total_energy">
+<code class="descname">evaluate_total_energy</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.evaluate_total_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.evaluate_total_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total energy of the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.RHF.fill_density_matrix">
+<code class="descname">fill_density_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>full_density=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.fill_density_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.fill_density_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the density matrix evaluated using the coefficient matrix C.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.RHF.fill_fock_matrix">
+<code class="descname">fill_fock_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.fill_fock_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.fill_fock_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C : coefficient matrix
+t : time instant</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Project 2</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Emiliano Staffoli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
