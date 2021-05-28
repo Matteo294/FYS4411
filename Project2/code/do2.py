@@ -1,8 +1,6 @@
 from logging import log
 from operator import pos
-from os import system
-import re
-import sys
+from os import TMP_MAX, system
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,6 +9,8 @@ from numpy.lib.type_check import imag
 import scipy.linalg, scipy.integrate
 from quantum_systems import ODQD, GeneralOrbitalSystem
 from IPython.display import display, clear_output
+import time as timeimp
+from matplotlib.animation import FuncAnimation, PillowWriter
 matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
@@ -401,19 +401,37 @@ class GHF:
             integrator = scipy.integrate.ode(self.rhsf_OFF).set_integrator('zvode')
         
         integrator.set_initial_value( np.reshape(C0, (len(C0)**2,) ), tstart)
+        
+        pot = self.potential(self.system.grid)
+        obd0 = self.eval_one_body_density(C0)
+        plt.figure(figsize=(10,7))
+        plt.plot(self.system.grid, obd0)
+        plt.plot(self.system.grid, pot)
+
 
         i=0
         while integrator.successful() and i<i_max:
             C = integrator.integrate(integrator.t+dt)
             C = np.matrix(np.reshape(C, self.system.h.shape))
+            
+            if i%100==0:
+                plt.cla()
+                plt.plot(self.system.grid, self.eval_one_body_density(np.array(C)).real)
+                plt.plot(self.system.grid, pot + self.system.grid * self.laser_potential(integrator.t).real)
+                plt.grid()
+                plt.xlim([-10,10])
+                plt.ylim([-0.5, 2.5])
+                display(plt.gcf())
+                clear_output(wait=True)
+                timeimp.sleep(1e-5)
 
             if eval_overlap==True:
                 overlap[i] = np.abs(np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
             if eval_dipole==True:
                 dipole[i] = self.eval_dipole(C)
             i += 1
-            if i%10==0:
-                print('\rprogress = %.2f' % (100*i/i_max), end='')
+            # if i%10==0:
+            #     print('\rprogress = %.2f' % (100*i/i_max), end='')
         
         print('\r', end='')
         C = np.array(C)
@@ -436,18 +454,44 @@ class GHF:
         return C2, time, dipole, overlap, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT
 
 
-    def animation(self, i, line, dt, t_max, C0):
-        i_max = int( np.floor(t_max / dt) )
-        overlap = np.zeros( (i_max) )
+    def gif_generator(self, dt, t_max, C0):
+        fig, ax = plt.subplots(figsize=(10,7))
+        ax.set_xlim([-10, 10])
+        ax.set_ylim([-0.1, 1.5])
+        ax.set_xlabel(r'$x$', fontsize=22)
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
+        ax.grid()
+
+        epsilon, C0, energy_per_step, delta_per_step = self.solve_TIHF(tolerance=1e-6, max_iter=100)
+        line1, = ax.plot(self.system.grid, self.eval_one_body_density(C0).real)
+        line2, = ax.plot(self.system.grid, self.potential(self.system.grid))
+        props = dict(boxstyle='round', facecolor='white')
+        text = ax.text(-9, 1.4, r'$t/T_{max}=0$', fontsize=16, bbox=props, animated=True)
+
         integrator = scipy.integrate.ode(self.rhsf).set_integrator('zvode')
         integrator.set_initial_value( np.reshape(C0, len(C0)**2 ), 0)
-
-        C = integrator.integrate(integrator.t+dt)
-        C = np.matrix(np.reshape(C, self.system.h.shape))
-        overlap[i] = np.abs( np.linalg.det( C[:,0:2].H @ C0[:,0:2] ))**2
         
-        line.set_ydata(self.eval_one_body_density(C).real)
-        return line,
+        save_every_n=500
+        i_max = i_max = int( np.floor(t_max / dt / save_every_n) )
+
+        anim = FuncAnimation(fig, self.anima, fargs=(text, line1, line2, integrator, dt, t_max, save_every_n), frames=i_max)
+        writer = PillowWriter(fps=20)  
+        anim.save("animation.gif", writer=writer)  
+    
+
+    def anima(self, i, text, line1, line2, integrator, dt, t_max, save_every_n):
+
+        for i in range(save_every_n):
+            C = integrator.integrate(integrator.t+dt)
+            C = np.matrix(np.reshape(C, self.system.h.shape))
+
+        line1.set_ydata(self.eval_one_body_density(C).real)
+        line2.set_ydata(self.potential(self.system.grid) + self.system.grid*self.laser_potential(integrator.t))
+        text.set_text(r'$t/T_{max}=$'+ f'{integrator.t/t_max:.2}')
+        
+        
+        
+        
     
     
 
