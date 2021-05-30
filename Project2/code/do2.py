@@ -16,11 +16,12 @@ matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
 class GHF:
     """
-        Initializes a system in the general spin representation. The default values in the creator are referred to the analyzed case.
-        A more detailed description is provided in the paper folder in this same GitHub repository.
+        Initializes a system in the general spin representation. The default values in the creator are referred to the main analyzed case.
+        A more detailed description is provided in the paper folder at https://github.com/Matteo294/FYS4411.
         The quantum-system documentation appears in https://schoyen.github.io/quantum-systems/
 
-        Args:
+        **Args**:
+        
             l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions
 
             grid_length (int) : extension of the mesh goes from -grid_length to grid_length
@@ -41,7 +42,8 @@ class GHF:
 
             antisymmetrize (bool) : if True, antisymmetrizes the system.u matrix
 
-        Attributes:
+        **Attributes**:
+        
             potential (func) : ODQD.HOPotential(Omega) 
 
             system : GeneralOrbitalSystem object (see https://schoyen.github.io/quantum-systems/)
@@ -55,11 +57,9 @@ class GHF:
             nparticles (int) : number of electrons in the system
 
     """
-    def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=True):
-        if potential is None:
-            self.potential = ODQD.HOPotential(Omega)
-        else:
-            self.potential = potential
+    def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, antisymmetrize=True):
+        
+        self.potential = ODQD.HOPotential(Omega)
         
         odho = ODQD(l, grid_length, num_grid_points, a, alpha, potential=self.potential)
         self.system = GeneralOrbitalSystem(n=nparticles, basis_set=odho, anti_symmetrize=antisymmetrize)
@@ -74,24 +74,27 @@ class GHF:
         """
         Returns the value of the laser potential at time t.
 
-        Args:
+        **Args**:
             t (float) : time instant
         
-        Returns:
-            (float) epsilon0 * sin( omega * t )
+        **Returns**:
+            epsilon0 * sin( omega * t ) (float) 
 
         """
         return self.epsilon0 * np.sin( self.omega * t )
     
     def fill_density_matrix(self, C):
-        """
-        Returns the density matrix evaluated using the coefficient matrix C.
+        r"""
+        Returns the density matrix evaluated using the coefficient matrix C, according to
+        
+        :math:`M_{\alpha\beta} = \sum_i^{occ} C_{\alpha,i}^* C_{\beta,i}`
 
-        Args:
+        **Args**:
             C (np.ndarray) : coefficient matrix
         
-        Returns:
+        **Returns**:
             density_matrix (np.ndarray)
+
         """
         density = np.zeros( C.shape, dtype=np.complex128)
         for i in range(self.nparticles):
@@ -100,15 +103,17 @@ class GHF:
         return density
         
     def fill_fock_matrix(self, C, t):
-        """
-        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.
+        r"""
+        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to
 
-        Args:
+        :math:`f_{\mu\nu}(t) =  h_{\mu\nu}^{ho} + x_{\mu\nu} \varepsilon_0 \sin(\omega t) + \sum_{j}^{occ} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta,AS}`
+
+        **Args**:
             C (np.ndarray) : coefficient matrix
 
             t (float) : time instant
         
-        Returns:
+        **Returns**:
             fock_matrix (np.ndarray)
 
         """
@@ -121,14 +126,16 @@ class GHF:
         return f
     
     def evaluate_total_energy(self, C):
-        """
-        Returns the total energy of the system.
+        r"""
+        Returns the total energy of the system, given by
+        
+        :math:`E[H] = \sum_{i=1}^2 \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + \frac{1}{2} \sum_{i,j=1}^2 \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta,AS}`
 
-        Args:
+        **Args**:
             C (np.ndarray) : coefficient matrix
         
-        Returns:
-            energy (float)
+        **Returns**:
+            energy (complex)
 
         """
         density = self.fill_density_matrix(C)
@@ -137,52 +144,36 @@ class GHF:
         
         return energy
     
-    def eval_one_body_density(self, C, plot_ON=False, save_fig=False):
-        """
-        Returns the one-body density of the system.
+    def eval_one_body_density(self, C):
+        r"""
+        Returns the one-body density of the system, according to
 
-        Args:
+        :math:`\rho(x) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)`
+
+        **Args**:
             C (np.ndarray) : coefficient matrix
 
-        Kwargs:
-            plot_ON (bool) : if True plots the one-body density
-
-        Returns:
+        **Returns**:
             one_body_density (np.array)
+
         """
         obd = np.zeros( len(self.system.grid) )
         density = self.fill_density_matrix(C)
         obd = np.einsum('mi,mn,ni->i', self.system.spf, density, self.system.spf, dtype=np.complex128)
 
-        if plot_ON==True: 
-            plt.figure(figsize=(13, 13))
-            img = plt.imread("theoretical_density.png")
-            ext = [-6.0, 6.0, 0.00, 0.4]
-            plt.imshow(img, zorder=0, extent=ext)
-            aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
-            plt.gca().set_aspect(aspect)
-            plt.plot(self.system.grid, obd.real)
-            plt.xlabel('x', fontsize=16)
-            plt.ylabel(r'$\rho(x)$', fontsize=16)
-            plt.xlim([-10, 10])
-            ax = plt.gca()
-            ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
-            plt.grid()
-            if save_fig==True:
-                plt.savefig('../paper/images/one_body_density_comparison.pdf', bbox_inches='tight')
-            plt.show()
-
         return obd
     
     def eval_dipole(self, C):
-        """
-        Returns the expected value of the position operator for the system.
+        r"""
+        Returns the expected value of the position operator for the system, given by
 
-        Args:
+        :math:`\overline{x}(t) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^*(t) C_{\beta,i} (t) \langle \chi_{\alpha}(x) \vert \hat{x} \vert \chi_{\beta}(x)\rangle`
+
+        **Args**:
             C (np.ndarray) : coefficient matrix
         
-        Returns:            
-            dipole (float) : expected value for position operator
+        **Returns**:            
+            dipole (complex) : expected value for position operator
 
         """
         density = self.fill_density_matrix(C)
@@ -190,22 +181,21 @@ class GHF:
         return dipole
     
     def solve_TIHF(self, tolerance, max_iter, print_ON=False, eval_energy_per_step=False, eval_delta=False):
-        """
+        r"""
         Solves the Ruthaan-Hall equations for the system.
 
-        Args:
+        **Args**:
             tolerance (float) : stopping condition for the algorithm.
             
             max_iter (int) : maximum number of iterations before the algorithm stops
 
-        Kwargs:
             print_ON (bool) : if True prints if the convergence or the max number of iterations has been reached.
 
             energy_per_step (bool) : if True, the energy of the system is evaluated at every step
 
-            delta_per_step (bool) : if True, the delta parameter of the system is evaluated at every step
+            eval_delta (bool) : if True, the :math:`\Delta` parameter of the system is evaluated at every step
         
-        Returns:
+        **Returns**:
             epsilon (np.array) : final eigenvalues
             
             C (np.ndarray) : final coefficient matrix
@@ -248,15 +238,19 @@ class GHF:
         return epsilon, C, energy_per_step, delta_per_step          
 
     def rhsf(self, t, C):
-        """
-            Returns the right-hand side of the Ruthaan-Hall equations with the laser source on.
+        r"""
+            Returns the right-hand side of the Ruthaan-Hall equations with the laser source on, corresponding to
 
-            Args:
-                t : time
-
-                C : coefficient matrix
+            :math:`\dot{C}(t) = -i f(t)C(t)`
             
-            Returns:
+            The output is reshaped into an array in order to be used into self.solve_TDHF()
+
+            **Args**:
+                t (float) : time
+
+                C (np.ndarray) : coefficient matrix
+            
+            **Returns**:
                 rhs (np.ndarray)
         
         """
@@ -267,15 +261,19 @@ class GHF:
         return res
     
     def rhsf_OFF(self, t, C):
-        """
-            Returns the right-hand side of the Ruthaan-Hall equations with the laser source off.
+        r"""
+            Returns the right-hand side of the Ruthaan-Hall equations with the laser source off, given by
 
-            Args:
-                t : time
+            :math:`\dot{C}(t) = -i f(t)C(t)`
 
-                C : coefficient matrix
+            The output is reshaped into an array in order to be used into self.solve_TDHF()
+
+            **Args**:
+                t (float) : time
+
+                C (np.ndarray) : coefficient matrix
             
-            Returns:
+            **Returns**:
                 rhs (np.ndarray)
 
         """
@@ -286,27 +284,27 @@ class GHF:
         return res
     
     def solve_TDHF(self, tstart, dt, t_max, C0, eval_overlap=False, eval_dipole=False, eval_energy=False, laser_ON=True):
-        """
+        r"""
         Solves iteratively the time-dependent Ruthaan-Hall equations for the system.
 
-        Args:
-            t_start : time at which the evolution begins
+        **Args**:
+            t_start (float) : time at which the evolution begins
 
-            dt : time step
+            dt (float) : time step
 
-            t_max : time at which the evolution ends
+            t_max (float) : time at which the evolution ends
 
-            C0 : coefficient matrix at time t_start
+            C0 (np.ndarray) : coefficient matrix at time t_start
 
-            eval_overlap : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant
+            eval_overlap (bool) : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant
 
-            eval_dipole : if True, the expected value for the dipole operator is evaluated at every instant
+            eval_dipole (bool) : if True, the expected value for the dipole operator is evaluated at every instant
             
-            eval_energy : if True, the total energy is evaluated at every instant
+            eval_energy (bool) : if True, the total energy is evaluated at every instant
 
-            laser_ON : if True, the laser source is on
+            laser_ON (bool) : if True, the laser source is on
         
-        Returns: 
+        **Return**: 
             C (np.ndarray) : coefficient matrix at t=t_max
             
             time (np.array) : time instants from tstart to t_max spaced by dt
@@ -362,22 +360,22 @@ class GHF:
         return C, time, overlap, dipole, energy
 
     def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt):
-        """
+        r"""
         Solves the time-independent Ruthaan-Hall equations and then performs a time-evolution of the system switching off the laser source at a certain time.
         Performs the Fourier analysis on the curves for overlap and dipole moment obtained for t>t_laser_ON
 
-        Args:
-            tolerance : stopping condition for the time-independent solver.
+        **Args**:
+            tolerance (float) : stopping condition for the time-independent solver.
             
-            max_iter : maximum number of iterations before the time-independent solver stops.
+            max_iter (int) : maximum number of iterations before the time-independent solver stops.
 
-            t_laser_ON : instant at which the laser is switched off
+            t_laser_ON (float) : instant at which the laser is switched off
 
-            t_max : final instant for time evolution
+            t_max (float) : final instant for time evolution
 
-            dt : time step
+            dt (float) : time step
 
-        Returns:
+        **Returns**:
             C2 (np.ndarray) : coefficient matrix for t=t_max
 
             time (np.array) : time instants from tstart to t_max spaced by dt
@@ -385,6 +383,8 @@ class GHF:
             dipole (np.array) : dipole evaluated at each time instant
 
             overlap (np.array) : overlap evaluated at each time instant
+
+            energy (np.array) : total energy at each time instant
 
             dipoleFFT (np.array) : fft of dipole values for t>t_laser_ON
 
@@ -411,7 +411,20 @@ class GHF:
         return C2, time, dipole, overlap, energy, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT
 
 
-    def gif_generator(self, dt, t_max, C0):
+    def gif_generator(self, dt, t_max, C0, save_every_n=500):
+        r"""
+        Generates an animated image (.gif) with the time evolution of the one-body density and the time evolution of the one body potential.
+
+        **Args**:
+            dt (float) : time step
+
+            t_max (float) : total duration of the time evolution
+
+            C0 (np.ndarray) : coefficient matrix at time t=0
+
+            save_every_n (int) : number of time steps between two successive frames in the final .gif file
+
+        """
         fig, ax = plt.subplots(figsize=(10,7))
         ax.set_xlim([-10, 10])
         ax.set_ylim([-0.1, 1.5])
@@ -428,7 +441,6 @@ class GHF:
         integrator = scipy.integrate.ode(self.rhsf).set_integrator('zvode')
         integrator.set_initial_value( np.reshape(C0, len(C0)**2 ), 0)
         
-        save_every_n=500
         i_max = i_max = int( np.floor(t_max / dt / save_every_n) )
 
         anim = FuncAnimation(fig, self.anima, fargs=(text, line1, line2, integrator, dt, t_max, save_every_n), frames=i_max)
@@ -437,7 +449,10 @@ class GHF:
     
 
     def anima(self, i, text, line1, line2, integrator, dt, t_max, save_every_n):
+        r"""
+        Iterative function needed for self.gif_generator
 
+        """
         for i in range(save_every_n):
             C = integrator.integrate(integrator.t+dt)
             C = np.matrix(np.reshape(C, self.system.h.shape))
@@ -448,11 +463,12 @@ class GHF:
         
     
     def plot_AO(self): 
-        """
+        r"""
             Plots the square modulus of the Atomic Orbitals (harmonic oscillator eigenstates).
             The zero-level for each single particle state is its corresponding eigenvalue.
+
         """
-        plt.figure(figsize=(8, 5))
+        plt.figure(figsize=(10,7))
         plt.plot(self.system.grid, self.potential(self.system.grid))
 
         for i in range(int(self.system.l/2)):
@@ -463,11 +479,12 @@ class GHF:
         plt.show()
     
     def plot_MO(self, epsilon, C):
-        """
+        r"""
             Plots the square modulus of the Molecular Orbitals (after the basis change).
             The zero-level for each single particle state is its corresponding eigenvalue.
+
         """
-        plt.figure(figsize=(8,5))
+        plt.figure(figsize=(10,7))
         plt.plot(self.system.grid, self.potential(self.system.grid))
         
         for i in range(self.system.l):
@@ -477,73 +494,39 @@ class GHF:
             plt.plot( self.system.grid,  np.abs(to_plot)**2 + epsilon[i], label=r"$\phi_{" + f"{i}" + r"}$" )
 
         plt.grid()
+        plt.legend()
         plt.show()
+    
+    def plot_one_body_density(self, one_body_density, save_fig=False):
+        r"""
+            Plots the comparison between the one-body density and the result by Zanghellini et al..
 
-    def plot_onebody_comparison(self, onebodyg, onebodyr, save_fig=False):
+            **Args**:
+                one_body_density (np.array) : result of self.eval_one_body_density()
+
         """
-            FACCIAMO SENZA DOCUMENTAZIONE DAI
-        """
-        plt.figure(figsize=(16, 16))
+        plt.figure(figsize=(13, 13))
         img = plt.imread("theoretical_density.png")
         ext = [-6.0, 6.0, 0.00, 0.4]
         plt.imshow(img, zorder=0, extent=ext)
         aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
         plt.gca().set_aspect(aspect)
-        plt.plot(self.system.grid, onebodyg.real, label='GHF')
-        plt.plot(self.system.grid, onebodyr.real, label='RHF')
+        plt.plot(self.system.grid , one_body_density.real)
         plt.xlabel('x', fontsize=16)
         plt.ylabel(r'$\rho(x)$', fontsize=16)
+        plt.xlim([-10, 10])
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
         plt.grid()
-        plt.legend(fontsize=12)
         if save_fig==True:
-            plt.savefig('../paper/images/onebody_density_comp_article.pdf', bbox_inches='tight')
-        plt.show()
-    
-    def plot_energy_per_iteration(self, energy_ghf, energy_rhf, save_fig=False):
-        """
-            FACCIAMO SENZA DOCUMENTAZIONE DAI
-        """
-        plt.figure(figsize=(10,7))
-        plt.plot(np.arange(len(energy_ghf)), energy_ghf.real, label='GHF')
-        plt.plot(np.arange(len(energy_rhf)), energy_rhf.real, label='RHF')
-        plt.xlabel('Iteration', fontsize=22)
-        plt.ylabel('Energy', fontsize=22)
-        ax = plt.gca()
-        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-        plt.grid()
-        plt.legend(fontsize=14)
-
-        if save_fig==True:
-            plt.savefig('../paper/images/energy_at_every_step.pdf', bbox_inches='tight')
-        plt.show()
-        
-    def plot_delta_per_iteration(self, delta_ghf, delta_rhf, tolerance, save_fig=False):
-        """
-            FACCIAMO SENZA DOCUMENTAZIONE DAI
-        """
-        plt.figure(figsize=(10,7))
-        plt.plot(np.arange(len(delta_ghf)), delta_ghf.real, label='GHF')
-        plt.plot(np.arange(len(delta_rhf)), delta_rhf.real, label='RHF')
-        plt.plot(np.arange(len(delta_rhf)), tolerance*np.ones(len(delta_ghf)), linestyle='--', color='red', label=r'$\delta$')
-        plt.xlabel('Iteration', fontsize=22)
-        plt.ylabel(r'$\Delta$', fontsize=22)
-        ax = plt.gca()
-        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-        ax.set_yscale('log')
-        plt.grid()
-        plt.legend(fontsize=14)
-
-        if save_fig==True:
-            plt.savefig('../paper/images/delta_at_every_step.pdf', bbox_inches='tight')
+            plt.savefig('../paper/images/one_body_density_comparison.pdf', bbox_inches='tight')
         plt.show()
     
     def plot_overlap(self, time, overlap, save_fig=False):
-        """
+        r"""
             Plots the comparison between the overlaps evaluated in the time-dependent solver and by Zanghellini et al..
 
-            Args:
+            **Args**:
                 time (np.array) : array of time instants
 
                 overlap (np.array) : overlap for each time instant
@@ -564,66 +547,15 @@ class GHF:
         if save_fig==True:
             plt.savefig('../paper/images/overlap_comp_article.pdf', bbox_inches='tight')
         plt.show()
-
-    def plot_dipole(self, time, dipole, save_fig=False):
-        """
-            FACCIAMO SENZA DOCUMENTAZIONE DAI
-        """
-        plt.figure(figsize=(10,7))
-        plt.plot(time* 0.5 * self.omega / np.pi, dipole)
-        plt.xlabel(r'$t\omega/2\pi}$', fontsize=22)
-        plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
-        ax = plt.gca()
-        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-        plt.grid()
-        if save_fig==True:
-            plt.savefig('../paper/images/time_dependent_dipole.pdf', bbox_inches='tight')
-        plt.show()
-        
-    def plot_overlaps(self, time, overlap1, overlap2, overlap3, save_fig=False):
-        """
-            FACCIAMO SENZA DOCUMENTAZIONE DAI
-        """
-        plt.figure(figsize=(16,5))
-        plt.plot(time* 0.5 * self.Omega / np.pi, overlap1, label=r'$\omega=8\Omega$')
-        plt.plot(time* 0.5 * self.Omega / np.pi, overlap2, label=r'$\omega=4\Omega$')
-        plt.plot(time* 0.5 * self.Omega / np.pi, overlap3, label=r'$\omega=32\Omega$')
-        plt.xlabel(r'$t\Omega/2\pi$', fontsize=16)
-        plt.ylabel(r'$\xi(t)$', fontsize=16)
-        plt.xlim([0, 1.2])
-        ax = plt.gca()
-        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
-        plt.grid()
-        plt.legend(fontsize=16)
-        if save_fig==True:
-            plt.savefig('../paper/images/overlaps_different_omega.pdf', bbox_inches='tight')
-        plt.show()
-    
-
-    def plot_dipoles(self, time, dipole1, dipole2, dipole3, save_fig=False):
-        """
-            FACCIAMO SENZA DOCUMENTAZIONE DAI
-        """
-        plt.figure(figsize=(10,7))
-        plt.plot(time* 0.5 * self.Omega / np.pi, dipole1, label=r'$\omega=8\Omega$')
-        plt.plot(time* 0.5 * self.Omega / np.pi, dipole2, label=r'$\omega=4\Omega$')
-        plt.plot(time* 0.5 * self.Omega / np.pi, dipole3, label=r'$\omega=32\Omega$')
-        plt.xlabel(r'$t\Omega/2\pi}$', fontsize=22)
-        plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
-        ax = plt.gca()
-        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-        plt.grid()
-        plt.legend(fontsize=16)
-        if save_fig==True:
-            plt.savefig('../paper/images/dipoles_different_omega.pdf', bbox_inches='tight')
-        plt.show()  
     
     def plot_fourier_analysis(self, time, dipole, overlap, energy, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT, save_dipole=False, save_overlap=False, save_energy=False, save_fft_x=False, save_fft_overlap=False):    
-        """
+        r"""
             Plots the results of the Fourier analysis.
 
-            Args:
+            **Args**:
                 time (np.array) : array of time instants
+
+                dipole (np.array) : dipole for each time instant
 
                 overlap (np.array) : overlap for each time instant
 
@@ -636,6 +568,7 @@ class GHF:
                 overlapFFT (np.array) : fast Fourier transform of the overlap signal
                 
                 overlapfreqFFT (np.array) : frequency spectrum of the overlap signal (useful for plotting) 
+
         """
         plt.figure(figsize=(16,5))
         plt.plot(time/np.max(time), dipole.real)
@@ -694,9 +627,123 @@ class GHF:
         if save_fft_overlap==True:
             plt.savefig('../paper/images/overlap_spectrum.pdf', bbox_inches='tight')
         plt.show()
+    
+    
+    def plot_onebody_comparison(self, onebodyg, onebodyr, save_fig=False):
+        r"""
+            FACCIAMO SENZA DOCUMENTAZIONE DAI
+        """
+        plt.figure(figsize=(16, 16))
+        img = plt.imread("theoretical_density.png")
+        ext = [-6.0, 6.0, 0.00, 0.4]
+        plt.imshow(img, zorder=0, extent=ext)
+        aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
+        plt.gca().set_aspect(aspect)
+        plt.plot(self.system.grid, onebodyg.real, label='GHF')
+        plt.plot(self.system.grid, onebodyr.real, label='RHF')
+        plt.xlabel('x', fontsize=16)
+        plt.ylabel(r'$\rho(x)$', fontsize=16)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+        plt.grid()
+        plt.legend(fontsize=12)
+        if save_fig==True:
+            plt.savefig('../paper/images/onebody_density_comp_article.pdf', bbox_inches='tight')
+        plt.show()
+    
+    def plot_energy_per_iteration(self, energy_ghf, energy_rhf, save_fig=False):
+        r"""
+            FACCIAMO SENZA DOCUMENTAZIONE DAI
+        """
+        plt.figure(figsize=(10,7))
+        plt.plot(np.arange(len(energy_ghf)), energy_ghf.real, label='GHF')
+        plt.plot(np.arange(len(energy_rhf)), energy_rhf.real, label='RHF')
+        plt.xlabel('Iteration', fontsize=22)
+        plt.ylabel('Energy', fontsize=22)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        plt.grid()
+        plt.legend(fontsize=14)
+
+        if save_fig==True:
+            plt.savefig('../paper/images/energy_at_every_step.pdf', bbox_inches='tight')
+        plt.show()
+        
+    def plot_delta_per_iteration(self, delta_ghf, delta_rhf, tolerance, save_fig=False):
+        r"""
+            FACCIAMO SENZA DOCUMENTAZIONE DAI
+        """
+        plt.figure(figsize=(10,7))
+        plt.plot(np.arange(len(delta_ghf)), delta_ghf.real, label='GHF')
+        plt.plot(np.arange(len(delta_rhf)), delta_rhf.real, label='RHF')
+        plt.plot(np.arange(len(delta_rhf)), tolerance*np.ones(len(delta_ghf)), linestyle='--', color='red', label=r'$\delta$')
+        plt.xlabel('Iteration', fontsize=22)
+        plt.ylabel(r'$\Delta$', fontsize=22)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        ax.set_yscale('log')
+        plt.grid()
+        plt.legend(fontsize=14)
+
+        if save_fig==True:
+            plt.savefig('../paper/images/delta_at_every_step.pdf', bbox_inches='tight')
+        plt.show()
+
+    def plot_dipole(self, time, dipole, save_fig=False):
+        r"""
+            FACCIAMO SENZA DOCUMENTAZIONE DAI
+        """
+        plt.figure(figsize=(10,7))
+        plt.plot(time* 0.5 * self.omega / np.pi, dipole)
+        plt.xlabel(r'$t\omega/2\pi}$', fontsize=22)
+        plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        plt.grid()
+        if save_fig==True:
+            plt.savefig('../paper/images/time_dependent_dipole.pdf', bbox_inches='tight')
+        plt.show()
+        
+    def plot_overlaps(self, time, overlap1, overlap2, overlap3, save_fig=False):
+        r"""
+            FACCIAMO SENZA DOCUMENTAZIONE DAI
+        """
+        plt.figure(figsize=(16,5))
+        plt.plot(time* 0.5 * self.Omega / np.pi, overlap1, label=r'$\omega=8\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, overlap2, label=r'$\omega=4\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, overlap3, label=r'$\omega=32\Omega$')
+        plt.xlabel(r'$t\Omega/2\pi$', fontsize=16)
+        plt.ylabel(r'$\xi(t)$', fontsize=16)
+        plt.xlim([0, 1.2])
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
+        plt.grid()
+        plt.legend(fontsize=16)
+        if save_fig==True:
+            plt.savefig('../paper/images/overlaps_different_omega.pdf', bbox_inches='tight')
+        plt.show()
+    
+
+    def plot_dipoles(self, time, dipole1, dipole2, dipole3, save_fig=False):
+        r"""
+            FACCIAMO SENZA DOCUMENTAZIONE DAI
+        """
+        plt.figure(figsize=(10,7))
+        plt.plot(time* 0.5 * self.Omega / np.pi, dipole1, label=r'$\omega=8\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, dipole2, label=r'$\omega=4\Omega$')
+        plt.plot(time* 0.5 * self.Omega / np.pi, dipole3, label=r'$\omega=32\Omega$')
+        plt.xlabel(r'$t\Omega/2\pi}$', fontsize=22)
+        plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
+        ax = plt.gca()
+        ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
+        plt.grid()
+        plt.legend(fontsize=16)
+        if save_fig==True:
+            plt.savefig('../paper/images/dipoles_different_omega.pdf', bbox_inches='tight')
+        plt.show()  
 
     def plot_fft_dipole_comparison(self, freq1,freq2,freq3, fft1, fft2, fft3, save_fig=False):
-        """
+        r"""
             FACCIAMO SENZA DOCUMENTAZIONE DAI
         """
         plt.figure(figsize=(10,7))
@@ -727,7 +774,7 @@ class GHF:
         plt.show()
 
     def plot_fft_overlap_comparison(self, freq1,freq2,freq3, fft1, fft2, fft3, save_fig=False):
-        """
+        r"""
             FACCIAMO SENZA DOCUMENTAZIONE DAI
         """
         plt.figure(figsize=(10,7))
@@ -763,12 +810,12 @@ class GHF:
 
 
 class RHF(GHF):
-    """
+    r"""
         Initializes a system in the restricted spin representation. The default values in the creator are referred to the analyzed case.
         A more detailed description is provided in the paper folder in this same GitHub repository.
         The quantum-system documentation appears in https://schoyen.github.io/quantum-systems/
 
-        Args:
+        **Args**:
             l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions
 
             grid_length (int) : extension of the mesh goes from -grid_length to grid_length
@@ -787,7 +834,9 @@ class RHF(GHF):
 
             nparticles (int) : number of electrons in the system
 
-        Attributes:
+            antisimmetrize (bool) : MUST remain False
+
+        **Attributes**:
             potential (func) : ODQD.HOPotential(Omega)  
 
             system : ODQD object (see https://schoyen.github.io/quantum-systems/)
@@ -803,46 +852,50 @@ class RHF(GHF):
     """
 
     def __init__(self, l=10, grid_length=10, num_grid_points=201, alpha=1.0, a=0.25, Omega=0.25, omega=2, epsilon0=1, nparticles=2, potential=None, antisymmetrize=False):
-        if potential is None:
-            self.potential = ODQD.HOPotential(Omega)
-        else:
-            self.potential = potential
         
+        self.potential = ODQD.HOPotential(Omega)
+                
         self.system = ODQD(l, grid_length, num_grid_points, a, alpha, potential=self.potential)
         self.nparticles = nparticles
         self.Omega = Omega
         self.omega = omega
         self.epsilon0 = epsilon0
     
-    def fill_density_matrix(self, C, full_density=False):
-        """
-        Returns the density matrix evaluated using the coefficient matrix C.
+    def fill_density_matrix(self, C):
+        r"""
+        Returns the density matrix evaluated using the coefficient matrix C, according to
+        
+        :math:`M_{\alpha\beta} = \sum_i^{nparticles/2} C_{\alpha,i}^* C_{\beta,i}`
 
-        Args:
+        **Args**:
             C (np.ndarray) : coefficient matrix
         
-        Returns:
+        **Returns**:
             density_matrix (np.ndarray)
+
         """
-        if full_density is True: 
-            imax = len(C)
-        else:
-            imax = int(self.nparticles/2)
 
         density = np.zeros( C.shape, dtype=np.complex128)
-        for i in range(imax):
+        for i in range(int(self.nparticles/2)):
             density += np.outer( np.conjugate(C[:,i]), C[:,i])
         
         return density
         return 
 
     def fill_fock_matrix(self, C, t):
-        """
-        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.
+        r"""
+        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to
 
-        Args:
-            C : coefficient matrix
-            t : time instant
+        :math:`f_{\mu\nu} =  h_{\mu\nu}^{ho} + 2\sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta} - \sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\delta\nu}`
+
+        **Args**:
+            C (np.ndarray) : coefficient matrix
+
+            t (float) : time instant
+        
+        **Returns**:
+            fock_matrix (np.ndarray)
+
         """
         f = np.zeros(self.system.h.shape, dtype=np.complex128)    
         density = self.fill_density_matrix(C)
@@ -854,14 +907,16 @@ class RHF(GHF):
         return f
     
     def evaluate_total_energy(self, C):
-        """
-        Returns the total energy of the system.
+        r"""
+        Returns the total energy of the system, given by
+        
+        :math:`E[H] = 2\sum_{i=1}^{n/2} \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + 2 \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta} - \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\delta\beta}`
 
-        Args:
+        **Args**:
             C (np.ndarray) : coefficient matrix
         
-        Returns:
-            energy (float)
+        **Returns**:
+            energy (complex)
 
         """
         density = self.fill_density_matrix(C)
@@ -872,33 +927,22 @@ class RHF(GHF):
         
         return energy
     
-    def eval_one_body_density(self, C, plot_ON=False):
-        """
-        Returns the one-body density of the system.
+    def eval_one_body_density(self, C):
+        r"""
+        Returns the one-body density of the system, according to
 
-        Args:
+        :math:`\rho(x) = 2 \sum_i^{n/2} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)`
+
+        **Args**:
             C (np.ndarray) : coefficient matrix
 
-        Kwargs:
-            plot_ON (bool) : if True plots the one-body density
-
-        Returns:
+        **Returns**:
             one_body_density (np.array)
+
         """
         obd = np.zeros( len(self.system.grid) )
         density = self.fill_density_matrix(C)
         obd = 2*np.einsum('mi,mn,ni->i', self.system.spf, density, self.system.spf, dtype=np.complex128)
-
-        if plot_ON==True: 
-            plt.figure(figsize=(13, 13))
-            img = plt.imread("theoretical_density.png")
-            ext = [-6.0, 6.0, 0.00, 0.4]
-            plt.imshow(img, zorder=0, extent=ext)
-            aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
-            plt.gca().set_aspect(aspect)
-            plt.plot(self.system.grid, obd.real)
-            plt.grid()
-            plt.show()
 
         return obd
 

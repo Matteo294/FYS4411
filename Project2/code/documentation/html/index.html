@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -33,9 +34,9 @@
 <span id="welcome-to-project-2-s-documentation"></span><h1>Welcome to Project 2’s documentation!<a class="headerlink" href="#module-do" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="do.GHF">
-<em class="property">class </em><code class="descclassname">do.</code><code class="descname">GHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>potential=None</em>, <em>antisymmetrize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes a system in the general spin representation. The default values in the creator are referred to the analyzed case.
-A more detailed description is provided in the paper folder in this same GitHub repository.
+<em class="property">class </em><code class="descclassname">do.</code><code class="descname">GHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>antisymmetrize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a system in the general spin representation. The default values in the creator are referred to the main analyzed case.
+A more detailed description is provided in the paper folder at <a class="reference external" href="https://github.com/Matteo294/FYS4411">https://github.com/Matteo294/FYS4411</a>.
 The quantum-system documentation appears in <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a></p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -62,7 +63,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.GHF.eval_dipole">
 <code class="descname">eval_dipole</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.eval_dipole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.eval_dipole" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the expected value of the position operator for the system.</p>
+<dd><p>Returns the expected value of the position operator for the system, given by</p>
+<p><span class="math notranslate nohighlight">\(\overline{x}(t) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^*(t) C_{\beta,i} (t) \langle \chi_{\alpha}(x) \vert \hat{x} \vert \chi_{\beta}(x)\rangle\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>C (np.ndarray) : coefficient matrix</dd>
@@ -74,7 +76,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.GHF.eval_one_body_density">
 <code class="descname">eval_one_body_density</code><span class="sig-paren">(</span><em>C</em>, <em>plot_ON=False</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.eval_one_body_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.eval_one_body_density" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the one-body density of the system.</p>
+<dd><p>Returns the one-body density of the system, according to</p>
+<p><span class="math notranslate nohighlight">\(\rho(x) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>C (np.ndarray) : coefficient matrix</dd>
@@ -88,7 +91,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.GHF.evaluate_total_energy">
 <code class="descname">evaluate_total_energy</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.evaluate_total_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.evaluate_total_energy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the total energy of the system.</p>
+<dd><p>Returns the total energy of the system, given by</p>
+<p><span class="math notranslate nohighlight">\(E[H] = \sum_{i=1}^2 \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + \frac{1}{2} \sum_{i,j=1}^2 \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta,AS}\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>C (np.ndarray) : coefficient matrix</dd>
@@ -100,7 +104,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.GHF.fill_density_matrix">
 <code class="descname">fill_density_matrix</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fill_density_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fill_density_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the density matrix evaluated using the coefficient matrix C.</p>
+<dd><p>Returns the density matrix evaluated using the coefficient matrix C, according to</p>
+<p><span class="math notranslate nohighlight">\(M_{\alpha\beta} = \sum_i^{occ} C_{\alpha,i}^* C_{i,\beta}\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>C (np.ndarray) : coefficient matrix</dd>
@@ -112,7 +117,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.GHF.fill_fock_matrix">
 <code class="descname">fill_fock_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fill_fock_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fill_fock_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</p>
+<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to</p>
+<p><span class="math notranslate nohighlight">\(f_{\mu\nu}(t) =  h_{\mu\nu}^{ho} + x_{\mu\nu} \varepsilon_0 \sin(\omega t) + \sum_{j}^{occ} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta,AS}\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><p class="first">C (np.ndarray) : coefficient matrix</p>
@@ -130,11 +136,11 @@ The quantum-system documentation appears in <a class="reference external" href="
 Performs the Fourier analysis on the curves for overlap and dipole moment obtained for t&gt;t_laser_ON</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><p class="first">tolerance : stopping condition for the time-independent solver.</p>
-<p>max_iter : maximum number of iterations before the time-independent solver stops.</p>
-<p>t_laser_ON : instant at which the laser is switched off</p>
-<p>t_max : final instant for time evolution</p>
-<p class="last">dt : time step</p>
+<dd><p class="first">tolerance (float) : stopping condition for the time-independent solver.</p>
+<p>max_iter (int) : maximum number of iterations before the time-independent solver stops.</p>
+<p>t_laser_ON (float) : instant at which the laser is switched off</p>
+<p>t_max (float) : final instant for time evolution</p>
+<p class="last">dt (float) : time step</p>
 </dd>
 <dt>Returns:</dt>
 <dd><p class="first">C2 (np.ndarray) : coefficient matrix for t=t_max</p>
@@ -255,11 +261,12 @@ The zero-level for each single particle state is its corresponding eigenvalue.</
 <dl class="method">
 <dt id="do.GHF.rhsf">
 <code class="descname">rhsf</code><span class="sig-paren">(</span><em>t</em>, <em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.rhsf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.rhsf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source on.</p>
+<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source on, corresponding to</p>
+<p><span class="math notranslate nohighlight">\(\dot{C}(t) = -i f(t)C(t)\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><p class="first">t : time</p>
-<p class="last">C : coefficient matrix</p>
+<dd><p class="first">t (float) : time</p>
+<p class="last">C (np.ndarray) : coefficient matrix</p>
 </dd>
 <dt>Returns:</dt>
 <dd>rhs (np.ndarray)</dd>
@@ -269,11 +276,12 @@ The zero-level for each single particle state is its corresponding eigenvalue.</
 <dl class="method">
 <dt id="do.GHF.rhsf_OFF">
 <code class="descname">rhsf_OFF</code><span class="sig-paren">(</span><em>t</em>, <em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.rhsf_OFF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.rhsf_OFF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source off.</p>
+<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source off, given by</p>
+<p><span class="math notranslate nohighlight">\(\dot{C}(t) = -i f(t)C(t)\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><p class="first">t : time</p>
-<p class="last">C : coefficient matrix</p>
+<dd><p class="first">t (float) : time</p>
+<p class="last">C (np.ndarray) : coefficient matrix</p>
 </dd>
 <dt>Returns:</dt>
 <dd>rhs (np.ndarray)</dd>
@@ -286,14 +294,14 @@ The zero-level for each single particle state is its corresponding eigenvalue.</
 <dd><p>Solves iteratively the time-dependent Ruthaan-Hall equations for the system.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd><p class="first">t_start : time at which the evolution begins</p>
-<p>dt : time step</p>
-<p>t_max : time at which the evolution ends</p>
-<p>C0 : coefficient matrix at time t_start</p>
-<p>eval_overlap : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant</p>
-<p>eval_dipole : if True, the expected value for the dipole operator is evaluated at every instant</p>
-<p>eval_energy : if True, the total energy is evaluated at every instant</p>
-<p class="last">laser_ON : if True, the laser source is on</p>
+<dd><p class="first">t_start (float) : time at which the evolution begins</p>
+<p>dt (float) : time step</p>
+<p>t_max (float) : time at which the evolution ends</p>
+<p>C0 (np.ndarray) : coefficient matrix at time t_start</p>
+<p>eval_overlap (bool) : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant</p>
+<p>eval_dipole (bool) : if True, the expected value for the dipole operator is evaluated at every instant</p>
+<p>eval_energy (bool) : if True, the total energy is evaluated at every instant</p>
+<p class="last">laser_ON (bool) : if True, the laser source is on</p>
 </dd>
 <dt>Returns: </dt>
 <dd><p class="first">C (np.ndarray) : coefficient matrix at t=t_max</p>
@@ -317,7 +325,7 @@ The zero-level for each single particle state is its corresponding eigenvalue.</
 <dt>Kwargs:</dt>
 <dd><p class="first">print_ON (bool) : if True prints if the convergence or the max number of iterations has been reached.</p>
 <p>energy_per_step (bool) : if True, the energy of the system is evaluated at every step</p>
-<p class="last">delta_per_step (bool) : if True, the delta parameter of the system is evaluated at every step</p>
+<p class="last">delta_per_step (bool) : if True, the <span class="math notranslate nohighlight">\(\Delta\)</span> parameter of the system is evaluated at every step</p>
 </dd>
 <dt>Returns:</dt>
 <dd><p class="first">epsilon (np.array) : final eigenvalues</p>
@@ -360,7 +368,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.RHF.eval_one_body_density">
 <code class="descname">eval_one_body_density</code><span class="sig-paren">(</span><em>C</em>, <em>plot_ON=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.eval_one_body_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.eval_one_body_density" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the one-body density of the system.</p>
+<dd><p>Returns the one-body density of the system, according to</p>
+<p><span class="math notranslate nohighlight">\(\rho(x) = 2 \sum_i^{n/2} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>C (np.ndarray) : coefficient matrix</dd>
@@ -374,7 +383,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.RHF.evaluate_total_energy">
 <code class="descname">evaluate_total_energy</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.evaluate_total_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.evaluate_total_energy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the total energy of the system.</p>
+<dd><p>Returns the total energy of the system, given by</p>
+<p><span class="math notranslate nohighlight">\(E[H] = 2\sum_{i=1}^{n/2} \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + 2 \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta} - \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\delta\beta}\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>C (np.ndarray) : coefficient matrix</dd>
@@ -386,7 +396,8 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.RHF.fill_density_matrix">
 <code class="descname">fill_density_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>full_density=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.fill_density_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.fill_density_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the density matrix evaluated using the coefficient matrix C.</p>
+<dd><p>Returns the density matrix evaluated using the coefficient matrix C, according to</p>
+<p><span class="math notranslate nohighlight">\(M_{\alpha\beta} = \sum_i^{nparticles/2} C_{\alpha,i}^* C_{i,\beta}\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>C (np.ndarray) : coefficient matrix</dd>
@@ -398,11 +409,15 @@ The quantum-system documentation appears in <a class="reference external" href="
 <dl class="method">
 <dt id="do.RHF.fill_fock_matrix">
 <code class="descname">fill_fock_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.fill_fock_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.fill_fock_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</p>
+<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to</p>
+<p><span class="math notranslate nohighlight">\(f_{\mu\nu} =  h_{\mu\nu}^{ho} + 2\sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta} - \sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\delta\nu}\)</span></p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>C : coefficient matrix
-t : time instant</dd>
+<dd><p class="first">C (np.ndarray) : coefficient matrix</p>
+<p class="last">t (float) : time instant</p>
+</dd>
+<dt>Returns:</dt>
+<dd>fock_matrix (np.ndarray)</dd>
 </dl>
 </dd></dl>
 

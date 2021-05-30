@@ -59,7 +59,7 @@
 
 
 \title{Project 2 Documentation}
-\date{May 26, 2021}
+\date{May 30, 2021}
 \release{}
 \author{Emiliano Staffoli}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -78,8 +78,8 @@
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.GHF}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{do.}}\sphinxbfcode{\sphinxupquote{GHF}}}{\emph{l=10}, \emph{grid\_length=10}, \emph{num\_grid\_points=201}, \emph{alpha=1.0}, \emph{a=0.25}, \emph{Omega=0.25}, \emph{omega=2}, \emph{epsilon0=1}, \emph{nparticles=2}, \emph{antisymmetrize=True}}{}
-Initializes a system in the general spin representation. The default values in the creator are referred to the analyzed case.
-A more detailed description is provided in the paper folder in this same GitHub repository.
+Initializes a system in the general spin representation. The default values in the creator are referred to the main analyzed case.
+A more detailed description is provided in the paper folder at \sphinxurl{https://github.com/Matteo294/FYS4411}.
 The quantum-system documentation appears in \sphinxurl{https://schoyen.github.io/quantum-systems/}
 \begin{description}
 \item[{Args:}] \leavevmode
@@ -121,7 +121,9 @@ nparticles (int) : number of electrons in the system
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.GHF.eval_dipole}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_dipole}}}{\emph{C}}{}
-Returns the expected value of the position operator for the system.
+Returns the expected value of the position operator for the system, given by
+
+\(\overline{x}(t) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^*(t) C_{\beta,i} (t) \langle \chi_{\alpha}(x) \vert \hat{x} \vert \chi_{\beta}(x)\rangle\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
@@ -136,8 +138,10 @@ dipole (float) : expected value for position operator
 \index{eval\_one\_body\_density() (do.GHF method)@\spxentry{eval\_one\_body\_density()}\spxextra{do.GHF method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{index:do.GHF.eval_one_body_density}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_one\_body\_density}}}{\emph{C}, \emph{plot\_ON=False}}{}
-Returns the one-body density of the system.
+\phantomsection\label{\detokenize{index:do.GHF.eval_one_body_density}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_one\_body\_density}}}{\emph{C}, \emph{plot\_ON=False}, \emph{save\_fig=False}}{}
+Returns the one-body density of the system, according to
+
+\(\rho(x) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
@@ -156,7 +160,9 @@ one\_body\_density (np.array)
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.GHF.evaluate_total_energy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{evaluate\_total\_energy}}}{\emph{C}}{}
-Returns the total energy of the system.
+Returns the total energy of the system, given by
+
+\(E[H] = \sum_{i=1}^2 \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + \frac{1}{2} \sum_{i,j=1}^2 \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta,AS}\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
@@ -172,7 +178,9 @@ energy (float)
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.GHF.fill_density_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{fill\_density\_matrix}}}{\emph{C}}{}
-Returns the density matrix evaluated using the coefficient matrix C.
+Returns the density matrix evaluated using the coefficient matrix C, according to
+
+\(M_{\alpha\beta} = \sum_i^{occ} C_{\alpha,i}^* C_{i,\beta}\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
@@ -188,7 +196,9 @@ density\_matrix (np.ndarray)
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.GHF.fill_fock_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{fill\_fock\_matrix}}}{\emph{C}, \emph{t}}{}
-Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.
+Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to
+
+\(f_{\mu\nu}(t) =  h_{\mu\nu}^{ho} + x_{\mu\nu} \varepsilon_0 \sin(\omega t) + \sum_{j}^{occ} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta,AS}\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
@@ -210,15 +220,15 @@ Solves the time-independent Ruthaan-Hall equations and then performs a time-evol
 Performs the Fourier analysis on the curves for overlap and dipole moment obtained for t\textgreater{}t\_laser\_ON
 \begin{description}
 \item[{Args:}] \leavevmode
-tolerance : stopping condition for the time-independent solver.
+tolerance (float) : stopping condition for the time-independent solver.
 
-max\_iter : maximum number of iterations before the time-independent solver stops.
+max\_iter (int) : maximum number of iterations before the time-independent solver stops.
 
-t\_laser\_ON : instant at which the laser is switched off
+t\_laser\_ON (float) : instant at which the laser is switched off
 
-t\_max : final instant for time evolution
+t\_max (float) : final instant for time evolution
 
-dt : time step
+dt (float) : time step
 
 \item[{Returns:}] \leavevmode
 C2 (np.ndarray) : coefficient matrix for t=t\_max
@@ -257,16 +267,140 @@ t (float) : time instant
 
 \end{fulllineitems}
 
+\index{plot\_AO() (do.GHF method)@\spxentry{plot\_AO()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_AO}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_AO}}}{}{}
+Plots the square modulus of the Atomic Orbitals (harmonic oscillator eigenstates).
+The zero-level for each single particle state is its corresponding eigenvalue.
+
+\end{fulllineitems}
+
+\index{plot\_MO() (do.GHF method)@\spxentry{plot\_MO()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_MO}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_MO}}}{\emph{epsilon}, \emph{C}}{}
+Plots the square modulus of the Molecular Orbitals (after the basis change).
+The zero-level for each single particle state is its corresponding eigenvalue.
+
+\end{fulllineitems}
+
+\index{plot\_delta\_per\_iteration() (do.GHF method)@\spxentry{plot\_delta\_per\_iteration()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_delta_per_iteration}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_delta\_per\_iteration}}}{\emph{delta\_ghf}, \emph{delta\_rhf}, \emph{tolerance}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
+\index{plot\_dipole() (do.GHF method)@\spxentry{plot\_dipole()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_dipole}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_dipole}}}{\emph{time}, \emph{dipole}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
+\index{plot\_dipoles() (do.GHF method)@\spxentry{plot\_dipoles()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_dipoles}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_dipoles}}}{\emph{time}, \emph{dipole1}, \emph{dipole2}, \emph{dipole3}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
+\index{plot\_energy\_per\_iteration() (do.GHF method)@\spxentry{plot\_energy\_per\_iteration()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_energy_per_iteration}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_energy\_per\_iteration}}}{\emph{energy\_ghf}, \emph{energy\_rhf}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
+\index{plot\_fft\_dipole\_comparison() (do.GHF method)@\spxentry{plot\_fft\_dipole\_comparison()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_fft_dipole_comparison}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_fft\_dipole\_comparison}}}{\emph{freq1}, \emph{freq2}, \emph{freq3}, \emph{fft1}, \emph{fft2}, \emph{fft3}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
+\index{plot\_fft\_overlap\_comparison() (do.GHF method)@\spxentry{plot\_fft\_overlap\_comparison()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_fft_overlap_comparison}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_fft\_overlap\_comparison}}}{\emph{freq1}, \emph{freq2}, \emph{freq3}, \emph{fft1}, \emph{fft2}, \emph{fft3}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
+\index{plot\_fourier\_analysis() (do.GHF method)@\spxentry{plot\_fourier\_analysis()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_fourier_analysis}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_fourier\_analysis}}}{\emph{time}, \emph{dipole}, \emph{overlap}, \emph{energy}, \emph{xFFT}, \emph{xfreqFFT}, \emph{overlapFFT}, \emph{overlapfreqFFT}, \emph{save\_dipole=False}, \emph{save\_overlap=False}, \emph{save\_energy=False}, \emph{save\_fft\_x=False}, \emph{save\_fft\_overlap=False}}{}
+Plots the results of the Fourier analysis.
+\begin{description}
+\item[{Args:}] \leavevmode
+time (np.array) : array of time instants
+
+overlap (np.array) : overlap for each time instant
+
+energy (np.array) : energy for each time instant
+
+xFFT (np.array) : fast Fourier transform of the dipole signal
+
+xfreqFFT (np.array) : frequency spectrum of the dipole signal (useful for plotting)
+
+overlapFFT (np.array) : fast Fourier transform of the overlap signal
+
+overlapfreqFFT (np.array) : frequency spectrum of the overlap signal (useful for plotting)
+
+\end{description}
+
+\end{fulllineitems}
+
+\index{plot\_onebody\_comparison() (do.GHF method)@\spxentry{plot\_onebody\_comparison()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_onebody_comparison}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_onebody\_comparison}}}{\emph{onebodyg}, \emph{onebodyr}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
+\index{plot\_overlap() (do.GHF method)@\spxentry{plot\_overlap()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_overlap}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_overlap}}}{\emph{time}, \emph{overlap}, \emph{save\_fig=False}}{}
+Plots the comparison between the overlaps evaluated in the time-dependent solver and by Zanghellini et al..
+\begin{description}
+\item[{Args:}] \leavevmode
+time (np.array) : array of time instants
+
+overlap (np.array) : overlap for each time instant
+
+\end{description}
+
+\end{fulllineitems}
+
+\index{plot\_overlaps() (do.GHF method)@\spxentry{plot\_overlaps()}\spxextra{do.GHF method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{index:do.GHF.plot_overlaps}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{plot\_overlaps}}}{\emph{time}, \emph{overlap1}, \emph{overlap2}, \emph{overlap3}, \emph{save\_fig=False}}{}
+FACCIAMO SENZA DOCUMENTAZIONE DAI
+
+\end{fulllineitems}
+
 \index{rhsf() (do.GHF method)@\spxentry{rhsf()}\spxextra{do.GHF method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.GHF.rhsf}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{rhsf}}}{\emph{t}, \emph{C}}{}
-Returns the right-hand side of the Ruthaan-Hall equations with the laser source on.
+Returns the right-hand side of the Ruthaan-Hall equations with the laser source on, corresponding to
+
+\(\dot{C}(t) = -i f(t)C(t)\)
 \begin{description}
 \item[{Args:}] \leavevmode
-t : time
+t (float) : time
 
-C : coefficient matrix
+C (np.ndarray) : coefficient matrix
 
 \item[{Returns:}] \leavevmode
 rhs (np.ndarray)
@@ -279,12 +413,14 @@ rhs (np.ndarray)
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.GHF.rhsf_OFF}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{rhsf\_OFF}}}{\emph{t}, \emph{C}}{}
-Returns the right-hand side of the Ruthaan-Hall equations with the laser source off.
+Returns the right-hand side of the Ruthaan-Hall equations with the laser source off, given by
+
+\(\dot{C}(t) = -i f(t)C(t)\)
 \begin{description}
 \item[{Args:}] \leavevmode
-t : time
+t (float) : time
 
-C : coefficient matrix
+C (np.ndarray) : coefficient matrix
 
 \item[{Returns:}] \leavevmode
 rhs (np.ndarray)
@@ -296,23 +432,25 @@ rhs (np.ndarray)
 \index{solve\_TDHF() (do.GHF method)@\spxentry{solve\_TDHF()}\spxextra{do.GHF method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{index:do.GHF.solve_TDHF}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{solve\_TDHF}}}{\emph{tstart}, \emph{dt}, \emph{t\_max}, \emph{C0}, \emph{eval\_overlap=False}, \emph{eval\_dipole=False}, \emph{laser\_ON=True}}{}
+\phantomsection\label{\detokenize{index:do.GHF.solve_TDHF}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{solve\_TDHF}}}{\emph{tstart}, \emph{dt}, \emph{t\_max}, \emph{C0}, \emph{eval\_overlap=False}, \emph{eval\_dipole=False}, \emph{eval\_energy=False}, \emph{laser\_ON=True}}{}
 Solves iteratively the time-dependent Ruthaan-Hall equations for the system.
 \begin{description}
 \item[{Args:}] \leavevmode
-t\_start : time at which the evolution begins
+t\_start (float) : time at which the evolution begins
 
-dt : time step
+dt (float) : time step
 
-t\_max : time at which the evolution ends
+t\_max (float) : time at which the evolution ends
 
-C0 : coefficient matrix at time t\_start
+C0 (np.ndarray) : coefficient matrix at time t\_start
 
-eval\_overlap : if True, the overlap with the wavefunction at t=t\_start is evaluated at every instant
+eval\_overlap (bool) : if True, the overlap with the wavefunction at t=t\_start is evaluated at every instant
 
-eval\_dipole : if True, the expected value for the dipole operator is evaluated at every instant
+eval\_dipole (bool) : if True, the expected value for the dipole operator is evaluated at every instant
 
-laser\_ON : if True, the laser source is on
+eval\_energy (bool) : if True, the total energy is evaluated at every instant
+
+laser\_ON (bool) : if True, the laser source is on
 
 \item[{Returns: }] \leavevmode
 C (np.ndarray) : coefficient matrix at t=t\_max
@@ -322,6 +460,8 @@ time (np.array) : time instants from tstart to t\_max spaced by dt
 overlap (np.array) : None if eval\_overlap==False
 
 dipole (np.array) : None if eval\_dipole==False
+
+energy (np.array) : None if eval\_energy==False
 
 \end{description}
 
@@ -343,7 +483,7 @@ print\_ON (bool) : if True prints if the convergence or the max number of iterat
 
 energy\_per\_step (bool) : if True, the energy of the system is evaluated at every step
 
-delta\_per\_step (bool) : if True, the delta parameter of the system is evaluated at every step
+delta\_per\_step (bool) : if True, the \(\Delta\) parameter of the system is evaluated at every step
 
 \item[{Returns:}] \leavevmode
 epsilon (np.array) : final eigenvalues
@@ -364,7 +504,7 @@ delta\_per\_step (np.array) : None if delta\_per\_step==False
 \index{RHF (class in do)@\spxentry{RHF}\spxextra{class in do}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{index:do.RHF}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{do.}}\sphinxbfcode{\sphinxupquote{RHF}}}{\emph{l=10}, \emph{grid\_length=10}, \emph{num\_grid\_points=201}, \emph{alpha=1.0}, \emph{a=0.25}, \emph{Omega=0.25}, \emph{omega=2}, \emph{epsilon0=1}, \emph{nparticles=2}, \emph{potential=None}}{}
+\phantomsection\label{\detokenize{index:do.RHF}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{do.}}\sphinxbfcode{\sphinxupquote{RHF}}}{\emph{l=10}, \emph{grid\_length=10}, \emph{num\_grid\_points=201}, \emph{alpha=1.0}, \emph{a=0.25}, \emph{Omega=0.25}, \emph{omega=2}, \emph{epsilon0=1}, \emph{nparticles=2}, \emph{potential=None}, \emph{antisymmetrize=False}}{}
 Initializes a system in the restricted spin representation. The default values in the creator are referred to the analyzed case.
 A more detailed description is provided in the paper folder in this same GitHub repository.
 The quantum-system documentation appears in \sphinxurl{https://schoyen.github.io/quantum-systems/}
@@ -406,7 +546,9 @@ nparticles (int) : number of electrons in the system
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.RHF.eval_one_body_density}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_one\_body\_density}}}{\emph{C}, \emph{plot\_ON=False}}{}
-Returns the one-body density of the system.
+Returns the one-body density of the system, according to
+
+\(\rho(x) = 2 \sum_i^{n/2} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
@@ -425,15 +567,15 @@ one\_body\_density (np.array)
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.RHF.evaluate_total_energy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{evaluate\_total\_energy}}}{\emph{C}}{}
-Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.
+Returns the total energy of the system, given by
+
+\(E[H] = 2\sum_{i=1}^{n/2} \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + 2 \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta} - \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\delta\beta}\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
 
-t (float) : time instant
-
 \item[{Returns:}] \leavevmode
-fock\_matrix (np.ndarray)
+energy (float)
 
 \end{description}
 
@@ -443,7 +585,9 @@ fock\_matrix (np.ndarray)
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.RHF.fill_density_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{fill\_density\_matrix}}}{\emph{C}, \emph{full\_density=False}}{}
-Returns the density matrix evaluated using the coefficient matrix C.
+Returns the density matrix evaluated using the coefficient matrix C, according to
+
+\(M_{\alpha\beta} = \sum_i^{nparticles/2} C_{\alpha,i}^* C_{i,\beta}\)
 \begin{description}
 \item[{Args:}] \leavevmode
 C (np.ndarray) : coefficient matrix
@@ -459,11 +603,17 @@ density\_matrix (np.ndarray)
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:do.RHF.fill_fock_matrix}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{fill\_fock\_matrix}}}{\emph{C}, \emph{t}}{}
-Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.
+Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to
+
+\(f_{\mu\nu} =  h_{\mu\nu}^{ho} + 2\sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta} - \sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\delta\nu}\)
 \begin{description}
 \item[{Args:}] \leavevmode
-C : coefficient matrix
-t : time instant
+C (np.ndarray) : coefficient matrix
+
+t (float) : time instant
+
+\item[{Returns:}] \leavevmode
+fock\_matrix (np.ndarray)
 
 \end{description}
 

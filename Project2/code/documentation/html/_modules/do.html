@@ -14,6 +14,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
@@ -48,8 +49,8 @@
 
 <div class="viewcode-block" id="GHF"><a class="viewcode-back" href="../index.html#do.GHF">[docs]</a><span class="k">class</span> <span class="nc">GHF</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes a system in the general spin representation. The default values in the creator are referred to the analyzed case.</span>
-<span class="sd">        A more detailed description is provided in the paper folder in this same GitHub repository.</span>
+<span class="sd">        Initializes a system in the general spin representation. The default values in the creator are referred to the main analyzed case.</span>
+<span class="sd">        A more detailed description is provided in the paper folder at https://github.com/Matteo294/FYS4411.</span>
 <span class="sd">        The quantum-system documentation appears in https://schoyen.github.io/quantum-systems/</span>
 
 <span class="sd">        Args:</span>
@@ -87,11 +88,9 @@
 <span class="sd">            nparticles (int) : number of electrons in the system</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">grid_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">Omega</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsilon0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nparticles</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">antisymmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">potential</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">ODQD</span><span class="o">.</span><span class="n">HOPotential</span><span class="p">(</span><span class="n">Omega</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">potential</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">grid_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">Omega</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsilon0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nparticles</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">antisymmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">ODQD</span><span class="o">.</span><span class="n">HOPotential</span><span class="p">(</span><span class="n">Omega</span><span class="p">)</span>
         
         <span class="n">odho</span> <span class="o">=</span> <span class="n">ODQD</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">grid_length</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">GeneralOrbitalSystem</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">nparticles</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="n">odho</span><span class="p">,</span> <span class="n">anti_symmetrize</span><span class="o">=</span><span class="n">antisymmetrize</span><span class="p">)</span>
@@ -116,8 +115,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="o">*</span> <span class="n">t</span> <span class="p">)</span></div>
     
 <div class="viewcode-block" id="GHF.fill_density_matrix"><a class="viewcode-back" href="../index.html#do.GHF.fill_density_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">fill_density_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the density matrix evaluated using the coefficient matrix C.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the density matrix evaluated using the coefficient matrix C, according to</span>
+<span class="sd">        </span>
+<span class="sd">        :math:`M_{\alpha\beta} = \sum_i^{occ} C_{\alpha,i}^* C_{i,\beta}`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
@@ -132,8 +133,10 @@
         <span class="k">return</span> <span class="n">density</span></div>
         
 <div class="viewcode-block" id="GHF.fill_fock_matrix"><a class="viewcode-back" href="../index.html#do.GHF.fill_fock_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">fill_fock_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to</span>
+
+<span class="sd">        :math:`f_{\mu\nu}(t) =  h_{\mu\nu}^{ho} + x_{\mu\nu} \varepsilon_0 \sin(\omega t) + \sum_{j}^{occ} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta,AS}`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
@@ -153,8 +156,10 @@
         <span class="k">return</span> <span class="n">f</span></div>
     
 <div class="viewcode-block" id="GHF.evaluate_total_energy"><a class="viewcode-back" href="../index.html#do.GHF.evaluate_total_energy">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_total_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the total energy of the system.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the total energy of the system, given by</span>
+<span class="sd">        </span>
+<span class="sd">        :math:`E[H] = \sum_{i=1}^2 \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + \frac{1}{2} \sum_{i,j=1}^2 \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta,AS}`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
@@ -170,8 +175,10 @@
         <span class="k">return</span> <span class="n">energy</span></div>
     
 <div class="viewcode-block" id="GHF.eval_one_body_density"><a class="viewcode-back" href="../index.html#do.GHF.eval_one_body_density">[docs]</a>    <span class="k">def</span> <span class="nf">eval_one_body_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">plot_ON</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the one-body density of the system.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the one-body density of the system, according to</span>
+
+<span class="sd">        :math:`\rho(x) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
@@ -207,8 +214,10 @@
         <span class="k">return</span> <span class="n">obd</span></div>
     
 <div class="viewcode-block" id="GHF.eval_dipole"><a class="viewcode-back" href="../index.html#do.GHF.eval_dipole">[docs]</a>    <span class="k">def</span> <span class="nf">eval_dipole</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the expected value of the position operator for the system.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the expected value of the position operator for the system, given by</span>
+
+<span class="sd">        :math:`\overline{x}(t) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^*(t) C_{\beta,i} (t) \langle \chi_{\alpha}(x) \vert \hat{x} \vert \chi_{\beta}(x)\rangle`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
@@ -222,7 +231,7 @@
         <span class="k">return</span> <span class="n">dipole</span></div>
     
 <div class="viewcode-block" id="GHF.solve_TIHF"><a class="viewcode-back" href="../index.html#do.GHF.solve_TIHF">[docs]</a>    <span class="k">def</span> <span class="nf">solve_TIHF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">print_ON</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eval_energy_per_step</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eval_delta</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves the Ruthaan-Hall equations for the system.</span>
 
 <span class="sd">        Args:</span>
@@ -235,7 +244,7 @@
 
 <span class="sd">            energy_per_step (bool) : if True, the energy of the system is evaluated at every step</span>
 
-<span class="sd">            delta_per_step (bool) : if True, the delta parameter of the system is evaluated at every step</span>
+<span class="sd">            delta_per_step (bool) : if True, the :math:`\Delta` parameter of the system is evaluated at every step</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            epsilon (np.array) : final eigenvalues</span>
@@ -280,13 +289,15 @@
         <span class="k">return</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">energy_per_step</span><span class="p">,</span> <span class="n">delta_per_step</span>          </div>
 
 <div class="viewcode-block" id="GHF.rhsf"><a class="viewcode-back" href="../index.html#do.GHF.rhsf">[docs]</a>    <span class="k">def</span> <span class="nf">rhsf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Returns the right-hand side of the Ruthaan-Hall equations with the laser source on.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the right-hand side of the Ruthaan-Hall equations with the laser source on, corresponding to</span>
+
+<span class="sd">            :math:`\dot{C}(t) = -i f(t)C(t)`</span>
 
 <span class="sd">            Args:</span>
-<span class="sd">                t : time</span>
+<span class="sd">                t (float) : time</span>
 
-<span class="sd">                C : coefficient matrix</span>
+<span class="sd">                C (np.ndarray) : coefficient matrix</span>
 <span class="sd">            </span>
 <span class="sd">            Returns:</span>
 <span class="sd">                rhs (np.ndarray)</span>
@@ -299,13 +310,15 @@
         <span class="k">return</span> <span class="n">res</span></div>
     
 <div class="viewcode-block" id="GHF.rhsf_OFF"><a class="viewcode-back" href="../index.html#do.GHF.rhsf_OFF">[docs]</a>    <span class="k">def</span> <span class="nf">rhsf_OFF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Returns the right-hand side of the Ruthaan-Hall equations with the laser source off.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the right-hand side of the Ruthaan-Hall equations with the laser source off, given by</span>
+
+<span class="sd">            :math:`\dot{C}(t) = -i f(t)C(t)`</span>
 
 <span class="sd">            Args:</span>
-<span class="sd">                t : time</span>
+<span class="sd">                t (float) : time</span>
 
-<span class="sd">                C : coefficient matrix</span>
+<span class="sd">                C (np.ndarray) : coefficient matrix</span>
 <span class="sd">            </span>
 <span class="sd">            Returns:</span>
 <span class="sd">                rhs (np.ndarray)</span>
@@ -318,25 +331,25 @@
         <span class="k">return</span> <span class="n">res</span></div>
     
 <div class="viewcode-block" id="GHF.solve_TDHF"><a class="viewcode-back" href="../index.html#do.GHF.solve_TDHF">[docs]</a>    <span class="k">def</span> <span class="nf">solve_TDHF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">C0</span><span class="p">,</span> <span class="n">eval_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eval_dipole</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eval_energy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">laser_ON</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves iteratively the time-dependent Ruthaan-Hall equations for the system.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            t_start : time at which the evolution begins</span>
+<span class="sd">            t_start (float) : time at which the evolution begins</span>
 
-<span class="sd">            dt : time step</span>
+<span class="sd">            dt (float) : time step</span>
 
-<span class="sd">            t_max : time at which the evolution ends</span>
+<span class="sd">            t_max (float) : time at which the evolution ends</span>
 
-<span class="sd">            C0 : coefficient matrix at time t_start</span>
+<span class="sd">            C0 (np.ndarray) : coefficient matrix at time t_start</span>
 
-<span class="sd">            eval_overlap : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant</span>
+<span class="sd">            eval_overlap (bool) : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant</span>
 
-<span class="sd">            eval_dipole : if True, the expected value for the dipole operator is evaluated at every instant</span>
+<span class="sd">            eval_dipole (bool) : if True, the expected value for the dipole operator is evaluated at every instant</span>
 <span class="sd">            </span>
-<span class="sd">            eval_energy : if True, the total energy is evaluated at every instant</span>
+<span class="sd">            eval_energy (bool) : if True, the total energy is evaluated at every instant</span>
 
-<span class="sd">            laser_ON : if True, the laser source is on</span>
+<span class="sd">            laser_ON (bool) : if True, the laser source is on</span>
 <span class="sd">        </span>
 <span class="sd">        Returns: </span>
 <span class="sd">            C (np.ndarray) : coefficient matrix at t=t_max</span>
@@ -394,20 +407,20 @@
         <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">overlap</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">energy</span></div>
 
 <div class="viewcode-block" id="GHF.fourier_analysis"><a class="viewcode-back" href="../index.html#do.GHF.fourier_analysis">[docs]</a>    <span class="k">def</span> <span class="nf">fourier_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">t_laser_ON</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves the time-independent Ruthaan-Hall equations and then performs a time-evolution of the system switching off the laser source at a certain time.</span>
 <span class="sd">        Performs the Fourier analysis on the curves for overlap and dipole moment obtained for t&gt;t_laser_ON</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            tolerance : stopping condition for the time-independent solver.</span>
+<span class="sd">            tolerance (float) : stopping condition for the time-independent solver.</span>
 <span class="sd">            </span>
-<span class="sd">            max_iter : maximum number of iterations before the time-independent solver stops.</span>
+<span class="sd">            max_iter (int) : maximum number of iterations before the time-independent solver stops.</span>
 
-<span class="sd">            t_laser_ON : instant at which the laser is switched off</span>
+<span class="sd">            t_laser_ON (float) : instant at which the laser is switched off</span>
 
-<span class="sd">            t_max : final instant for time evolution</span>
+<span class="sd">            t_max (float) : final instant for time evolution</span>
 
-<span class="sd">            dt : time step</span>
+<span class="sd">            dt (float) : time step</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            C2 (np.ndarray) : coefficient matrix for t=t_max</span>
@@ -480,7 +493,7 @@
         
     
 <div class="viewcode-block" id="GHF.plot_AO"><a class="viewcode-back" href="../index.html#do.GHF.plot_AO">[docs]</a>    <span class="k">def</span> <span class="nf">plot_AO</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Plots the square modulus of the Atomic Orbitals (harmonic oscillator eigenstates).</span>
 <span class="sd">            The zero-level for each single particle state is its corresponding eigenvalue.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -495,7 +508,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
     
 <div class="viewcode-block" id="GHF.plot_MO"><a class="viewcode-back" href="../index.html#do.GHF.plot_MO">[docs]</a>    <span class="k">def</span> <span class="nf">plot_MO</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Plots the square modulus of the Molecular Orbitals (after the basis change).</span>
 <span class="sd">            The zero-level for each single particle state is its corresponding eigenvalue.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -512,7 +525,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GHF.plot_onebody_comparison"><a class="viewcode-back" href="../index.html#do.GHF.plot_onebody_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_onebody_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onebodyg</span><span class="p">,</span> <span class="n">onebodyr</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
@@ -534,7 +547,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
     
 <div class="viewcode-block" id="GHF.plot_energy_per_iteration"><a class="viewcode-back" href="../index.html#do.GHF.plot_energy_per_iteration">[docs]</a>    <span class="k">def</span> <span class="nf">plot_energy_per_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy_ghf</span><span class="p">,</span> <span class="n">energy_rhf</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
@@ -552,7 +565,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
         
 <div class="viewcode-block" id="GHF.plot_delta_per_iteration"><a class="viewcode-back" href="../index.html#do.GHF.plot_delta_per_iteration">[docs]</a>    <span class="k">def</span> <span class="nf">plot_delta_per_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_ghf</span><span class="p">,</span> <span class="n">delta_rhf</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
@@ -572,7 +585,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
     
 <div class="viewcode-block" id="GHF.plot_overlap"><a class="viewcode-back" href="../index.html#do.GHF.plot_overlap">[docs]</a>    <span class="k">def</span> <span class="nf">plot_overlap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">overlap</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Plots the comparison between the overlaps evaluated in the time-dependent solver and by Zanghellini et al..</span>
 
 <span class="sd">            Args:</span>
@@ -598,7 +611,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GHF.plot_dipole"><a class="viewcode-back" href="../index.html#do.GHF.plot_dipole">[docs]</a>    <span class="k">def</span> <span class="nf">plot_dipole</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
@@ -613,7 +626,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
         
 <div class="viewcode-block" id="GHF.plot_overlaps"><a class="viewcode-back" href="../index.html#do.GHF.plot_overlaps">[docs]</a>    <span class="k">def</span> <span class="nf">plot_overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">overlap1</span><span class="p">,</span> <span class="n">overlap2</span><span class="p">,</span> <span class="n">overlap3</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
@@ -633,7 +646,7 @@
     
 
 <div class="viewcode-block" id="GHF.plot_dipoles"><a class="viewcode-back" href="../index.html#do.GHF.plot_dipoles">[docs]</a>    <span class="k">def</span> <span class="nf">plot_dipoles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">dipole1</span><span class="p">,</span> <span class="n">dipole2</span><span class="p">,</span> <span class="n">dipole3</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
@@ -651,7 +664,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  </div>
     
 <div class="viewcode-block" id="GHF.plot_fourier_analysis"><a class="viewcode-back" href="../index.html#do.GHF.plot_fourier_analysis">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fourier_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">dipole</span><span class="p">,</span> <span class="n">overlap</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">xFFT</span><span class="p">,</span> <span class="n">xfreqFFT</span><span class="p">,</span> <span class="n">overlapFFT</span><span class="p">,</span> <span class="n">overlapfreqFFT</span><span class="p">,</span> <span class="n">save_dipole</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_energy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_fft_x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_fft_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>    
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Plots the results of the Fourier analysis.</span>
 
 <span class="sd">            Args:</span>
@@ -728,7 +741,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GHF.plot_fft_dipole_comparison"><a class="viewcode-back" href="../index.html#do.GHF.plot_fft_dipole_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fft_dipole_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq1</span><span class="p">,</span><span class="n">freq2</span><span class="p">,</span><span class="n">freq3</span><span class="p">,</span> <span class="n">fft1</span><span class="p">,</span> <span class="n">fft2</span><span class="p">,</span> <span class="n">fft3</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
@@ -759,7 +772,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GHF.plot_fft_overlap_comparison"><a class="viewcode-back" href="../index.html#do.GHF.plot_fft_overlap_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fft_overlap_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq1</span><span class="p">,</span><span class="n">freq2</span><span class="p">,</span><span class="n">freq3</span><span class="p">,</span> <span class="n">fft1</span><span class="p">,</span> <span class="n">fft2</span><span class="p">,</span> <span class="n">fft3</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            FACCIAMO SENZA DOCUMENTAZIONE DAI</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
@@ -795,7 +808,7 @@
 
 
 <div class="viewcode-block" id="RHF"><a class="viewcode-back" href="../index.html#do.RHF">[docs]</a><span class="k">class</span> <span class="nc">RHF</span><span class="p">(</span><span class="n">GHF</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a system in the restricted spin representation. The default values in the creator are referred to the analyzed case.</span>
 <span class="sd">        A more detailed description is provided in the paper folder in this same GitHub repository.</span>
 <span class="sd">        The quantum-system documentation appears in https://schoyen.github.io/quantum-systems/</span>
@@ -847,8 +860,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">epsilon0</span> <span class="o">=</span> <span class="n">epsilon0</span>
     
 <div class="viewcode-block" id="RHF.fill_density_matrix"><a class="viewcode-back" href="../index.html#do.RHF.fill_density_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">fill_density_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">full_density</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the density matrix evaluated using the coefficient matrix C.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the density matrix evaluated using the coefficient matrix C, according to</span>
+<span class="sd">        </span>
+<span class="sd">        :math:`M_{\alpha\beta} = \sum_i^{nparticles/2} C_{\alpha,i}^* C_{i,\beta}`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
@@ -856,25 +871,28 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            density_matrix (np.ndarray)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">full_density</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span> 
-            <span class="n">imax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">imax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nparticles</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
 
         <span class="n">density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nparticles</span><span class="o">/</span><span class="mi">2</span><span class="p">)):</span>
             <span class="n">density</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">C</span><span class="p">[:,</span><span class="n">i</span><span class="p">]),</span> <span class="n">C</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
         
         <span class="k">return</span> <span class="n">density</span>
         <span class="k">return</span> </div>
 
 <div class="viewcode-block" id="RHF.fill_fock_matrix"><a class="viewcode-back" href="../index.html#do.RHF.fill_fock_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">fill_fock_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to</span>
+
+<span class="sd">        :math:`f_{\mu\nu} =  h_{\mu\nu}^{ho} + 2\sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta} - \sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\delta\nu}`</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            C : coefficient matrix</span>
-<span class="sd">            t : time instant</span>
+<span class="sd">            C (np.ndarray) : coefficient matrix</span>
+
+<span class="sd">            t (float) : time instant</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            fock_matrix (np.ndarray)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>    
         <span class="n">density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_density_matrix</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
@@ -886,8 +904,10 @@
         <span class="k">return</span> <span class="n">f</span></div>
     
 <div class="viewcode-block" id="RHF.evaluate_total_energy"><a class="viewcode-back" href="../index.html#do.RHF.evaluate_total_energy">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_total_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the total energy of the system.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the total energy of the system, given by</span>
+<span class="sd">        </span>
+<span class="sd">        :math:`E[H] = 2\sum_{i=1}^{n/2} \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + 2 \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta} - \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\delta\beta}`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
@@ -905,8 +925,10 @@
         <span class="k">return</span> <span class="n">energy</span></div>
     
 <div class="viewcode-block" id="RHF.eval_one_body_density"><a class="viewcode-back" href="../index.html#do.RHF.eval_one_body_density">[docs]</a>    <span class="k">def</span> <span class="nf">eval_one_body_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">plot_ON</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the one-body density of the system.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the one-body density of the system, according to</span>
+
+<span class="sd">        :math:`\rho(x) = 2 \sum_i^{n/2} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            C (np.ndarray) : coefficient matrix</span>
