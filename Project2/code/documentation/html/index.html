@@ -1,0 +1,493 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to Project 2’s documentation! &#8212; Project 2  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-do">
+<span id="welcome-to-project-2-s-documentation"></span><h1>Welcome to Project 2’s documentation!<a class="headerlink" href="#module-do" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="do.GHF">
+<em class="property">class </em><code class="descclassname">do.</code><code class="descname">GHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>antisymmetrize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a system in the general spin representation. The default values in the creator are referred to the main analyzed case.
+A more detailed description is provided in the paper folder at <a class="reference external" href="https://github.com/Matteo294/FYS4411">https://github.com/Matteo294/FYS4411</a>.
+The quantum-system documentation appears in <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions</p>
+<p>grid_length (int) : extension of the mesh goes from -grid_length to grid_length</p>
+<p>num_grid_points (int) : number of points in the mesh</p>
+<p>alpha (float) : strength parameter in the shielded Coulomb potential</p>
+<p>a (float) : shielding parameter in the shielded Coulomb potential</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p>nparticles (int) : number of electrons in the system</p>
+<p class="last">antisymmetrize (bool) : if True, antisymmetrizes the system.u matrix</p>
+</dd>
+<dt>Attributes:</dt>
+<dd><p class="first">potential (func) : ODQD.HOPotential(Omega)</p>
+<p>system : GeneralOrbitalSystem object (see <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a>)</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p class="last">nparticles (int) : number of electrons in the system</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="do.GHF.eval_dipole">
+<code class="descname">eval_dipole</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.eval_dipole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.eval_dipole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the expected value of the position operator for the system, given by</p>
+<p><span class="math notranslate nohighlight">\(\overline{x}(t) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^*(t) C_{\beta,i} (t) \langle \chi_{\alpha}(x) \vert \hat{x} \vert \chi_{\beta}(x)\rangle\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:            </dt>
+<dd>dipole (float) : expected value for position operator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.eval_one_body_density">
+<code class="descname">eval_one_body_density</code><span class="sig-paren">(</span><em>C</em>, <em>plot_ON=False</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.eval_one_body_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.eval_one_body_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the one-body density of the system, according to</p>
+<p><span class="math notranslate nohighlight">\(\rho(x) = \sum_i^{occ} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Kwargs:</dt>
+<dd>plot_ON (bool) : if True plots the one-body density</dd>
+<dt>Returns:</dt>
+<dd>one_body_density (np.array)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.evaluate_total_energy">
+<code class="descname">evaluate_total_energy</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.evaluate_total_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.evaluate_total_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total energy of the system, given by</p>
+<p><span class="math notranslate nohighlight">\(E[H] = \sum_{i=1}^2 \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + \frac{1}{2} \sum_{i,j=1}^2 \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta,AS}\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:</dt>
+<dd>energy (float)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.fill_density_matrix">
+<code class="descname">fill_density_matrix</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fill_density_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fill_density_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the density matrix evaluated using the coefficient matrix C, according to</p>
+<p><span class="math notranslate nohighlight">\(M_{\alpha\beta} = \sum_i^{occ} C_{\alpha,i}^* C_{i,\beta}\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:</dt>
+<dd>density_matrix (np.ndarray)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.fill_fock_matrix">
+<code class="descname">fill_fock_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fill_fock_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fill_fock_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to</p>
+<p><span class="math notranslate nohighlight">\(f_{\mu\nu}(t) =  h_{\mu\nu}^{ho} + x_{\mu\nu} \varepsilon_0 \sin(\omega t) + \sum_{j}^{occ} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta,AS}\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">C (np.ndarray) : coefficient matrix</p>
+<p class="last">t (float) : time instant</p>
+</dd>
+<dt>Returns:</dt>
+<dd>fock_matrix (np.ndarray)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.fourier_analysis">
+<code class="descname">fourier_analysis</code><span class="sig-paren">(</span><em>tolerance</em>, <em>max_iter</em>, <em>t_laser_ON</em>, <em>t_max</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.fourier_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.fourier_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves the time-independent Ruthaan-Hall equations and then performs a time-evolution of the system switching off the laser source at a certain time.
+Performs the Fourier analysis on the curves for overlap and dipole moment obtained for t&gt;t_laser_ON</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">tolerance (float) : stopping condition for the time-independent solver.</p>
+<p>max_iter (int) : maximum number of iterations before the time-independent solver stops.</p>
+<p>t_laser_ON (float) : instant at which the laser is switched off</p>
+<p>t_max (float) : final instant for time evolution</p>
+<p class="last">dt (float) : time step</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">C2 (np.ndarray) : coefficient matrix for t=t_max</p>
+<p>time (np.array) : time instants from tstart to t_max spaced by dt</p>
+<p>dipole (np.array) : dipole evaluated at each time instant</p>
+<p>overlap (np.array) : overlap evaluated at each time instant</p>
+<p>dipoleFFT (np.array) : fft of dipole values for t&gt;t_laser_ON</p>
+<p>dipolefreqFFT (np.array) : array of frequencies corresponding to dipoleFFT</p>
+<p>overlapFFT (np.array) : fft of overlap values for t&gt;t_laser_ON</p>
+<p class="last">overlapfreqFFT (np.array) : array of frequencies corresponding to overlapFFT</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.laser_potential">
+<code class="descname">laser_potential</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.laser_potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.laser_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the laser potential at time t.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>t (float) : time instant</dd>
+<dt>Returns:</dt>
+<dd>(float) epsilon0 * sin( omega * t )</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_AO">
+<code class="descname">plot_AO</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_AO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_AO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the square modulus of the Atomic Orbitals (harmonic oscillator eigenstates).
+The zero-level for each single particle state is its corresponding eigenvalue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_MO">
+<code class="descname">plot_MO</code><span class="sig-paren">(</span><em>epsilon</em>, <em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_MO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_MO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the square modulus of the Molecular Orbitals (after the basis change).
+The zero-level for each single particle state is its corresponding eigenvalue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_delta_per_iteration">
+<code class="descname">plot_delta_per_iteration</code><span class="sig-paren">(</span><em>delta_ghf</em>, <em>delta_rhf</em>, <em>tolerance</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_delta_per_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_delta_per_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_dipole">
+<code class="descname">plot_dipole</code><span class="sig-paren">(</span><em>time</em>, <em>dipole</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_dipole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_dipole" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_dipoles">
+<code class="descname">plot_dipoles</code><span class="sig-paren">(</span><em>time</em>, <em>dipole1</em>, <em>dipole2</em>, <em>dipole3</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_dipoles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_dipoles" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_energy_per_iteration">
+<code class="descname">plot_energy_per_iteration</code><span class="sig-paren">(</span><em>energy_ghf</em>, <em>energy_rhf</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_energy_per_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_energy_per_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_fft_dipole_comparison">
+<code class="descname">plot_fft_dipole_comparison</code><span class="sig-paren">(</span><em>freq1</em>, <em>freq2</em>, <em>freq3</em>, <em>fft1</em>, <em>fft2</em>, <em>fft3</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_fft_dipole_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_fft_dipole_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_fft_overlap_comparison">
+<code class="descname">plot_fft_overlap_comparison</code><span class="sig-paren">(</span><em>freq1</em>, <em>freq2</em>, <em>freq3</em>, <em>fft1</em>, <em>fft2</em>, <em>fft3</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_fft_overlap_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_fft_overlap_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_fourier_analysis">
+<code class="descname">plot_fourier_analysis</code><span class="sig-paren">(</span><em>time</em>, <em>dipole</em>, <em>overlap</em>, <em>energy</em>, <em>xFFT</em>, <em>xfreqFFT</em>, <em>overlapFFT</em>, <em>overlapfreqFFT</em>, <em>save_dipole=False</em>, <em>save_overlap=False</em>, <em>save_energy=False</em>, <em>save_fft_x=False</em>, <em>save_fft_overlap=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_fourier_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_fourier_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the results of the Fourier analysis.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">time (np.array) : array of time instants</p>
+<p>overlap (np.array) : overlap for each time instant</p>
+<p>energy (np.array) : energy for each time instant</p>
+<p>xFFT (np.array) : fast Fourier transform of the dipole signal</p>
+<p>xfreqFFT (np.array) : frequency spectrum of the dipole signal (useful for plotting)</p>
+<p>overlapFFT (np.array) : fast Fourier transform of the overlap signal</p>
+<p class="last">overlapfreqFFT (np.array) : frequency spectrum of the overlap signal (useful for plotting)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_onebody_comparison">
+<code class="descname">plot_onebody_comparison</code><span class="sig-paren">(</span><em>onebodyg</em>, <em>onebodyr</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_onebody_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_onebody_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_overlap">
+<code class="descname">plot_overlap</code><span class="sig-paren">(</span><em>time</em>, <em>overlap</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_overlap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the comparison between the overlaps evaluated in the time-dependent solver and by Zanghellini et al..</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">time (np.array) : array of time instants</p>
+<p class="last">overlap (np.array) : overlap for each time instant</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.plot_overlaps">
+<code class="descname">plot_overlaps</code><span class="sig-paren">(</span><em>time</em>, <em>overlap1</em>, <em>overlap2</em>, <em>overlap3</em>, <em>save_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.plot_overlaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.plot_overlaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>FACCIAMO SENZA DOCUMENTAZIONE DAI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.rhsf">
+<code class="descname">rhsf</code><span class="sig-paren">(</span><em>t</em>, <em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.rhsf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.rhsf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source on, corresponding to</p>
+<p><span class="math notranslate nohighlight">\(\dot{C}(t) = -i f(t)C(t)\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">t (float) : time</p>
+<p class="last">C (np.ndarray) : coefficient matrix</p>
+</dd>
+<dt>Returns:</dt>
+<dd>rhs (np.ndarray)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.rhsf_OFF">
+<code class="descname">rhsf_OFF</code><span class="sig-paren">(</span><em>t</em>, <em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.rhsf_OFF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.rhsf_OFF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the right-hand side of the Ruthaan-Hall equations with the laser source off, given by</p>
+<p><span class="math notranslate nohighlight">\(\dot{C}(t) = -i f(t)C(t)\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">t (float) : time</p>
+<p class="last">C (np.ndarray) : coefficient matrix</p>
+</dd>
+<dt>Returns:</dt>
+<dd>rhs (np.ndarray)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.solve_TDHF">
+<code class="descname">solve_TDHF</code><span class="sig-paren">(</span><em>tstart</em>, <em>dt</em>, <em>t_max</em>, <em>C0</em>, <em>eval_overlap=False</em>, <em>eval_dipole=False</em>, <em>eval_energy=False</em>, <em>laser_ON=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.solve_TDHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.solve_TDHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves iteratively the time-dependent Ruthaan-Hall equations for the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">t_start (float) : time at which the evolution begins</p>
+<p>dt (float) : time step</p>
+<p>t_max (float) : time at which the evolution ends</p>
+<p>C0 (np.ndarray) : coefficient matrix at time t_start</p>
+<p>eval_overlap (bool) : if True, the overlap with the wavefunction at t=t_start is evaluated at every instant</p>
+<p>eval_dipole (bool) : if True, the expected value for the dipole operator is evaluated at every instant</p>
+<p>eval_energy (bool) : if True, the total energy is evaluated at every instant</p>
+<p class="last">laser_ON (bool) : if True, the laser source is on</p>
+</dd>
+<dt>Returns: </dt>
+<dd><p class="first">C (np.ndarray) : coefficient matrix at t=t_max</p>
+<p>time (np.array) : time instants from tstart to t_max spaced by dt</p>
+<p>overlap (np.array) : None if eval_overlap==False</p>
+<p>dipole (np.array) : None if eval_dipole==False</p>
+<p class="last">energy (np.array) : None if eval_energy==False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.GHF.solve_TIHF">
+<code class="descname">solve_TIHF</code><span class="sig-paren">(</span><em>tolerance</em>, <em>max_iter</em>, <em>print_ON=False</em>, <em>eval_energy_per_step=False</em>, <em>eval_delta=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#GHF.solve_TIHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.GHF.solve_TIHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves the Ruthaan-Hall equations for the system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">tolerance (float) : stopping condition for the algorithm.</p>
+<p class="last">max_iter (int) : maximum number of iterations before the algorithm stops</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd><p class="first">print_ON (bool) : if True prints if the convergence or the max number of iterations has been reached.</p>
+<p>energy_per_step (bool) : if True, the energy of the system is evaluated at every step</p>
+<p class="last">delta_per_step (bool) : if True, the <span class="math notranslate nohighlight">\(\Delta\)</span> parameter of the system is evaluated at every step</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">epsilon (np.array) : final eigenvalues</p>
+<p>C (np.ndarray) : final coefficient matrix</p>
+<p>energy_per_step (np.array) : None if energy_per_step==False</p>
+<p class="last">delta_per_step (np.array) : None if delta_per_step==False</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="do.RHF">
+<em class="property">class </em><code class="descclassname">do.</code><code class="descname">RHF</code><span class="sig-paren">(</span><em>l=10</em>, <em>grid_length=10</em>, <em>num_grid_points=201</em>, <em>alpha=1.0</em>, <em>a=0.25</em>, <em>Omega=0.25</em>, <em>omega=2</em>, <em>epsilon0=1</em>, <em>nparticles=2</em>, <em>potential=None</em>, <em>antisymmetrize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a system in the restricted spin representation. The default values in the creator are referred to the analyzed case.
+A more detailed description is provided in the paper folder in this same GitHub repository.
+The quantum-system documentation appears in <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">l (int) : number of harmonic oscillator eigenstates used for the expansion of the radial part of the single-particle wavefunctions</p>
+<p>grid_length (int) : extension of the mesh goes from -grid_length to grid_length</p>
+<p>num_grid_points (int) : number of points in the mesh</p>
+<p>alpha (float) : strength parameter in the shielded Coulomb potential</p>
+<p>a (float) : shielding parameter in the shielded Coulomb potential</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p class="last">nparticles (int) : number of electrons in the system</p>
+</dd>
+<dt>Attributes:</dt>
+<dd><p class="first">potential (func) : ODQD.HOPotential(Omega)</p>
+<p>system : ODQD object (see <a class="reference external" href="https://schoyen.github.io/quantum-systems/">https://schoyen.github.io/quantum-systems/</a>)</p>
+<p>Omega (float) : frequency of the harmonic oscillator potential in which the electrons are trapped</p>
+<p>omega (float) : frequency of the laser source</p>
+<p>epsilon0 (float) : amplitude of the sinusoidal potential associated to the laser</p>
+<p class="last">nparticles (int) : number of electrons in the system</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="do.RHF.eval_one_body_density">
+<code class="descname">eval_one_body_density</code><span class="sig-paren">(</span><em>C</em>, <em>plot_ON=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.eval_one_body_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.eval_one_body_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the one-body density of the system, according to</p>
+<p><span class="math notranslate nohighlight">\(\rho(x) = 2 \sum_i^{n/2} \sum_{\alpha\beta} C_{\alpha,i}^* C_{\beta,i} \chi_{\alpha}^*(x) \chi_{\beta}(x)\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Kwargs:</dt>
+<dd>plot_ON (bool) : if True plots the one-body density</dd>
+<dt>Returns:</dt>
+<dd>one_body_density (np.array)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.RHF.evaluate_total_energy">
+<code class="descname">evaluate_total_energy</code><span class="sig-paren">(</span><em>C</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.evaluate_total_energy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.evaluate_total_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total energy of the system, given by</p>
+<p><span class="math notranslate nohighlight">\(E[H] = 2\sum_{i=1}^{n/2} \sum_{\alpha,\beta} C_{\alpha,i}^* C_{\beta,i} h_{\alpha\beta}^{ho} + 2 \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\beta\delta} - \sum_{i,j=1}^{n/2} \sum_{\alpha\beta\gamma\delta} C_{\alpha,i}^* C_{\gamma,j}^* C_{\beta,i} C_{\delta,j}  u^{\alpha\gamma}_{\delta\beta}\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:</dt>
+<dd>energy (float)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.RHF.fill_density_matrix">
+<code class="descname">fill_density_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>full_density=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.fill_density_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.fill_density_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the density matrix evaluated using the coefficient matrix C, according to</p>
+<p><span class="math notranslate nohighlight">\(M_{\alpha\beta} = \sum_i^{nparticles/2} C_{\alpha,i}^* C_{i,\beta}\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>C (np.ndarray) : coefficient matrix</dd>
+<dt>Returns:</dt>
+<dd>density_matrix (np.ndarray)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="do.RHF.fill_fock_matrix">
+<code class="descname">fill_fock_matrix</code><span class="sig-paren">(</span><em>C</em>, <em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/do.html#RHF.fill_fock_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#do.RHF.fill_fock_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Fock matrix evaluated using the coefficient matrix C evaluated at time t, according to</p>
+<p><span class="math notranslate nohighlight">\(f_{\mu\nu} =  h_{\mu\nu}^{ho} + 2\sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\nu\delta} - \sum_{j}^{n/2} \sum_{\gamma\delta} C_{\gamma,j}^* C_{\delta,j} u^{\mu\gamma}_{\delta\nu}\)</span></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">C (np.ndarray) : coefficient matrix</p>
+<p class="last">t (float) : time instant</p>
+</dd>
+<dt>Returns:</dt>
+<dd>fock_matrix (np.ndarray)</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Project 2</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Emiliano Staffoli.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

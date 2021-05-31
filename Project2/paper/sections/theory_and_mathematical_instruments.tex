@@ -1,0 +1,37 @@
+The treatment of complex many-body systems such as molecules or clusters represents a very demanding task. The introduction of some properly chosen approximations usually leads to a solution for the considered problem, the price to pay being a possible lack of accuracy in the obtained results. Extended systems illuminated by strong laser sources constitute a clear example: they are very complex to treat both computationally and theoretically and even the adoption of the so-called single active electron approximation is of any help in this context. Moreover, well known and established methods as the time-dependent Hartree-Fock or the time-dependent density functional theory suffer of a lack of accuracy when applied to the description of electron dynamics in such complex systems. Zanghellini et al. tried to provide for a new approach \cite{Zangellini_2003} to this kind of problems, formulating the so-called Multi-configuration time-dependent Hartree-Fock method for strong laser field problems. As the name suggests, this strategy still relies on the standard HF theory, but now the total wavefunction describing a system of fermions is expanded in a series of Slater determinants. Higher levels of accuracy can be reached as the number of terms $\eta$ in the expansion increases, finally reaching the exact solution for $\eta \rightarrow \infty$. 
+
+At a later stage the validity of the approach was tested by applying it for the description of two systems, the first constituted by two electrons trapped in a harmonic oscillator potential, the second being represented by a He atom. Both the configurations were subject to a strong laser field. Procedures and results are reported in \cite{Zanghellini_2004}: here the attention is mainly focused on determining the number of Slater determinant that allows to reach a convergence with the numerically exact solution to the considered problems. On the contrary, we will limit our discussion to the case $\eta=1$, trying to reproduce the results for the 2-electrons systems only.
+
+\subsection{PRELIMINARY TIME-INDEPENDENT TREATMENT}
+The first part of the project was devoted to access the main properties of the system in its ground state. According to the content of the article, the following Hamiltonian was adopted
+\begin{align}
+\begin{split}
+    H(x,y; t) =& -\frac{1}{2} \left( \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} \right) + \frac{1}{2} \Omega^2 (x^2 + y^2) + \\
+    & + \frac{1}{\sqrt{(x-y)^2 + a^2}} \\
+    =& \sum_{i=1}^2 h_i + v(x,y)
+\end{split}  
+\label{eq:hamiltonian_t_indep}
+\end{align}
+where $x$ and $y$ are the coordinates for the two electrons. The single-particle Hamiltonians are limited to a kinetic energy term and a harmonic oscillator potential, since at this stage the time dependence is still not included. The interaction between the electrons is represented by a smoothed Coulomb potential, where the shielding parameter $a$ has been inserted to avoid divergences. The values adopted in the article are $\Omega=0.25$, $\omega=8\Omega$ and $a=0.25$. \\
+
+For this first stage of the treatment, the standard time-independent Hartree-Fock method was adopted. [bla bla bla, scriveremo qualcosa qui in base a dove mettiamo la derivazione].
+
+\subsubsection{EXPECTATION VALUES}
+The results in terms of total wavefunction $\Psi$ provided at the end of the iterative process were then used to access some important properties of the system in its ground state. In particular, the energy of the system can be achieved as
+\begin{equation*}
+    \mathbb{E}[H] =
+\end{equation*}
+
+% The Hamiltonian used for the description of the apparatus takes the following form (in atomic units)
+% \begin{align}
+% \begin{split}
+%     H(x,y; t) =& -\frac{1}{2} \left( \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} \right) + \frac{1}{2} \Omega^2 (x^2 + y^2) + \\
+%     &+ \frac{1}{\sqrt{(x-y)^2 + a^2}} + (x+y) \fakeeps_0 \sin (\omega t)
+% \end{split}
+% \label{eq:hamiltonian}
+% \end{align}
+% where $x$ and $y$ are the coordinates for the two electrons. The single-particle terms are constituted by an harmonic oscillator potential and a time-dependent sinusoidal contribution standing for the laser field illuminating the system. 
+
+% \subsection{}
+
+
