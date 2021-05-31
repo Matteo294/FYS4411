@@ -425,10 +425,10 @@ class GHF:
 
         """
         fig, ax = plt.subplots(figsize=(10,7))
-        plt.title(r'$\Omega=0.25,\;\omega=1.0,\; \delta t = 10^{-4},\; T_{max}= 1.2 \times 2 \pi / \Omega$', fontsize=18)
+        plt.title(r'$\Omega=0.25,\;\omega=8.0,\; \delta t = 10^{-4},\; T_{max}= 1.2 \times 2 \pi / \Omega$', fontsize=18)
         ax.set_xlim([-10, 10])
         ax.set_ylim([-0.1, 1.5])
-        ax.set_xlabel(r'$x$', fontsize=22)
+        ax.set_xlabel(r'$x$ [a.u.]', fontsize=22)
         ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
         ax.grid()
 
@@ -445,7 +445,7 @@ class GHF:
         i_max = i_max = int( np.floor(t_max / dt / save_every_n) )
 
         anim = FuncAnimation(fig, self.anima, fargs=(text, line1, line2, integrator, dt, t_max, save_every_n), frames=i_max)
-        writer = PillowWriter(fps=20)  
+        writer = PillowWriter(fps=15)  
         anim.save("animation.gif", writer=writer)  
     
 
@@ -471,6 +471,7 @@ class GHF:
         """
         plt.figure(figsize=(10,7))
         plt.plot(self.system.grid, self.potential(self.system.grid))
+        plt.xlabel('x [a.u.]')
 
         for i in range(int(self.system.l/2)):
             plt.plot( self.system.grid, np.abs(self.system.spf[2*i]) ** 2 + self.system.h[2*i, 2*i].real, label=r"$\chi_{" + f"{i}" + r"}$" )
@@ -487,6 +488,7 @@ class GHF:
         """
         plt.figure(figsize=(10,7))
         plt.plot(self.system.grid, self.potential(self.system.grid))
+        plt.xlabel('x [a.u.]')
         
         for i in range(self.system.l):
             to_plot = np.zeros( self.system.grid.shape, np.complex128 )
@@ -513,7 +515,7 @@ class GHF:
         aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
         plt.gca().set_aspect(aspect)
         plt.plot(self.system.grid , one_body_density.real)
-        plt.xlabel('x', fontsize=16)
+        plt.xlabel('x [a.u.]', fontsize=16)
         plt.ylabel(r'$\rho(x)$', fontsize=16)
         plt.xlim([-10, 10])
         ax = plt.gca()
@@ -539,7 +541,6 @@ class GHF:
         plt.plot(time* 0.5 * self.omega / np.pi, overlap)
         plt.xlabel(r'$t\omega/2\pi}$', fontsize=16)
         plt.ylabel(r'$\xi(t)$', fontsize=16)
-        #plt.xlim([0,8])
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
         plt.grid()
@@ -570,7 +571,7 @@ class GHF:
         plt.figure(figsize=(16,5))
         plt.plot(time/np.max(time), dipole.real)
         plt.xlabel(r'$t/T_f$', fontsize=16)
-        plt.ylabel(r'$\overline{x}(t)$', fontsize=16)
+        plt.ylabel(r'$\overline{x}(t)$ [a.u.]', fontsize=16)
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
         plt.grid()
@@ -589,7 +590,7 @@ class GHF:
             plt.figure(figsize=(16,5))
             plt.plot(time/np.max(time), energy.real)
             plt.xlabel(r'$t/T_f$', fontsize=16)
-            plt.ylabel(r'$Energy (t)$', fontsize=16)
+            plt.ylabel(r'$Energy (t)$ [Hartree]', fontsize=16)
             ax = plt.gca()
             ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
             plt.grid()
@@ -616,185 +617,6 @@ class GHF:
         plt.grid()
         plt.show()
     
-    
-    # def plot_onebody_comparison(self, onebodyg, onebodyr, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(16, 16))
-    #     img = plt.imread("theoretical_density.png")
-    #     ext = [-6.0, 6.0, 0.00, 0.4]
-    #     plt.imshow(img, zorder=0, extent=ext)
-    #     aspect = img.shape[0]/float(img.shape[1])*((ext[1]-ext[0])/(ext[3]-ext[2]))
-    #     plt.gca().set_aspect(aspect)
-    #     plt.plot(self.system.grid, onebodyg.real, label='GHF')
-    #     plt.plot(self.system.grid, onebodyr.real, label='RHF')
-    #     plt.xlabel('x', fontsize=16)
-    #     plt.ylabel(r'$\rho(x)$', fontsize=16)
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
-    #     plt.grid()
-    #     plt.legend(fontsize=12)
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/onebody_density_comp_article.pdf', bbox_inches='tight')
-    #     plt.show()
-    
-    # def plot_energy_per_iteration(self, energy_ghf, energy_rhf, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(10,7))
-    #     plt.plot(np.arange(len(energy_ghf)), energy_ghf.real, label='GHF')
-    #     plt.plot(np.arange(len(energy_rhf)), energy_rhf.real, label='RHF')
-    #     plt.xlabel('Iteration', fontsize=22)
-    #     plt.ylabel('Energy', fontsize=22)
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-    #     plt.grid()
-    #     plt.legend(fontsize=14)
-
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/energy_at_every_step.pdf', bbox_inches='tight')
-    #     plt.show()
-        
-    # def plot_delta_per_iteration(self, delta_ghf, delta_rhf, tolerance, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(10,7))
-    #     plt.plot(np.arange(len(delta_ghf)), delta_ghf.real, label='GHF')
-    #     plt.plot(np.arange(len(delta_rhf)), delta_rhf.real, label='RHF')
-    #     plt.plot(np.arange(len(delta_rhf)), tolerance*np.ones(len(delta_ghf)), linestyle='--', color='red', label=r'$\delta$')
-    #     plt.xlabel('Iteration', fontsize=22)
-    #     plt.ylabel(r'$\Delta$', fontsize=22)
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-    #     ax.set_yscale('log')
-    #     plt.grid()
-    #     plt.legend(fontsize=14)
-
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/delta_at_every_step.pdf', bbox_inches='tight')
-    #     plt.show()
-
-    # def plot_dipole(self, time, dipole, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(10,7))
-    #     plt.plot(time* 0.5 * self.omega / np.pi, dipole)
-    #     plt.xlabel(r'$t\omega/2\pi}$', fontsize=22)
-    #     plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-    #     plt.grid()
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/time_dependent_dipole.pdf', bbox_inches='tight')
-    #     plt.show()
-        
-    # def plot_overlaps(self, time, overlap1, overlap2, overlap3, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(16,5))
-    #     plt.plot(time* 0.5 * self.Omega / np.pi, overlap1, label=r'$\omega=8\Omega$')
-    #     plt.plot(time* 0.5 * self.Omega / np.pi, overlap2, label=r'$\omega=4\Omega$')
-    #     plt.plot(time* 0.5 * self.Omega / np.pi, overlap3, label=r'$\omega=32\Omega$')
-    #     plt.xlabel(r'$t\Omega/2\pi$', fontsize=16)
-    #     plt.ylabel(r'$\xi(t)$', fontsize=16)
-    #     plt.xlim([0, 1.2])
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
-    #     plt.grid()
-    #     plt.legend(fontsize=16)
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/overlaps_different_omega.pdf', bbox_inches='tight')
-    #     plt.show()
-    
-
-    # def plot_dipoles(self, time, dipole1, dipole2, dipole3, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(10,7))
-    #     plt.plot(time* 0.5 * self.Omega / np.pi, dipole1, label=r'$\omega=8\Omega$')
-    #     plt.plot(time* 0.5 * self.Omega / np.pi, dipole2, label=r'$\omega=4\Omega$')
-    #     plt.plot(time* 0.5 * self.Omega / np.pi, dipole3, label=r'$\omega=32\Omega$')
-    #     plt.xlabel(r'$t\Omega/2\pi}$', fontsize=22)
-    #     plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-    #     plt.grid()
-    #     plt.legend(fontsize=16)
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/dipoles_different_omega.pdf', bbox_inches='tight')
-    #     plt.show()  
-
-    # def plot_fft_dipole_comparison(self, freq1,freq2,freq3, fft1, fft2, fft3, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(10,7))
-    #     freq1 = freq1[freq1>=0]
-    #     freq2 = freq2[freq2>=0]
-    #     freq3 = freq3[freq3>=0]
-    #     fft1 = np.abs(fft1[0:len(freq1)])
-    #     fft2 = np.abs(fft2[0:len(freq2)])
-    #     fft3 = np.abs(fft3[0:len(freq3)])
-    #     fft1 = fft1/np.max(fft1)
-    #     fft2 = fft2/np.max(fft2)
-    #     fft3 = fft3/np.max(fft3)
-
-        
-    #     plt.plot(2*np.pi*freq1, fft1, label=r'$\Omega=0.25, \omega=2.0$')
-    #     plt.plot(2*np.pi*freq2, fft2, label=r'$\Omega=0.5, \omega=3.0$')
-    #     plt.plot(2*np.pi*freq3, fft3, label=r'$\Omega=0.75, \omega=4.0$')
-    #     plt.xlabel(r'$\omega_{fft}$', fontsize=22)
-    #     plt.ylabel(r'$FFT[\overline{x}(t)]$', fontsize=22)
-    #     plt.xlim([0, 2])
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-    #     plt.grid()
-    #     plt.legend(fontsize=14)
-
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/spectra_x_diff_omegas.pdf', bbox_inches='tight')
-    #     plt.show()
-
-    # def plot_fft_overlap_comparison(self, freq1,freq2,freq3, fft1, fft2, fft3, save_fig=False):
-    #     r"""
-    #         FACCIAMO SENZA DOCUMENTAZIONE DAI
-    #     """
-    #     plt.figure(figsize=(10,7))
-    #     freq1 = freq1[freq1>=0]
-    #     freq2 = freq2[freq2>=0]
-    #     freq3 = freq3[freq3>=0]
-    #     fft1 = np.abs(fft1[0:len(freq1)])
-    #     fft2 = np.abs(fft2[0:len(freq2)])
-    #     fft3 = np.abs(fft3[0:len(freq3)])
-    #     fft1 = fft1/np.max(fft1)
-    #     fft2 = fft2/np.max(fft2)
-    #     fft3 = fft3/np.max(fft3)
-        
-    #     plt.plot(2*np.pi*freq1, fft1, label=r'$\Omega=0.25, \omega=2.0$')
-    #     plt.plot(2*np.pi*freq2, fft2, label=r'$\Omega=0.5, \omega=3.0$')
-    #     plt.plot(2*np.pi*freq3, fft3, label=r'$\Omega=0.75, \omega=4.0$')
-    #     plt.xlabel(r'$\omega_{fft}$', fontsize=22)
-    #     plt.ylabel(r'$FFT[\xi_T(t)]$', fontsize=22)
-    #     plt.xlim([0, 2])
-    #     ax = plt.gca()
-    #     ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
-    #     plt.grid()
-    #     plt.legend(fontsize=14)
-
-    #     if save_fig==True:
-    #         plt.savefig('../paper/images/spectra_xi_diff_omegas.pdf', bbox_inches='tight')
-    #     plt.show()
-        
-        
-    
-    
-
 
 
 class RHF(GHF):
