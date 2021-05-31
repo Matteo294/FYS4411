@@ -3,7 +3,7 @@ This is the repository for the **Computationl Physics II** class at UiO.
    
 **Group member**s: Emiliano Staffoli, Matteo Zortea, Aexander Ferraro  
 
-The two mandatory projects, with related reports, are located in the respective directories (only Project1 visible now).
+The two mandatory projects, with related reports, are located in the respective directories.
 
 ### Project 1: Variational MC for trapped bosons
 The project consists in the study, via a variational Monte Carlo method, of a system of interacting bosons trapped in an elliptical potential.
