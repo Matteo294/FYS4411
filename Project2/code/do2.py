@@ -359,7 +359,7 @@ class GHF:
 
         return C, time, overlap, dipole, energy
 
-    def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt):
+    def fourier_analysis(self, tolerance, max_iter, t_laser_ON, t_max, dt, eval_energy=False):
         r"""
         Solves the time-independent Ruthaan-Hall equations and then performs a time-evolution of the system switching off the laser source at a certain time.
         Performs the Fourier analysis on the curves for overlap and dipole moment obtained for t>t_laser_ON
@@ -375,6 +375,8 @@ class GHF:
 
             dt (float) : time step
 
+            eval_energy (bool) : leave false for faster computation
+
         **Returns**:
             C2 (np.ndarray) : coefficient matrix for t=t_max
 
@@ -384,8 +386,6 @@ class GHF:
 
             overlap (np.array) : overlap evaluated at each time instant
 
-            energy (np.array) : total energy at each time instant
-
             dipoleFFT (np.array) : fft of dipole values for t>t_laser_ON
 
             dipolefreqFFT (np.array) : array of frequencies corresponding to dipoleFFT
@@ -394,21 +394,26 @@ class GHF:
 
             overlapfreqFFT (np.array) : array of frequencies corresponding to overlapFFT
 
+            energy (np.array) : total energy at each time instant
+
         """
         epsilon, C0, energy_per_step, delta_per_step = self.solve_TIHF(tolerance=tolerance, max_iter=max_iter, print_ON=False)
-        C1, time1, overlap1, dipole1, energy1 = self.solve_TDHF(0, dt, t_laser_ON, C0, eval_overlap=True, eval_dipole=True, eval_energy=True, laser_ON=True)
-        C2, time2, overlap2, dipole2, energy2 = self.solve_TDHF(t_laser_ON,  dt, t_max, C1, eval_overlap=True, eval_dipole=True, eval_energy=True, laser_ON=False)
+        C1, time1, overlap1, dipole1, energy1 = self.solve_TDHF(0, dt, t_laser_ON, C0, eval_overlap=True, eval_dipole=True, eval_energy=eval_energy, laser_ON=True)
+        C2, time2, overlap2, dipole2, energy2 = self.solve_TDHF(t_laser_ON,  dt, t_max, C1, eval_overlap=True, eval_dipole=True, eval_energy=eval_energy, laser_ON=False)
         time = np.concatenate((time1,time2))
         dipole = np.concatenate((dipole1, dipole2))
         overlap = np.concatenate((overlap1, overlap2))
-        energy = np.concatenate((energy1, energy2))
+        if eval_energy==True:
+            energy = np.concatenate((energy1, energy2))
+        else:
+            energy = None
 
         xFFT = np.fft.fft(dipole2)
         xfreqFFT = np.fft.fftfreq(len(dipole2), dt)
         overlapFFT = np.fft.fft(overlap2)
         overlapfreqFFT = np.fft.fftfreq(len(overlap2), dt)       
         
-        return C2, time, dipole, overlap, energy, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT
+        return C2, time, dipole, overlap, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT, energy
 
 
     def gif_generator(self, dt, t_max, C0, save_every_n=500):
@@ -548,7 +553,7 @@ class GHF:
             plt.savefig('../paper/images/overlap_comp_article.pdf', bbox_inches='tight')
         plt.show()
     
-    def plot_fourier_analysis(self, time, dipole, overlap, energy, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT, save_dipole=False, save_overlap=False, save_energy=False, save_fft_x=False, save_fft_overlap=False):    
+    def plot_fourier_analysis(self, time, dipole, overlap, xFFT, xfreqFFT, overlapFFT, overlapfreqFFT, energy=None, save_dipole=False, save_overlap=False, save_energy=False, save_fft_x=False, save_fft_overlap=False):    
         r"""
             Plots the results of the Fourier analysis.
 
@@ -558,8 +563,6 @@ class GHF:
                 dipole (np.array) : dipole for each time instant
 
                 overlap (np.array) : overlap for each time instant
-
-                energy (np.array) : energy for each time instant
                 
                 xFFT (np.array) : fast Fourier transform of the dipole signal
                 
@@ -569,11 +572,13 @@ class GHF:
                 
                 overlapfreqFFT (np.array) : frequency spectrum of the overlap signal (useful for plotting) 
 
+                energy (np.array) : energy for each time instant
+
         """
         plt.figure(figsize=(16,5))
         plt.plot(time/np.max(time), dipole.real)
         plt.xlabel(r'$t/T_f$', fontsize=16)
-        plt.ylabel(r'$\overline{x}(t)$', fontsize=16)
+        plt.ylabel(r'$\overline{x}(t)$ [a.u]', fontsize=16)
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
         plt.grid()
@@ -592,16 +597,17 @@ class GHF:
             plt.savefig('../paper/images/overlap_laser_ONOFF.pdf', bbox_inches='tight')
         plt.show()
 
-        plt.figure(figsize=(16,5))
-        plt.plot(time/np.max(time), energy.real)
-        plt.xlabel(r'$t/T_f$', fontsize=16)
-        plt.ylabel(r'$Energy (t)$', fontsize=16)
-        ax = plt.gca()
-        ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
-        plt.grid()
-        if save_energy==True:
-            plt.savefig('../paper/images/energy_laser_ONOFF.pdf', bbox_inches='tight')
-        plt.show()
+        if energy is not None:
+            plt.figure(figsize=(16,5))
+            plt.plot(time/np.max(time), energy.real)
+            plt.xlabel(r'$t/T_f$', fontsize=16)
+            plt.ylabel(r'$Energy (t)$', fontsize=16)
+            ax = plt.gca()
+            ax.tick_params(axis='both', which='major', pad=5, labelsize=18)
+            plt.grid()
+            if save_energy==True:
+                plt.savefig('../paper/images/energy_laser_ONOFF.pdf', bbox_inches='tight')
+            plt.show()
 
         plt.figure(figsize=(10,7))
         plt.plot(2*np.pi*xfreqFFT, np.abs(xFFT))
@@ -641,7 +647,7 @@ class GHF:
         plt.gca().set_aspect(aspect)
         plt.plot(self.system.grid, onebodyg.real, label='GHF')
         plt.plot(self.system.grid, onebodyr.real, label='RHF')
-        plt.xlabel('x', fontsize=16)
+        plt.xlabel(r'$x \; [a.u.]$', fontsize=16)
         plt.ylabel(r'$\rho(x)$', fontsize=16)
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=16)
@@ -659,7 +665,7 @@ class GHF:
         plt.plot(np.arange(len(energy_ghf)), energy_ghf.real, label='GHF')
         plt.plot(np.arange(len(energy_rhf)), energy_rhf.real, label='RHF')
         plt.xlabel('Iteration', fontsize=22)
-        plt.ylabel('Energy', fontsize=22)
+        plt.ylabel('Energy [Hartree]', fontsize=22)
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
         plt.grid()
@@ -678,7 +684,7 @@ class GHF:
         plt.plot(np.arange(len(delta_rhf)), delta_rhf.real, label='RHF')
         plt.plot(np.arange(len(delta_rhf)), tolerance*np.ones(len(delta_ghf)), linestyle='--', color='red', label=r'$\delta$')
         plt.xlabel('Iteration', fontsize=22)
-        plt.ylabel(r'$\Delta$', fontsize=22)
+        plt.ylabel(r'$\Delta$ [Hartree]', fontsize=22)
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
         ax.set_yscale('log')
@@ -733,7 +739,7 @@ class GHF:
         plt.plot(time* 0.5 * self.Omega / np.pi, dipole2, label=r'$\omega=4\Omega$')
         plt.plot(time* 0.5 * self.Omega / np.pi, dipole3, label=r'$\omega=32\Omega$')
         plt.xlabel(r'$t\Omega/2\pi}$', fontsize=22)
-        plt.ylabel(r'$\overline{x}(t)$', fontsize=22)
+        plt.ylabel(r'$\overline{x}(t)$ [a.u.]', fontsize=22)
         ax = plt.gca()
         ax.tick_params(axis='both', which='major', pad=5, labelsize=22)
         plt.grid()
