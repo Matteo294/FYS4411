@@ -184,7 +184,7 @@ class GHF:
 
             print_ON (bool) : if True prints if the convergence or the max number of iterations has been reached.
 
-            energy_per_step (bool) : if True, the energy of the system is evaluated at every step
+            eval_energy_per_step (bool) : if True, the energy of the system is evaluated at every step
 
             eval_delta_per_step (bool) : if True, the :math:`\Delta` parameter of the system is evaluated at every step
         
@@ -241,10 +241,10 @@ class GHF:
             **Args**:
                 t (float) : time
 
-                C (np.ndarray) : coefficient matrix
+                C (np.array) : reshaped coefficient matrix into array
             
             **Returns**:
-                rhs (np.ndarray)
+                rhs (np.array)
         
         """
         C = np.reshape(C, self.system.h.shape)
@@ -264,10 +264,10 @@ class GHF:
             **Args**:
                 t (float) : time
 
-                C (np.ndarray) : coefficient matrix
+                C (np.array) : coefficient matrix reshaped into array
             
             **Returns**:
-                rhs (np.ndarray)
+                rhs (np.array)
 
         """
         C = np.reshape(C, self.system.h.shape)
@@ -425,7 +425,7 @@ class GHF:
 
         """
         fig, ax = plt.subplots(figsize=(10,7))
-        plt.title(r'$\Omega=0.25,\;\omega=8.0,\; \delta t = 10^{-4},\; T_{max}= 1.2 \times 2 \pi / \Omega$', fontsize=18)
+        #plt.title(r'$\Omega=0.25,\;\omega=8.0,\; \delta t = 10^{-4},\; T_{max}= 1.2 \times 2 \pi / \Omega$', fontsize=18)
         ax.set_xlim([-10, 10])
         ax.set_ylim([-0.1, 1.5])
         ax.set_xlabel(r'$x$ [a.u.]', fontsize=22)
